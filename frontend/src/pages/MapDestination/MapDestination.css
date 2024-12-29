@@ -53,7 +53,7 @@
 }
 
 /* ปุ่มเลือกจุดรับ */
-.destination .pickup-button {
+.destination .drop-button {
     padding: 10px;
     background-color: #7F6ACB;
     color: #fff;

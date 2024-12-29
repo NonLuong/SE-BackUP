@@ -1,7 +1,7 @@
-import { IEmployee } from "../../../interfaces/IEmployee";
+import { EmployeeInterface } from "../../../interfaces/IEmployee";
 import axios from "axios";
 
-const apiUrl = "http://localhost:8080/api";
+const apiUrl = "http://localhost:8080";
 
 function getAuthHeaders() {
   const token = localStorage.getItem("authToken");
@@ -12,36 +12,41 @@ function getAuthHeaders() {
 }
 
 // Create Employee
-async function createEmployee(employee: IEmployee) {
+async function createEmployee(data: EmployeeInterface) {
   const requestOptions = {
     method: "POST",
     headers: getAuthHeaders(),
-    body: JSON.stringify({
-      firstname: employee.firstname,
-      lastname: employee.lastname,
-      phone_number: employee.phoneNumber, // ให้ใช้ชื่อ key ให้ตรงกับใน Controller
-      date_of_birth: employee.dateOfBirth, // ใน Go controller จะเป็น time.Time
-      start_date: employee.startDate, // เช่นเดียวกับด้านบน
-      salary: employee.salary,
-      profile: employee.profile,
-      email: employee.email,
-      password: employee.password,
-      position_id: employee.positionId, // ตรวจสอบให้ส่ง positionId เป็นตัวเลข
-      gender_id: employee.genderId, // ตรวจสอบให้ส่ง genderId เป็นตัวเลข
-    }),
+    body: JSON.stringify(data),
   };
 
   try {
     const response = await fetch(`${apiUrl}/employees`, requestOptions);
+
+    // Log response for debugging
+    console.log("Response from API:", response);
+
+    // Check if response status is not OK (2xx)
     if (!response.ok) {
-      throw new Error(`HTTP Error: ${response.status}`);
+      const errorMessage = `HTTP Error: ${response.status} - ${response.statusText}`;
+      console.error("Error in response:", errorMessage);
+
+      // Attempt to extract error message from response body
+      const errorBody = await response.json().catch(() => null);
+      throw new Error(
+        errorBody?.message || errorMessage || "Unknown error occurred"
+      );
     }
+
+    // Return JSON response if successful
     return await response.json();
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating employee:", error);
-    return { status: 500, message: "Server Error" };
+
+    // Re-throw the error to be handled by caller
+    throw error;
   }
 }
+
 
 
 // List Employees
@@ -71,7 +76,7 @@ async function listGenders() {
   };
 
   try {
-    const response = await fetch(`${apiUrl}/genders`, requestOptions);
+    const response = await fetch(`${apiUrl}/gender`, requestOptions);
     if (!response.ok) {
       throw new Error(`HTTP Error: ${response.status}`);
     }
@@ -118,9 +123,9 @@ async function deleteEmployee(id: number) {
 }
 
 // service/https/Employee/index.ts
-export const updateEmployee = async (employee: IEmployee) => {
+export const updateEmployee = async (employee: EmployeeInterface) => {
   try {
-    const response = await axios.put(`/employees/${employee.id}`, employee);
+    const response = await axios.put(`/employees/${employee.ID}`, employee);
     return response;
   } catch (error) {
     console.error("Error updating employee:", error);

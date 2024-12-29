@@ -2,23 +2,29 @@ package entity
 
 import "gorm.io/gorm"
 
+// Passenger Entity
 type Passenger struct {
-	gorm.Model  
-    
-    UserName   string       `json:"user_name"`
-    FirstName   string    `json:"first_name"`
-    LastName   string    `json:"last_name"`
-    PhoneNumber string    `json:"phone_number"`
-    Email       string    `json:"email"`
-    Password    string    `json:"password"`
+	gorm.Model
 
-    GenderID    uint       `json:"gender_id"`
-    Gender      Gender    `gorm:"foreignKey:GenderID" json:"gender"` // ความสัมพันธ์ belongsTo
+	//  ข้อมูลส่วนตัว
+	UserName   string `gorm:"uniqueIndex" valid:"required~Username is required."`
+	FirstName  string `valid:"required~FirstName is required"`
+	LastName   string `valid:"required~LastName is required"`
+	PhoneNumber string `valid:"required~PhoneNumber is required,stringlength(10|10)~PhoneNumber must be 10 digits"`
+	Email       string `valid:"required~Email is required,email~Email is invalid"`
+	Password    string `json:"password"`
 
-    Bookings    []Booking `gorm:"foreignKey:PassengerID" json:"bookings"` // ความสัมพันธ์ hasMany
+	//  ความสัมพันธ์กับตาราง Gender
+	GenderID uint   `json:"gender_id"`
+	Gender   Gender `gorm:"foreignKey:GenderID" json:"gender" valid:"-"` // ปิดการ Validate Nested Struct
 
-	Messages       []Message `gorm:"foreignKey:PassengerID" json:"messages"` // ความสัมพันธ์ hasMany
+	//  ความสัมพันธ์กับตาราง Booking
+	Bookings []Booking `gorm:"foreignKey:PassengerID" json:"bookings" valid:"-"` // ปิดการ Validate Nested Struct
 
-    RoleID   uint   `gorm:"not null"`
-    Role     Roles   `gorm:"foreignKey:RoleID"`
+	//  ความสัมพันธ์กับตาราง Message
+	Messages []Message `gorm:"foreignKey:PassengerID" json:"messages" valid:"-"` // ปิดการ Validate Nested Struct
+
+	//  ความสัมพันธ์กับตาราง Role
+	RoleID uint `gorm:"not null"`
+	Role   Roles `gorm:"foreignKey:RoleID" valid:"-"` // ปิดการ Validate Nested Struct
 }

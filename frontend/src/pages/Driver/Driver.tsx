@@ -23,15 +23,12 @@ const Driver: React.FC = () => {
     const fetchDrivers = async () => {
       try {
         const data = await listDrivers();
+        console.log(data); // ตรวจสอบข้อมูลที่ได้จาก API
         setDrivers(data);
         setTotalDrivers(data.length);
 
-        const maleDrivers = data.filter(
-          (drv: any) => drv.Gender && drv.Gender.gender === "Male"
-        );
-        const femaleDrivers = data.filter(
-          (drv: any) => drv.Gender && drv.Gender.gender === "Female"
-        );
+        const maleDrivers = data.filter((drv: any) => drv.Gender?.gender === "Male");
+        const femaleDrivers = data.filter((drv: any) => drv.Gender?.gender === "Female");
 
         setMaleCount(maleDrivers.length);
         setFemaleCount(femaleDrivers.length);
@@ -49,6 +46,16 @@ const Driver: React.FC = () => {
       if (success) {
         setDrivers(drivers.filter((drv: any) => drv.ID !== id));
         setTotalDrivers(totalDrivers - 1);
+
+        const maleDrivers = drivers.filter(
+          (drv: any) => drv.ID !== id && drv.Gender?.gender === "Male"
+        );
+        const femaleDrivers = drivers.filter(
+          (drv: any) => drv.ID !== id && drv.Gender?.gender === "Female"
+        );
+
+        setMaleCount(maleDrivers.length);
+        setFemaleCount(femaleDrivers.length);
       }
     } catch (error) {
       console.error("Error deleting driver:", error);
@@ -95,7 +102,7 @@ const Driver: React.FC = () => {
     },
     {
       title: "เพศ",
-      dataIndex: ["Gender", "gender"],
+      dataIndex: ["Gender", "gender"], // อัปเดต dataIndex ให้ถูกต้อง
       key: "gender",
     },
     {
@@ -236,7 +243,7 @@ const Driver: React.FC = () => {
         {/* Delete Confirmation Modal */}
         <Modal
           title="Confirm Delete"
-          visible={isModalVisible}
+          open={isModalVisible} // ใช้ open แทน visible
           onOk={() => handleDelete(currentDriverId!)}
           onCancel={handleCancel}
           okText="Confirm"

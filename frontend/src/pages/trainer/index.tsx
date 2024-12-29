@@ -87,12 +87,6 @@ function Trainers() {
       ),
     },
     {
-      title: "อายุ",
-      dataIndex: "age",
-      key: "age",
-      render: (age) => age || "ไม่มีข้อมูล",
-    },
-    {
       title: "เพศ",
       key: "gender",
       render: (record) => {

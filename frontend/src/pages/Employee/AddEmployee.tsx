@@ -17,101 +17,92 @@ import {
   listGenders,
   listPositions,
 } from "../../services/https/Employee/index";
-import { IEmployee } from "../../interfaces/IEmployee";
-import type { UploadFile } from "antd";
+import { Position } from "../../interfaces/IPosition";
+import { Gender } from "../../interfaces/IGender";
+import type { GetProp, UploadFile, UploadProps } from "antd";
+import { useNavigate } from "react-router-dom";
+//import { EmployeeInterface } from "../../interfaces/IEmployee";
+
+type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 
 const { Option } = Select;
 
 const AddEmployee: React.FC = () => {
   const [form] = Form.useForm();
-  const [genders, setGenders] = useState([]);
-  const [positions, setPositions] = useState([]);
+  const navigate = useNavigate();
+  const [messageApi, contextHolder] = message.useMessage();
+  const [genders, setGenders] = useState<Gender[]>([]);
+  const [positions, setPositions] = useState<Position[]>([]);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
-  const [previewVisible, setPreviewVisible] = useState(false);
-  const [previewImage, setPreviewImage] = useState("");
-  const [previewTitle, setPreviewTitle] = useState("");
 
   // Fetch Genders and Positions on component mount
-  useEffect(() => {
-    const fetchData = async () => {
+  const getGenderAndPositions = async () => {
+    try {
       const genderData = await listGenders();
       const positionData = await listPositions();
       if (genderData) setGenders(genderData);
       if (positionData) setPositions(positionData);
-    };
+    } catch (error) {
+      console.error("Error fetching genders and positions:", error);
+      message.error("Failed to load genders or positions.");
+    }
+  };
 
-    fetchData();
+  useEffect(() => {
+    getGenderAndPositions();
   }, []);
 
-  const onChange = ({ fileList: newFileList }: { fileList: UploadFile[] }) => {
-    setFileList(newFileList.slice(-1)); // จำกัดให้สามารถอัปโหลดได้เพียง 1 รูป
+  const onChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
+    setFileList(newFileList.slice(-1)); // Limit to 1 file
   };
 
   const onPreview = async (file: UploadFile) => {
-    if (!file.url && !file.preview) {
-      file.preview = await new Promise((resolve) => {
+    let src = file.url as string;
+    if (!src) {
+      src = await new Promise((resolve) => {
         const reader = new FileReader();
-        reader.readAsDataURL(file.originFileObj as Blob);
+        reader.readAsDataURL(file.originFileObj as FileType);
         reader.onload = () => resolve(reader.result as string);
       });
     }
-    setPreviewImage(file.url || (file.preview as string));
-    setPreviewVisible(true);
-    setPreviewTitle(
-      file.name || file.url!.substring(file.url!.lastIndexOf("/") + 1)
-    );
+    const image = new Image();
+    image.src = src;
+    const imgWindow = window.open(src);
+    imgWindow?.document.write(image.outerHTML);
   };
 
   const handleFinish = async (values: any) => {
     try {
-      // ตรวจสอบว่า gender และ position ถูกแปลงเป็น Number
-      const genderId = Number(values.gender);
-      const positionId = Number(values.position);
-  
-      // เช็คว่า genderId และ positionId เป็นตัวเลขที่ถูกต้อง
-      if (isNaN(genderId) || isNaN(positionId)) {
-        throw new Error("กรุณาเลือกเพศและตำแหน่งที่ถูกต้อง");
-      }
-  
-      let roleId: number | null = null;
-      if (positionId === 2) {
-        roleId = 3; // Employee
-      } else if (positionId === 1 || positionId === 3) {
-        roleId = 4; // Owner or Admin
-      }
-  
-      const employeeData: IEmployee = {
+      const employeeData = {
         firstname: values.firstname,
         lastname: values.lastname,
-        phoneNumber: values.phone,
-        genderId: genderId, // ใช้ genderId ที่ตรวจสอบแล้ว
-        positionId: positionId, // ใช้ positionId ที่ตรวจสอบแล้ว
-        salary: values.salary,
+        phone_number: values.phone,
+        date_of_birth: values.birthdate.format("YYYY-MM-DD"),
+        start_date: values.startdate.format("YYYY-MM-DD"),
+        salary: parseFloat(values.salary),
+        profile: fileList[0]?.thumbUrl || "",
         email: values.email,
         password: values.password,
-        startDate: values.startdate.format("YYYY-MM-DD"),
-        dateOfBirth: values.birthdate.format("YYYY-MM-DD"),
-        //RolesID: roleId,
-        profile: fileList[0]?.thumbUrl || "",
+        position_id: values.position,
+        gender_id: values.gender,
       };
-  
-      console.log("Sending Employee Data:", employeeData);
-  
+
       const response = await createEmployee(employeeData);
-  
-      if (response.status === 201) {
-        message.success("บันทึกข้อมูลพนักงานสำเร็จ!");
-        form.resetFields();
-        setFileList([]);
-      } else {
-        throw new Error(response.data?.message || "Unknown error");
-      }
+
+      messageApi.open({
+        type: "success",
+        content: "บันทึกข้อมูลพนักงานสำเร็จ!",
+      });
+      //setTimeout(() => navigate("/employees"), 2000);
     } catch (error: any) {
-      console.error("Error creating employee:", error);
-      message.error(`บันทึกข้อมูลล้มเหลว: ${error.message}`);
+      console.error("Error in handleFinish:", error.message || error);
+
+      messageApi.open({
+        type: "error",
+        content: `บันทึกข้อมูลล้มเหลว: ${error.message || "เกิดข้อผิดพลาด!"}`,
+      });
     }
   };
-  
 
   return (
     <div style={{ display: "flex", minHeight: "100vh", width: "100vw" }}>
@@ -120,6 +111,7 @@ const AddEmployee: React.FC = () => {
 
       {/* Main Content */}
       <div style={{ flex: 1, background: "#D9D7EF" }}>
+        {contextHolder}
         <h1 style={{ textAlign: "center", marginBottom: "30px" }}>
           เพิ่มข้อมูลพนักงานใหม่
         </h1>
@@ -127,10 +119,10 @@ const AddEmployee: React.FC = () => {
           form={form}
           layout="vertical"
           onFinish={handleFinish}
+          autoComplete="off"
           style={{
             width: "100%",
             maxWidth: "1200px",
-            height: "67%",
             margin: "0 auto",
             background: "#ffffff",
             padding: "40px",
@@ -145,7 +137,6 @@ const AddEmployee: React.FC = () => {
               gap: "20px",
             }}
           >
-            {/* Other form items */}
             <Form.Item
               label="ชื่อจริง"
               name="firstname"
@@ -165,11 +156,11 @@ const AddEmployee: React.FC = () => {
             <Form.Item
               label="เพศ"
               name="gender"
-              rules={[{ required: true, message: "กรุณาเลือกเพศ" }]}
+              rules={[{ required: true, message: "กรุณาระบุเพศ" }]}
             >
               <Select placeholder="เลือกเพศ">
-                {genders.map((gender: any) => (
-                  <Option key={gender.id} value={Number(gender.id)}>
+                {genders.map((gender) => (
+                  <Option key={gender.ID} value={gender.ID}>
                     {gender.gender}
                   </Option>
                 ))}
@@ -179,7 +170,17 @@ const AddEmployee: React.FC = () => {
             <Form.Item
               label="เบอร์โทรศัพท์"
               name="phone"
-              rules={[{ required: true, message: "กรุณากรอกเบอร์โทรศัพท์" }]}
+              rules={[
+                {
+                  required: true,
+                  message: "กรุณากรอกเบอร์โทรศัพท์",
+                },
+                {
+                  pattern: /^[0]\d{9}$/,
+                  message:
+                    "Phone number must be exactly 10 digits and start with '0'!",
+                },
+              ]}
             >
               <Input placeholder="กรอกเบอร์โทรศัพท์" />
             </Form.Item>
@@ -201,8 +202,8 @@ const AddEmployee: React.FC = () => {
               rules={[{ required: true, message: "กรุณาเลือกตำแหน่ง" }]}
             >
               <Select placeholder="เลือกตำแหน่ง">
-                {positions.map((position: any) => (
-                  <Option key={position.id} value={Number(position.id)}>
+                {positions.map((position) => (
+                  <Option key={position.ID} value={position.ID}>
                     {position.position}
                   </Option>
                 ))}
@@ -222,9 +223,12 @@ const AddEmployee: React.FC = () => {
               name="email"
               rules={[
                 {
-                  required: true,
                   type: "email",
-                  message: "กรุณากรอกอีเมลที่ถูกต้อง",
+                  message: "รูปแบบอีเมลไม่ถูกต้อง",
+                },
+                {
+                  required: true,
+                  message: "กรุณากรอกอีเมล",
                 },
               ]}
             >
@@ -243,7 +247,6 @@ const AddEmployee: React.FC = () => {
               label="วันที่เริ่มงาน"
               name="startdate"
               rules={[{ required: true, message: "กรุณาเลือกวันที่เริ่มงาน" }]}
-              style={{ gridColumn: "span 1" }}
             >
               <DatePicker
                 style={{ width: "100%" }}
@@ -252,18 +255,20 @@ const AddEmployee: React.FC = () => {
             </Form.Item>
 
             <Form.Item
+              id="profile"
               label="รูปประจำตัว"
               name="profile"
               valuePropName="fileList"
               getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
-              style={{ gridColumn: "span 1" }}
             >
               <ImgCrop rotationSlider>
                 <Upload
+                  beforeUpload={() => false} // ปิดการอัปโหลดอัตโนมัติ
                   fileList={fileList}
                   onChange={onChange}
                   listType="picture-card"
                   onPreview={onPreview}
+                  id="employeePic" // เพิ่ม id สำหรับ Selenium
                 >
                   {fileList.length < 1 && (
                     <div>
@@ -276,31 +281,12 @@ const AddEmployee: React.FC = () => {
             </Form.Item>
           </div>
 
-          {/* Buttons */}
-          <Form.Item
-            style={{
-              textAlign: "center",
-              gridColumn: "span 3",
-            }}
-          >
+          <Form.Item style={{ textAlign: "center" }}>
             <Button type="primary" htmlType="submit">
               เพิ่มพนักงาน
             </Button>
           </Form.Item>
         </Form>
-
-        <Modal
-          visible={previewVisible}
-          title={previewTitle}
-          footer={null}
-          onCancel={() => setPreviewVisible(false)}
-        >
-          <img
-            alt="profile"
-            style={{ width: "100%" }}
-            src={previewImage}
-          />
-        </Modal>
       </div>
     </div>
   );

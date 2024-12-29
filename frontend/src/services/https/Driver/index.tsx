@@ -1,7 +1,7 @@
 import axios from "axios";
 import { IDriver } from "../../../interfaces/IDriver";
 
-const apiUrl = "http://localhost:8080/api";
+const apiUrl = "http://localhost:8080";
 
 function getAuthHeaders() {
   const token = localStorage.getItem("authToken");

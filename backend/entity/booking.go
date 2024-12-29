@@ -1,30 +1,34 @@
 package entity
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
+// Booking Entity
 type Booking struct {
-    gorm.Model
-    Beginning   string  `json:"beginning"`
-    Terminus    string  `json:"terminus"`
-    StartTime   string  `json:"start_time"`
-    EndTime     string  `json:"end_time"`
-    Distance    float64 `json:"distance"`
-    TotalPrice  float64 `json:"total_price"`
-    BookingTime string  `json:"booking_time"`
-    BookingStatus string `json:"booking_status"`
-    Vehicle     string  `json:"vehicle"`
+	gorm.Model
+	Beginning     string  `json:"beginning" valid:"required~Beginning is required."`
+	Terminus      string  `json:"terminus" valid:"required~Terminus is required."`
+	StartTime     string  `json:"start_time" valid:"required~Start time is required."`
+	EndTime       string  `json:"end_time" valid:"required~End time is required."`
+	Distance      float64 `json:"distance" valid:"float,required~Distance is required."`
+	TotalPrice    float64 `json:"total_price" valid:"float,required~Total price is required."`
+	BookingTime   string  `json:"booking_time" valid:"required~Booking time is required."`
+	BookingStatus string  `json:"booking_status" valid:"required~Booking status is required."`
+	
+	Vehicle       string  `json:"vehicle" valid:"required~Vehicle is required."`
+	
+	PassengerID uint `json:"passenger_id" valid:"required~PassengerID is required."`
+	Passenger   Passenger `gorm:"foreignKey:PassengerID" json:"passenger" valid:"-"` // ไม่ Validate Nested Struct
 
-    PassengerID uint    `json:"passenger_id"`
-    Passenger   Passenger `gorm:"foreignKey:PassengerID" json:"passenger"` // ความสัมพันธ์ belongsTo
+	DriverID uint `json:"driver_id" valid:"required~DriverID is required."`
+	Driver   Driver `gorm:"foreignKey:DriverID" json:"driver" valid:"-"` // ไม่ Validate Nested Struct
 
-    DriverID    uint     `json:"driver_id"`
-    Driver      Driver    `gorm:"foreignKey:DriverID" json:"driver"` // ความสัมพันธ์ belongsTo
+	Messages []Message `gorm:"foreignKey:BookingID" json:"messages" valid:"-"` // ไม่ Validate Nested Struct
 
-    Messages    []Message `gorm:"foreignKey:BookingID" json:"messages"` // ความสัมพันธ์ hasMany
+	StartLocationID uint `json:"start_location_id" valid:"required~Start Location is required."`
+	StartLocation   StartLocation `gorm:"foreignKey:StartLocationID" json:"start_location" valid:"-"` // ไม่ Validate Nested Struct
 
-    StartLocationID *uint `json:"start_location_id"` // Foreign Key
-    StartLocation   StartLocation `gorm:"foreignKey:StartLocationID" json:"start_location"` // ความสัมพันธ์ hasOne
-
-    DestinationID *uint `json:"destination_id"` // Foreign Key
-    Destination   Destination `gorm:"foreignKey:DestinationID" json:"destination"` // ความสัมพันธ์ hasOne
+	DestinationID uint `json:"destination_id" valid:"required~Destination is required."`
+	Destination   Destination `gorm:"foreignKey:DestinationID" json:"destination" valid:"-"` // ไม่ Validate Nested Struct
 }

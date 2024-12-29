@@ -52,6 +52,9 @@ func SetupDatabase() {
 		&entity.TrainBook{},
 		&entity.Trainers{},
 		&entity.Rooms{},
+		&entity.BankName{},
+
+
 	)
 
 	GenderMale := entity.Gender{Gender: "Male"}
@@ -61,14 +64,14 @@ func SetupDatabase() {
 
 	// ข้อมูลตำแหน่งที่ต้องการเพิ่ม
 	locations := []entity.Location{
-		{Latitude: 14.989440874562565, Longitude: 102.09469233129263, Province: "นครราชสีมา", Place: "สถานีขนส่งผู้โดยสารจังหวัดนครราชสีมา แห่งที่2", DriverID: 1},
-		{Latitude: 14.97226216361242, Longitude: 102.07854163104108, Province: "นครราชสีมา", Place: "สถานีรถไฟโคราช", DriverID: 2},
-		{Latitude: 14.980969671175174, Longitude: 102.07643761780784, Province: "นครราชสีมา", Place: "เดอะมอลล์ โคราช", DriverID: 3},
-		{Latitude: 14.98183787602261, Longitude: 102.09010039126157, Province: "นครราชสีมา", Place: "เทอร์มินอล 21 โคราช", DriverID: 4},
-		{Latitude: 14.996281374785447, Longitude: 102.11693411904838, Province: "นครราชสีมา", Place: "เซ็นทรัล โคราช", DriverID: 5},
-		{Latitude: 14.901746803513126, Longitude: 102.00956884715538, Province: "นครราชสีมา", Place: "Café Amazon สาขา มทส. ประตู 4", DriverID: 6},
+		{Latitude: 14.989440874562565, Longitude: 102.09469233129263, Province: "นครราชสีมา", Place: "สถานีขนส่งผู้โดยสารจังหวัดนครราชสีมา แห่งที่2",DriverID:1},
+		{Latitude: 14.97226216361242, Longitude: 102.07854163104108, Province: "นครราชสีมา", Place: "สถานีรถไฟโคราช",DriverID:2},
+		{Latitude: 14.980969671175174, Longitude: 102.07643761780784, Province: "นครราชสีมา", Place: "เดอะมอลล์ โคราช",DriverID:3},
+		{Latitude: 14.98183787602261, Longitude: 102.09010039126157, Province: "นครราชสีมา", Place: "เทอร์มินอล 21 โคราช",DriverID:4},
+		{Latitude: 14.996281374785447, Longitude: 102.11693411904838, Province: "นครราชสีมา", Place: "เซ็นทรัล โคราช",DriverID:5},
+		{Latitude: 14.901746803513126, Longitude: 102.00956884715538, Province: "นครราชสีมา", Place: "Café Amazon สาขา มทส. ประตู 4",DriverID:6},
 		{Latitude: 14.978256144038262, Longitude: 102.09254730290546, Province: "นครราชสีมา", Place: "สถานีขนส่งนครราชสีมา"},
-		{Latitude: 14.974824485355242, Longitude: 102.0981385474978, Province: "นครราชสีมา", Place: "Café Class ใกล้ลานย่าโม"},
+		{Latitude: 14.974824485355242, Longitude: 102.0981385474978, Province: "นครราชสีมา", Place: "Café Class ใกล้ลานย่าโม",},
 		{Latitude: 14.986847325609906, Longitude: 102.09175265877519, Province: "นครราชสีมา", Place: "โรงเรียนอัสสัมชัญนครราชสีมา"},
 		{Latitude: 13.745983305017283, Longitude: 100.5343802441482, Province: "กรุงเทพมหานคร", Place: "สยามพารากอน"},
 		{Latitude: 13.98919288476311, Longitude: 100.61774675399516, Province: "กรุงเทพมหานคร", Place: "ฟิวเจอร์พาร์ค รังสิต แอน สเปลล์"},
@@ -81,20 +84,24 @@ func SetupDatabase() {
 		db.FirstOrCreate(&location, entity.Location{Latitude: location.Latitude, Longitude: location.Longitude, Place: location.Place})
 	}
 
+
 	statuses := []entity.Status{
 		{
-			StatusName: "Active",      //ใช้บ่งบอกว่าสถานะของ Drivers
-			StatusType: "Operational", //พร้อมใช้งาน
+			StatusName: "Active",//ใช้บ่งบอกว่าสถานะของ Drivers
+			StatusType: "Operational",//พร้อมใช้งาน
 		},
 		{
 			StatusName: "Inactive",
 			StatusType: "Non-Operational",
 		},
 	}
-
+	
 	for _, status := range statuses {
 		db.Create(&status)
 	}
+	
+	
+
 
 	promotions := []entity.Promotion{
 		{
@@ -105,98 +112,98 @@ func SetupDatabase() {
 			EndDate:              time.Now().Add(30 * 24 * time.Hour),
 			UseLimit:             2,
 			UseCount:             0,
-			DistancePromotion:    0.0,
+			DistancePromotion :             10.0,
 			Photo:                "promo1.jpg",
 			DiscountTypeID:       2, // Percent discount
 			StatusPromotionID:    1, // ACTIVE
 		},
 		{
 			PromotionCode:        "DRIVE002",
-			PromotionName:        "ลด 10/10",
-			PromotionDescription: "รับส่วนลด 10% เมื่อเดินทางขั้นต่ำ 10 กม.",
-			Discount:             10, // ส่วนลด 10%
-			EndDate:              time.Now().Add(30 * 24 * time.Hour),
-			UseLimit:             5,
+			PromotionName:        "แค่ 5 กม. ก็ลดเลย!",
+			PromotionDescription: "เดินทางในระยะทาง 5 กม. ขึ้นไป ลดทันที 50 บาท",
+			Discount:             50.0,
+			EndDate:              time.Now().Add(60 * 24 * time.Hour),
+			UseLimit:             3,
 			UseCount:             0,
-			DistancePromotion:    10.0,
+			DistancePromotion :             5.0,
 			Photo:                "promo2.jpg",
-			DiscountTypeID:       2, // Percent discount
-			StatusPromotionID:    1, // ACTIVE
+			DiscountTypeID:       1, // Amount discount
+			StatusPromotionID:             1, // ACTIVE
 		},
 		{
 			PromotionCode:        "DRIVE003",
-			PromotionName:        "ลด 100 บาทต้อนรับปีใหม่",
-			PromotionDescription: "เพียงเดินทางขั้นต่ำ 10 กม. ช่วงเทศกาล",
-			Discount:             100, // ส่วนลด 100 บาท
-			EndDate:              time.Now().Add(30 * 24 * time.Hour),
-			UseLimit:             3,
+			PromotionName:        "ระยะทางไกลก็ลดให้!",
+			PromotionDescription: "รับส่วนลด 15% สำหรับการเดินทางในระยะทาง 20 กม. ขึ้นไป",
+			Discount:             15.0,
+			EndDate:              time.Now().Add(90 * 24 * time.Hour),
+			UseLimit:             2,
 			UseCount:             0,
-			DistancePromotion:    10.0,
+			DistancePromotion :             20.0,
 			Photo:                "promo3.jpg",
-			DiscountTypeID:       1, // Amount discount
-			StatusPromotionID:    1, // ACTIVE
+			DiscountTypeID:       2, // Percent discount
+			StatusPromotionID:              1, // ACTIVE
 		},
 		{
 			PromotionCode:        "DRIVE004",
-			PromotionName:        "ลด 15% สุดคุ้ม",
-			PromotionDescription: "เมื่อเดินทางในเมืองขั้นต่ำ 5 กม.",
-			Discount:             15, // ส่วนลด 15%
-			EndDate:              time.Now().Add(30 * 24 * time.Hour),
-			UseLimit:             4,
+			PromotionName:        "ยิ่งขยับ ยิ่งลด!",
+			PromotionDescription: "รับส่วนลด 30 บาทเมื่อเดินทางในระยะทางเกิน 3 กม.",
+			Discount:             30.0,
+			EndDate:              time.Now().Add(120 * 24 * time.Hour),
+			UseLimit:             1,
 			UseCount:             0,
-			DistancePromotion:    5.0,
+			DistancePromotion:             3.0,
 			Photo:                "promo4.jpg",
-			DiscountTypeID:       2, // Percent discount
-			StatusPromotionID:    1, // ACTIVE
+			DiscountTypeID:       1, // Amount discount
+			StatusPromotionID:             1, // ACTIVE
 		},
 		{
 			PromotionCode:        "DRIVE005",
-			PromotionName:        "ลด 200 บาทแน่นๆ",
-			PromotionDescription: "เมื่อเดินทางระยะไกล 20 กม.",
-			Discount:             200, // ส่วนลด 200 บาท
-			EndDate:              time.Now().Add(30 * 24 * time.Hour),
-			UseLimit:             2,
+			PromotionName:        "8 กม. ส่งฟรี ไม่มีเงื่อนไข",
+			PromotionDescription: "รับบริการส่งฟรีเมื่อระยะทางไม่เกิน 8 กม.",
+			Discount:             100.0, // คิดเป็นส่วนลดเต็ม 100%
+			EndDate:              time.Now().Add(45 * 24 * time.Hour),
+			UseLimit:             1,
 			UseCount:             0,
-			DistancePromotion:    20.0,
+			DistancePromotion :             8.0,
 			Photo:                "promo5.jpg",
-			DiscountTypeID:       1, // Amount discount
-			StatusPromotionID:    1, // ACTIVE
+			DiscountTypeID:       2, // Percent discount
+			StatusPromotionID:             1, // ACTIVE
 		},
 		{
 			PromotionCode:        "DRIVE006",
-			PromotionName:        "ลดครึ่งนึง 50%",
-			PromotionDescription: "เมื่อเดินทางในระยะ 7 กม.",
-			Discount:             50, // ส่วนลด 50%
-			EndDate:              time.Now().Add(30 * 24 * time.Hour),
-			UseLimit:             4,
+			PromotionName:        "15 กม. ลดให้เลย 20%",
+			PromotionDescription: "รับส่วนลด 20% สำหรับการเดินทางที่ระยะทางขั้นต่ำ 15 กม.",
+			Discount:             20.0,
+			EndDate:              time.Now().Add(180 * 24 * time.Hour),
+			UseLimit:             1,
 			UseCount:             0,
-			DistancePromotion:    7.0,
+			DistancePromotion :             15.0,
 			Photo:                "promo6.jpg",
 			DiscountTypeID:       2, // Percent discount
-			StatusPromotionID:    1, // ACTIVE
+			StatusPromotionID:              2, // ACTIVE
 		},
 		{
 			PromotionCode:        "DRIVE007",
-			PromotionName:        "เดินทางคุ้มลด 5%",
-			PromotionDescription: "แจกจ่ายเดินทางขั้นต่ำเพียง 3 กม.",
-			Discount:             5, //
-			EndDate:              time.Now().Add(30 * 24 * time.Hour),
-			UseLimit:             7,
+			PromotionName:        "12 กม. ขึ้นไป ลด 100!",
+			PromotionDescription: "รับส่วนลด 100 บาทสำหรับการเดินทางที่ระยะทางเกิน 12 กม.",
+			Discount:             100.0,
+			EndDate:              time.Now().Add(60 * 24 * time.Hour),
+			UseLimit:             3,
 			UseCount:             0,
-			DistancePromotion:    3.0,
+			DistancePromotion :             12.0,
 			Photo:                "promo7.jpg",
-			DiscountTypeID:       2, // percent discount
-			StatusPromotionID:    1, // ACTIVE
+			DiscountTypeID:       1, // Amount discount
+			StatusPromotionID:             2, // ACTIVE
 		},
 		{
 			PromotionCode:        "DRIVE008",
-			PromotionName:        "ลด 25% เดือนแห่งความสุข",
-			PromotionDescription: "เดินทางครบเพียง 6 กม.",
-			Discount:             25, // ส่วนลด 25%
+			PromotionName:        "6 กม. สุดคุ้ม!",
+			PromotionDescription: "เดินทางในระยะทางไม่เกิน 6 กม. รับส่วนลด 50%",
+			Discount:             50.0,
 			EndDate:              time.Now().Add(30 * 24 * time.Hour),
-			UseLimit:             8,
+			UseLimit:             5,
 			UseCount:             0,
-			DistancePromotion:    6.0,
+			DistancePromotion :             6.0,
 			Photo:                "promo8.jpg",
 			DiscountTypeID:       2, // Percent discount
 			StatusPromotionID:    1, // ACTIVE
@@ -209,7 +216,7 @@ func SetupDatabase() {
 			EndDate:              time.Now().Add(30 * 24 * time.Hour),
 			UseLimit:             9,
 			UseCount:             0,
-			DistancePromotion:    8.0,
+			DistancePromotion :             18.0,
 			Photo:                "promo9.jpg",
 			DiscountTypeID:       2, // Percent discount
 			StatusPromotionID:    1, // ACTIVE
@@ -222,7 +229,7 @@ func SetupDatabase() {
 			EndDate:              time.Now().Add(30 * 24 * time.Hour),
 			UseLimit:             4,
 			UseCount:             0,
-			DistancePromotion:    30.0,
+			DistancePromotion :             5.0,
 			Photo:                "promo10.jpg",
 			DiscountTypeID:       2, // Percent discount
 			StatusPromotionID:    2, // close
@@ -258,6 +265,7 @@ func SetupDatabase() {
 	db.FirstOrCreate(&BankKrungthai, &entity.BankName{BankName: "ธนาคารกรุงไทย"})
 	db.FirstOrCreate(&BankTMB, &entity.BankName{BankName: "ธนาคารทหารไทย"})
 
+	
 	// สร้าง Position
 	PositionOwner := entity.Position{Position: "Owner"}
 	PositionEmployee := entity.Position{Position: "Employee"}
@@ -346,9 +354,9 @@ func SetupDatabase() {
 			RoleID:                      roleDriver.ID,
 			GenderID:                    GenderMale.ID,
 			EmployeeID:                  2,
-			VehicleID:                   1,
-			LocationID:                  6,
-			StatusID:                    1,
+			VehicleID:					 1,
+			LocationID: 6,
+			StatusID: 1,
 		},
 		{
 			Firstname:                   "Somsak",
@@ -364,9 +372,9 @@ func SetupDatabase() {
 			RoleID:                      roleDriver.ID,
 			GenderID:                    GenderMale.ID,
 			EmployeeID:                  2,
-			VehicleID:                   2,
-			LocationID:                  1,
-			StatusID:                    1,
+			VehicleID:					 2,
+			LocationID: 1,
+			StatusID: 1,
 		},
 		{
 			Firstname:                   "Prasit",
@@ -382,9 +390,9 @@ func SetupDatabase() {
 			RoleID:                      roleDriver.ID,
 			GenderID:                    GenderMale.ID,
 			EmployeeID:                  3,
-			VehicleID:                   6,
-			LocationID:                  2,
-			StatusID:                    1,
+			VehicleID:					 6,
+			LocationID: 2,
+			StatusID: 1,
 		},
 		{
 			Firstname:                   "Thannam",
@@ -400,9 +408,9 @@ func SetupDatabase() {
 			RoleID:                      roleDriver.ID,
 			GenderID:                    GenderFemale.ID,
 			EmployeeID:                  3,
-			VehicleID:                   4,
-			LocationID:                  3,
-			StatusID:                    2,
+			VehicleID:					 4,
+			LocationID: 3,
+			StatusID: 2,
 		},
 		{
 			Firstname:                   "Anan",
@@ -418,9 +426,9 @@ func SetupDatabase() {
 			RoleID:                      roleDriver.ID,
 			GenderID:                    GenderFemale.ID,
 			EmployeeID:                  2,
-			VehicleID:                   5,
-			LocationID:                  4,
-			StatusID:                    2,
+			VehicleID:					 5,
+			LocationID: 4,
+			StatusID: 2,
 		},
 		{
 			Firstname:                   "Supa",
@@ -436,9 +444,9 @@ func SetupDatabase() {
 			RoleID:                      roleDriver.ID,
 			GenderID:                    GenderFemale.ID,
 			EmployeeID:                  2,
-			VehicleID:                   3,
-			LocationID:                  5,
-			StatusID:                    1,
+			VehicleID:					 3,
+			LocationID: 5,
+			StatusID: 1,
 		},
 	}
 
@@ -452,7 +460,6 @@ func SetupDatabase() {
 			FirstName: "Nontakarn",
 			LastName: "saisok",
 			Email: "nontakarn@gmail.com",
-			Age: 21,
 			BirthDay: time.Date(2003, time.December, 11, 17, 0, 0, 0, time.UTC),
 			GenderID: 1,
 			RoleID: 3,
@@ -461,7 +468,6 @@ func SetupDatabase() {
 			FirstName: "Somsak",
 			LastName: "meemak",
 			Email: "Somsak@gmail.com",
-			Age: 52,
 			BirthDay: time.Date(1983, time.September, 14, 17, 0, 0, 0, time.UTC),
 			GenderID: 1,
 			RoleID: 3,
@@ -470,7 +476,6 @@ func SetupDatabase() {
 			FirstName: "Chutima",
 			LastName: "Ploysai",
 			Email: "chutima@gmail.com",
-			Age: 31,
 			BirthDay: time.Date(1992, time.March, 11, 17, 0, 0, 0, time.UTC),
 			GenderID: 2,
 			RoleID: 3,
@@ -479,7 +484,6 @@ func SetupDatabase() {
 			FirstName: "Kanokwan",
 			LastName: "Jantima",
 			Email: "kanokwan@gmail.com",
-			Age: 26,
 			BirthDay: time.Date(1997, time.November, 29, 17, 0, 0, 0, time.UTC),
 			GenderID: 2,
 			RoleID: 3,
@@ -488,7 +492,6 @@ func SetupDatabase() {
 			FirstName: "Jirawat",
 			LastName: "Somchai",
 			Email: "jirawat@gmail.com",
-			Age: 38,
 			BirthDay: time.Date(1985, time.May, 9, 17, 0, 0, 0, time.UTC),
 			GenderID: 1,
 			RoleID: 3,
@@ -497,7 +500,6 @@ func SetupDatabase() {
 			FirstName: "Sutida",
 			LastName: "Wongchai",
 			Email: "sutida@gmail.com",
-			Age: 33,
 			BirthDay: time.Date(1990, time.February, 16, 17, 0, 0, 0, time.UTC),
 			GenderID: 2,
 			RoleID: 3,
@@ -506,7 +508,6 @@ func SetupDatabase() {
 			FirstName: "Natthapong",
 			LastName: "Tangsiri",
 			Email: "natthapong@gmail.com",
-			Age: 35,
 			BirthDay: time.Date(1988, time.August, 22, 17, 0, 0, 0, time.UTC),
 			GenderID: 1,
 			RoleID: 3,
@@ -515,7 +516,6 @@ func SetupDatabase() {
 			FirstName: "Waraporn",
 			LastName: "Chanthai",
 			Email: "waraporn@gmail.com",
-			Age: 30,
 			BirthDay: time.Date(1993, time.September, 6, 17, 0, 0, 0, time.UTC),
 			GenderID: 2,
 			RoleID: 3,
@@ -524,7 +524,6 @@ func SetupDatabase() {
 			FirstName: "Prasit",
 			LastName: "Boonchai",
 			Email: "prasit@gmail.com",
-			Age: 40,
 			BirthDay: time.Date(1983, time.June, 13, 17, 0, 0, 0, time.UTC),
 			GenderID: 1,
 			RoleID: 3,
@@ -533,7 +532,6 @@ func SetupDatabase() {
 			FirstName: "Siriporn",
 			LastName: "Wansuk",
 			Email: "siriporn@gmail.com",
-			Age: 34,
 			BirthDay: time.Date(1989, time.December, 4, 17, 0, 0, 0, time.UTC),
 			GenderID: 2,
 			RoleID: 3,

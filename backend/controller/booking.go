@@ -1,13 +1,17 @@
 package controller
 
 import (
+	"encoding/json"
+	"fmt"
+	"log"
+	"math"
 	"net/http"
 	"project-se/config"
 	"project-se/entity"
-	"github.com/gin-gonic/gin"
 	"time"
-	"fmt"
-	"math"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket" // เพิ่มการ import WebSocket
 )
 
 /*func CreateBooking(c *gin.Context) {
@@ -34,7 +38,6 @@ import (
         "data":    booking,
     })
 }*/
-
 
 // ดึงข้อมูล Booking ทั้งหมด
 func GetAllBookings(c *gin.Context) {
@@ -69,25 +72,23 @@ func GetBookingByID(c *gin.Context) {
 	})
 }
 
-
 func CreateBooking(c *gin.Context) {
 	var booking entity.Booking
-
-	// ตรวจสอบ JSON ที่ส่งมา
+	// ตรวจสอบข้อมูลการจองจาก JSON
 	if err := c.ShouldBindJSON(&booking); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
 
-	// เชื่อมต่อฐานข้อมูล
+	// เชื่อมต่อกับฐานข้อมูล
 	db := config.DB()
 
-	// กำหนดค่าเริ่มต้นใน Backend
+	// กำหนดค่าเริ่มต้น
 	if booking.BookingStatus == "" {
-		booking.BookingStatus = "Pending" // ถ้าสถานะยังไม่ถูกส่งมา กำหนดเป็น "Pending"
+		booking.BookingStatus = "Pending"
 	}
 	if booking.BookingTime == "" {
-		booking.BookingTime = fmt.Sprintf("%v", time.Now()) // กำหนดเวลาการจองเป็นเวลาปัจจุบัน
+		booking.BookingTime = fmt.Sprintf("%v", time.Now())
 	}
 
 	// ดึงข้อมูลตำแหน่งเริ่มต้นของผู้โดยสาร
@@ -97,7 +98,7 @@ func CreateBooking(c *gin.Context) {
 		return
 	}
 
-	// บันทึกข้อมูลการจองลงในฐานข้อมูล
+	// บันทึกข้อมูลการจอง
 	if err := db.Create(&booking).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create booking"})
 		return
@@ -108,25 +109,17 @@ func CreateBooking(c *gin.Context) {
 	db.Find(&drivers)
 
 	var closestDriver entity.Driver
-	minDistance := math.MaxFloat64 // ตั้งค่าระยะทางเริ่มต้นให้มากที่สุด
+	minDistance := math.MaxFloat64
 
-	// คำนวณหาคนขับที่ใกล้ที่สุด
 	for _, driver := range drivers {
-		// ดึงข้อมูลตำแหน่งของคนขับจาก Location
 		var driverLocation entity.Location
 		if err := db.First(&driverLocation, "driver_id = ?", driver.ID).Error; err != nil {
 			fmt.Println("Error fetching driver location:", err)
-			continue // ถ้าหากไม่สามารถดึงข้อมูลตำแหน่งของคนขับได้, ข้ามไป
+			continue
 		}
-
-		// แสดงค่าพิกัดของจุดเริ่มต้นการจองและคนขับ
-		fmt.Printf("Start Location: %f, %f | Driver Location: %f, %f\n", 
-			startLocation.Latitude, startLocation.Longitude,
-			driverLocation.Latitude, driverLocation.Longitude)
 
 		// คำนวณระยะทาง
 		distance := calculateDistance(startLocation.Latitude, startLocation.Longitude, driverLocation.Latitude, driverLocation.Longitude)
-		fmt.Printf("Checking driver %d: distance = %f\n", driver.ID, distance) // แสดงผลข้อมูลการคำนวณระยะทาง
 
 		if distance < minDistance {
 			closestDriver = driver
@@ -134,27 +127,28 @@ func CreateBooking(c *gin.Context) {
 		}
 	}
 
-	// เช็คกรณีที่ไม่มีคนขับที่ใกล้ที่สุด
-	if closestDriver.ID == 0 { // เช็คว่าค่า ID ของ closestDriver เป็น 0 หรือไม่
+	// เช็คกรณีไม่มีคนขับที่ใกล้ที่สุด
+	if closestDriver.ID == 0 {
 		c.JSON(http.StatusNotFound, gin.H{"error": "No driver available"})
 		return
 	}
 
-	// แสดงผลข้อมูลของคนขับที่ใกล้ที่สุด
-	fmt.Printf("Found closest driver: %d, distance: %f\n", closestDriver.ID, minDistance)
-
-	// ส่งคำขอไปยังคนขับที่ใกล้ที่สุดเพื่อรับหรือปฏิเสธ
-	booking.DriverID = closestDriver.ID // อัปเดตการจับคู่กับคนขับ
+	// อัปเดตการจับคู่กับคนขับและสถานะการจอง
+	booking.DriverID = closestDriver.ID
 	booking.BookingStatus = "Waiting for driver acceptance"
-	db.Save(&booking) // อัปเดตข้อมูลการจองในฐานข้อมูล
+	db.Save(&booking)
 
-	// ส่งข้อมูลที่อัปเดตกลับไปยัง client
+	// ส่ง bookingId ไปให้คนขับผ่าน WebSocket
+	room := fmt.Sprintf("%d", closestDriver.ID) // ใช้ driverID เป็น room
+	fmt.Println("test1")
+	sendMessageToDriver(room, booking.ID)
+	fmt.Println("test2")
+	// ส่งข้อมูลการจองกลับไป
 	c.JSON(http.StatusCreated, gin.H{
 		"message": "Booking created, waiting for driver acceptance",
 		"data":    booking,
 	})
 }
-
 
 // ฟังก์ชันคำนวณระยะทางระหว่างสองพิกัด (ใช้ Haversine Formula)
 func calculateDistance(lat1, lon1, lat2, lon2 float64) float64 {
@@ -178,37 +172,68 @@ func degToRad(deg float64) float64 {
 	return deg * math.Pi / 180
 }
 
+// เก็บการเชื่อมต่อ WebSocket ของแต่ละห้อง
+var clients = make(map[string]map[*websocket.Conn]bool) // map[roomID] -> set of connections
 
+// ฟังก์ชันการส่งข้อความไปยังคนขับ
+func sendMessageToDriver(room string, bookingID uint) {
+	fmt.Println("test3")
+	fmt.Println("ห้อง driverid:",room,"bookingid :",bookingID)
+	if conn, exists := clients[room]; exists && len(conn) > 0 {
+		fmt.Println("test4")
+		message := map[string]interface{}{
+			"type":      "new_booking",
+			"bookingId": bookingID,
+		}
+		messageJSON, err := json.Marshal(message)  //เเปลง json ให้เป็น string/marshal เพราะ socket ไม่อ่าน json
+		if err != nil {
+			fmt.Println("test5")
+			log.Println("Error marshalling booking message:", err)
+			return
+		}
 
-// ฟังก์ชันที่ backend เพื่อรับการยืนยันการจองจากคนขับ
-func AcceptBooking(c *gin.Context) {
-    db := config.DB()
-    bookingID := c.Param("id") // ดึง Booking ID จาก URL
-
-    // หาข้อมูลการจองที่ตรงกับ ID ที่ได้รับ
-    var booking entity.Booking
-    if err := db.First(&booking, bookingID).Error; err != nil {
-        c.JSON(http.StatusNotFound, gin.H{"error": "Booking not found"})
-        return
-    }
-
-    // ตรวจสอบว่า Booking สถานะเป็น Pending ก่อน
-    if booking.BookingStatus != "Pending" {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Booking already processed"})
-        return
-    }
-
-    // เปลี่ยนสถานะเป็น "Accepted" และบันทึกคนขับที่รับงาน
-    booking.BookingStatus = "Accepted"
-    if err := db.Save(&booking).Error; err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to accept booking"})
-        return
-    }
-
-    // ส่งข้อมูลการจองที่ถูกอัปเดตกลับไปยัง client
-    c.JSON(http.StatusOK, gin.H{
-        "message": "Booking accepted successfully",
-        "data":    booking,
-    })
+		for c := range conn {
+			err := c.WriteMessage(websocket.TextMessage, messageJSON)
+			if err != nil {
+				log.Println("Error sending message to driver:", err)
+				c.Close()
+				delete(clients[room], c)
+			}
+		}
+		log.Printf("Message sent to room %s: %s", room, string(messageJSON))
+	} else {
+		fmt.Println("test6")
+		log.Printf("No active connection for driver %s", room)
+	}
 }
 
+func AcceptBooking(c *gin.Context) {
+	db := config.DB()
+	bookingID := c.Param("id")
+
+	var booking entity.Booking
+	if err := db.First(&booking, bookingID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Booking not found"})
+		return
+	}
+
+	// ตรวจสอบสถานะการจอง
+	if booking.BookingStatus != "Waiting for driver acceptance" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Booking already processed or in an incorrect state"})
+		return
+	}
+
+	// เปลี่ยนสถานะเป็น "Accepted"
+	booking.BookingStatus = "Accepted"
+	if err := db.Save(&booking).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to accept booking"})
+		return
+	}
+
+	// ส่งข้อมูลที่อัปเดตกลับไป
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Booking accepted successfully",
+		"data":    booking,
+	})
+}

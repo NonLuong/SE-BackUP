@@ -260,3 +260,29 @@ text-align: center;
 color:#4a40b7;
 font-weight: bold;
 }
+
+.success-message {
+  background-color: #685e83;
+  color: #ede9f5;
+  padding: 10px;
+  margin: 20px 0;
+  border: 1px solid #9c72a0;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
+  animation: fadeIn 1s ease-in-out;
+  
+}
+
+/* เพิ่มเอฟเฟกต์ Fade-in */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

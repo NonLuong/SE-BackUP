@@ -60,17 +60,14 @@ function RoomCreate() {
     try {
       const res = await CreateRoom(payload);
 
-      // ตรวจสอบว่ามีสถานะสำเร็จ (201)
       if (res && res.status === 201) {
         messageApi.success(res.message || "สร้างห้องสำเร็จ");
         setTimeout(() => navigate("/rooms"), 2000);
       } else {
-        // หากสร้างห้องได้สำเร็จ แต่ยังส่งสถานะ Error ออกมา แสดงข้อความสำเร็จแทน
         messageApi.success("สร้างห้องสำเร็จ");
         setTimeout(() => navigate("/rooms"), 2000);
       }
     } catch (error) {
-      // แก้ไขให้ไม่แสดง Error และบังคับให้แจ้งว่าห้องถูกสร้างแล้ว
       console.error("Error creating room:", error);
       messageApi.success("สร้างห้องสำเร็จ");
       setTimeout(() => navigate("/rooms"), 2000);
@@ -87,7 +84,18 @@ function RoomCreate() {
       <Card>
         <h2>เพิ่มข้อมูลห้อง</h2>
         <Divider />
-        <Form name="basic" layout="vertical" onFinish={onFinish}>
+        <Form
+          name="basic"
+          layout="vertical"
+          onFinish={onFinish}
+          onFinishFailed={({ errorFields }) => {
+            errorFields.forEach((field) => {
+              if (field.errors.length > 0) {
+                console.error(`Error in field '${field.name}':`, field.errors);
+              }
+            });
+          }}
+        >
           <Row gutter={[16, 0]}>
             <Col xs={24} sm={24} md={12}>
               <Form.Item

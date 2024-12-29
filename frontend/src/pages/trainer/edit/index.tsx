@@ -10,7 +10,6 @@ import {
   Card,
   message,
   DatePicker,
-  InputNumber,
   Select,
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
@@ -156,16 +155,6 @@ function TrainerEdit() {
                 rules={[{ required: true, message: "กรุณาเลือกวัน/เดือน/ปี เกิด!" }]}
               >
                 <DatePicker style={{ width: "100%" }} />
-              </Form.Item>
-            </Col>
-
-            <Col xs={24} sm={24} md={12}>
-              <Form.Item
-                label="อายุ"
-                name="age"
-                rules={[{ required: true, message: "กรุณากรอกอายุ!" }]}
-              >
-                <InputNumber min={1} max={99} style={{ width: "100%" }} />
               </Form.Item>
             </Col>
 

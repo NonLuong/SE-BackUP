@@ -22,21 +22,16 @@
 
 .navbar .nav-links li a {
   text-decoration: none; /* ลบขีดเส้นใต้ */
-  font-size: large; /* สีของข้อความ */
-  background-color: #c6c3f1; /* สีของข้อความ */
+  color: #c6c3f1; /* สีของข้อความ */
   font-size: 16px;
 }
 
 .navbar .nav-links li a:hover {
-   color: #8c62a5; /* สีข้อความเมื่อ hover */
-  background-color: #8c62a5; /* สีข้อความเมื่อ hover */
+  color: #8c62a5; /* สีข้อความเมื่อ hover */
   transition: color 0.3s;
 }
 
 .profile-icon-wrapper:hover {
-  background-color: #15081b; /* เปลี่ยนสีพื้นหลังเมื่อ hover */
+  background-color: #ddb6ec; /* เปลี่ยนสีพื้นหลังเมื่อ hover */
   transition: background-color 0.3s;
-  background-color: #783195; /* เปลี่ยนสีพื้นหลังเมื่อ hover */
-  transition: background-color 0.5s;
-
 }

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import AdminSidebar from "../../components/sider/AdminSidebar";
 import { Table, Button, Space, Card, Row, Col, Statistic, Modal } from "antd";
 import {
@@ -18,6 +19,7 @@ const Employee: React.FC = () => {
   const [femaleCount, setFemaleCount] = useState(0);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [currentEmployeeId, setCurrentEmployeeId] = useState<number | null>(null);
+  const navigate = useNavigate(); // ใช้สำหรับนำทาง
 
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -103,7 +105,11 @@ const Employee: React.FC = () => {
       key: "actions",
       render: (text: any, record: any) => (
         <Space size="middle">
-          <Button type="link" icon={<EditOutlined />} />
+          <Button
+            type="link"
+            icon={<EditOutlined />}
+            onClick={() => navigate(`/Employee/edit?id=${record.ID}`)} // นำไปยังหน้าแก้ไข
+          />
           {record.Position.position !== "Owner" && (
             <Button
               type="link"
@@ -225,11 +231,16 @@ const Employee: React.FC = () => {
         />
 
         {/* Add Button */}
-        <div style={{ textAlign: "right", marginTop: "20px" }}>
+        <div style={{ textAlign: "left", marginTop: "20px" }}> {/* ปุ่มอยู่ซ้าย */}
           <Button
             type="primary"
-            style={{ backgroundColor: "#4CAF50", borderColor: "#4CAF50" }}
+            size="small" // ลดขนาดปุ่ม
+            style={{
+              backgroundColor: "#4CAF50",
+              borderColor: "#4CAF50",
+            }}
             icon={<PlusOutlined />}
+            onClick={() => navigate("/Employee/create")} // นำไปยังหน้าสร้าง
           >
             Add Employee
           </Button>
