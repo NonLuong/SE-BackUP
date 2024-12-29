@@ -2,79 +2,13 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
+	
 	"log"
 	"net/http"
 	"project-se/config"
 	"project-se/controller"
 	"project-se/middlewares"
 )
-
-// WebSocket Upgrader
-var upgrader = websocket.Upgrader{
-	CheckOrigin: func(r *http.Request) bool {
-		return true // อนุญาตทุก Origin
-	},
-}
-
-// เก็บการเชื่อมต่อ WebSocket ของแต่ละห้อง
-var clients = make(map[string]map[*websocket.Conn]bool) // map[roomID] -> set of connections
-var broadcast = make(chan controller.Message)           // ใช้ Message จาก controller
-
-// WebSocket Handler สำหรับรับการเชื่อมต่อจากคนขับ
-func handleWebSocketConnections(c *gin.Context) {
-    conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
-    if err != nil {
-        log.Println("Error upgrading to WebSocket:", err)
-        return
-    }
-    defer conn.Close()  
-
-    room := c.DefaultQuery("room", "")
-    if room == "" {
-        log.Println("Room (bookingID) is required")
-        return
-    }
-
-    log.Printf("WebSocket connected for room: %s", room)
-
-    for {
-        _, message, err := conn.ReadMessage()
-        if err != nil {
-            log.Printf("Error reading from WebSocket room %s: %v", room, err)
-            break
-        }
-        log.Printf("Message from room %s: %s", room, message)
-    }
-
-    log.Printf("WebSocket disconnected for room: %s", room)
-}
-
-// ฟังก์ชันสำหรับส่งข้อความไปยังห้องที่เชื่อมต่ออยู่
-func handleMessages() {
-	for {
-		msg := <-broadcast
-		room := msg.Room
-
-		// ตรวจสอบว่าห้องมี client หรือไม่
-		if clients[room] == nil || len(clients[room]) == 0 {
-			log.Printf("No clients connected in room: %s. Message dropped.", room)
-			continue
-		}
-
-		// ส่งข้อความไปยังสมาชิกใน Room
-		for conn := range clients[room] {
-			err := conn.WriteJSON(msg)
-			if err != nil {
-				log.Printf("Error sending message to room %s: %v", room, err)
-				conn.Close()
-				delete(clients[room], conn)
-			}
-		}
-		//log.Printf("Message broadcasted to room %s: %+v", room, msg)
-	}
-}
-
 
 
 func main() {
@@ -99,7 +33,7 @@ func main() {
 	registerRoutes(r)
 
 	// เริ่มต้น Goroutine สำหรับ handleMessages()
-	go handleMessages()
+	//go handleMessages()
 
 	log.Printf("Server running on localhost:%s", PORT)
 	r.Run("localhost:" + PORT)
@@ -113,11 +47,17 @@ func registerRoutes(r *gin.Engine) {
 	r.POST("/bookings", controller.CreateBooking)
 	r.GET("/bookings", controller.GetAllBookings)
 	r.GET("/bookings/:id", controller.GetBookingByID)
-	r.POST("/api/bookings/accept/:id", controller.AcceptBooking)  // รับงานจากคนขับ
+	r.POST("/bookings/:id/accept", controller.AcceptBooking)
+	
 
 
 	// WebSocket
-	r.GET("/ws", handleWebSocketConnections)
+	//r.GET("/ws", handleWebSocketConnections)
+	// เพิ่ม WebSocket Route
+	r.GET("/ws/driver/:driverID", controller.DriverWebSocketHandler)
+
+	// Route อื่น ๆ
+
 
 	// Messages
 	r.GET("/messages", controller.GetAllMessages)                            // ดึงข้อความทั้งหมด

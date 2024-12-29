@@ -72,6 +72,7 @@ func GetBookingByID(c *gin.Context) {
 	})
 }
 
+
 func CreateBooking(c *gin.Context) {
 	var booking entity.Booking
 	// ตรวจสอบข้อมูลการจองจาก JSON
@@ -175,37 +176,95 @@ func degToRad(deg float64) float64 {
 // เก็บการเชื่อมต่อ WebSocket ของแต่ละห้อง
 var clients = make(map[string]map[*websocket.Conn]bool) // map[roomID] -> set of connections
 
-// ฟังก์ชันการส่งข้อความไปยังคนขับ
-func sendMessageToDriver(room string, bookingID uint) {
-	fmt.Println("test3")
-	fmt.Println("ห้อง driverid:",room,"bookingid :",bookingID)
-	if conn, exists := clients[room]; exists && len(conn) > 0 {
-		fmt.Println("test4")
-		message := map[string]interface{}{
-			"type":      "new_booking",
-			"bookingId": bookingID,
-		}
-		messageJSON, err := json.Marshal(message)  //เเปลง json ให้เป็น string/marshal เพราะ socket ไม่อ่าน json
-		if err != nil {
-			fmt.Println("test5")
-			log.Println("Error marshalling booking message:", err)
-			return
-		}
 
-		for c := range conn {
-			err := c.WriteMessage(websocket.TextMessage, messageJSON)
-			if err != nil {
-				log.Println("Error sending message to driver:", err)
-				c.Close()
-				delete(clients[room], c)
-			}
+
+func addClientConnection(room string, conn *websocket.Conn) {
+	if _, exists := clients[room]; !exists {
+		clients[room] = make(map[*websocket.Conn]bool)
+		fmt.Printf("✅ Room created: %s\n", room)
+	}
+	clients[room][conn] = true
+	fmt.Printf("✅ Added connection to room %s\n", room)
+}
+
+
+// อัปเกรด HTTP เป็น WebSocket
+var upgrader = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool {
+		return true // อนุญาตทุก origin (เฉพาะสำหรับการพัฒนา)
+	},
+}
+
+func DriverWebSocketHandler(c *gin.Context) {
+	driverID := c.Param("driverID") // ดึง driverID จาก URL
+
+	// อัปเกรดการเชื่อมต่อเป็น WebSocket
+	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		log.Println("❌ Failed to upgrade WebSocket connection:", err)
+		return
+	}
+	defer conn.Close()
+
+	// เพิ่มการเชื่อมต่อไปยัง clients
+	room := fmt.Sprintf("%s", driverID)
+	addClientConnection(room, conn)
+	fmt.Printf("✅ WebSocket connection established for driver %s\n", driverID)
+
+	// อ่านข้อความจาก WebSocket (เพื่อรักษาการเชื่อมต่อ)
+	for {
+		_, _, err := conn.ReadMessage()
+		if err != nil {
+			log.Println("❌ Error reading message from WebSocket:", err)
+			break
 		}
-		log.Printf("Message sent to room %s: %s", room, string(messageJSON))
-	} else {
-		fmt.Println("test6")
-		log.Printf("No active connection for driver %s", room)
 	}
 }
+
+func sendMessageToDriver(room string, bookingID uint) {
+	fmt.Println("🔍 Debug: Start sendMessageToDriver")
+	fmt.Printf("🛠️ Room: %s | BookingID: %d\n", room, bookingID)
+	fmt.Printf("🛠️ Current Clients: %+v\n", clients)
+
+	conn, exists := clients[room]
+	if !exists {
+		fmt.Println("❌ Room does not exist in clients.")
+		log.Printf("No active connection for driver %s", room)
+		return
+	}
+
+	if len(conn) == 0 {
+		fmt.Println("❌ No active connections in the specified room.")
+		log.Printf("No active connections for driver %s", room)
+		return
+	}
+
+	message := map[string]interface{}{
+		"type":      "new_booking",
+		"bookingId": bookingID,
+	}
+	messageJSON, err := json.Marshal(message)
+	if err != nil {
+		log.Println("❌ Error marshalling booking message:", err)
+		return
+	}
+
+	for c := range conn {
+		err := c.WriteMessage(websocket.TextMessage, messageJSON)
+		if err != nil {
+			log.Println("❌ Error sending message to driver:", err)
+			c.Close()
+			delete(clients[room], c)
+		} else {
+			fmt.Println("✅ Message sent successfully to a connection.")
+		}
+	}
+
+	log.Printf("📨 Message sent to room %s: %s", room, string(messageJSON))
+}
+
+
+
 
 func AcceptBooking(c *gin.Context) {
 	db := config.DB()

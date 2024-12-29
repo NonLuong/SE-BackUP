@@ -198,23 +198,33 @@ export const getBookingById = async (bookingId: string): Promise<any> => {
 };
 
 // ฟังก์ชันสำหรับการรับงานจากคนขับ
-export const acceptBooking = async (bookingId:string) => {
+export const acceptBooking = async (bookingId: string) => {
   try {
-    const response = await fetch(`/api/bookings/accept/${bookingId}`, {
+    const response = await fetch(`${apiUrl}/bookings/${bookingId}/accept`, {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
+
+    if (!response.ok) {
+      // ตรวจสอบ Response Status
+      const errorText = await response.text();
+      throw new Error(`Failed to accept booking. Status: ${response.status}, Message: ${errorText}`);
+    }
 
     const data = await response.json();
     if (data.success) {
-      return data;  // คืนค่าผลลัพธ์จากการรับงาน
+      return data; // คืนค่าผลลัพธ์จากการรับงาน
     } else {
       throw new Error(`Failed to accept booking: ${data.message}`);
     }
-  } catch (error) {
-    console.error('Error accepting booking:', error);
-    throw error;
+  } catch (error: any) {
+    console.error('❌ Error accepting booking:', error.message || error);
+    throw new Error(error.message || 'Unknown error occurred while accepting booking');
   }
 };
+
 export 
 { sendMessageToBackend };
 {fetchMessagesFromBackend};
