@@ -179,7 +179,7 @@ const MapComponent: React.FC = () => {
 
   return (
     <div className="mapcomponent"style={{ position: 'relative' }}>
-      <LoadScript googleMapsApiKey="AIzaSyBCporibkdPqd7yC4nJEWMZI2toIlY23jM" libraries={['places']}>
+      <LoadScript googleMapsApiKey="api key" libraries={['places']}>
         <GoogleMap
           mapContainerStyle={containerStyle}
           center={location}
