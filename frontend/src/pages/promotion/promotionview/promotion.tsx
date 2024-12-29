@@ -17,7 +17,7 @@ export interface PromotionInterface {
   status_promotion_id: number;
   use_limit: number;
   use_count: number;
-  distance: number;
+  distance_promotion: number;
   end_date: string;
   discount_type: string; // เพิ่มในกรณีที่ต้องการใช้ discount_type
 }
@@ -202,7 +202,7 @@ function View() {
                         >
                           <div>หมดเขตโปรโมชั่น {formatDate(promotion.end_date)}</div>
                           <div style={{ textAlign: "right" }}>
-                            ระยะทางขั้นต่ำ: {promotion.distance} กม. / จำกัดสิทธิ์ {promotion.use_limit} คน
+                            ระยะทางขั้นต่ำ: {promotion.distance_promotion} กม. / จำกัดสิทธิ์ {promotion.use_limit} คน
                           </div>
                         </div>
                       </Col>

@@ -1,15 +1,19 @@
-import { TrainersInterface } from "./ITrainer"; // Import TrainersInterface
+import { TrainersInterface } from "./ITrainer";
 
 export interface RoomInterface {
-  ID?: number; // ลำดับห้อง
-  RoomName?: string; // ชื่อห้อง (ใช้ใน Frontend)
-  room_name?: string; // ชื่อห้อง (ใช้ใน API)
-  Capacity?: number; // ความจุ (ใช้ใน Frontend)
-  capacity?: number; // ความจุ (ใช้ใน API)
-  TrainerID?: number; // ID ของเทรนเนอร์
-  Trainer?: TrainersInterface; // ความสัมพันธ์กับ TrainersInterface
-  Detail?: string; // รายละเอียดของห้อง (ใช้ใน Frontend)
-  detail?: string; // รายละเอียดของห้อง (ใช้ใน API)
-  CurrentBookings?: number; // จำนวนผู้จอง (ใช้ใน Frontend)
-  current_bookings?: number; // จำนวนผู้จอง (ใช้ใน API)
+  ID?: number; // ID ของห้อง
+  RoomName?: string; // ชื่อห้อง (สำหรับ Frontend)
+  room_name?: string; // ชื่อห้อง (สำหรับ API)
+  Capacity?: number; // ความจุของห้อง (สำหรับ Frontend)
+  capacity?: number; // ความจุของห้อง (สำหรับ API)
+  TrainerID?: number; // ID ของเทรนเนอร์ที่เชื่อมโยงกับห้อง
+  Trainer?: Pick<TrainersInterface, "FirstName" | "LastName"> | null; // จำกัดข้อมูลเฉพาะ FirstName และ LastName ของ Trainer
+  Detail?: string; // รายละเอียดห้อง (สำหรับ Frontend)
+  detail?: string; // รายละเอียดห้อง (สำหรับ API)
+  CurrentBookings?: number; // จำนวนผู้จองห้อง (สำหรับ Frontend)
+  current_bookings?: number; // จำนวนผู้จองห้อง (สำหรับ API)
+  Status?: string; // สถานะห้อง (Frontend)
+  status?: string; // สถานะห้อง (API)
+  CreatedAt?: string; // วันที่สร้างห้อง
+  UpdatedAt?: string; // วันที่แก้ไขล่าสุด
 }

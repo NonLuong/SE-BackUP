@@ -8,8 +8,8 @@ import {
   Input,
   Card,
   message,
+  notification,
   DatePicker,
-  InputNumber,
   Select,
 } from "antd";
 import { useState, useEffect } from "react";
@@ -26,36 +26,35 @@ function TrainerCreate() {
   const [gender, setGender] = useState<Gender[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // ดึงข้อมูลเพศ
+  // ป๊อปอัพแจ้งเตือน
+  const showErrorNotification = (title: string, description: string) => {
+    notification.error({
+      message: title,
+      description: description,
+      duration: 5, // ระยะเวลาแสดงผล 5 วินาที
+    });
+  };
+
   const onGetGender = async () => {
     setLoading(true);
     try {
       const res = await GetGender();
       if (res.status === 200 && Array.isArray(res.data) && res.data.length > 0) {
-        console.log("Gender Response:", res.data); // Debug ข้อมูล Gender
         setGender(res.data);
       } else {
         throw new Error("ไม่มีข้อมูลเพศ");
       }
     } catch (error: any) {
-      messageApi.error(error.message || "ไม่พบข้อมูลเพศ");
+      showErrorNotification("ข้อผิดพลาด", error.message || "ไม่พบข้อมูลเพศ");
       setGender([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // ฟังก์ชันสำหรับบันทึกข้อมูล
   const onFinish = async (values: TrainersInterface) => {
     try {
-      console.log("Form Values:", values); // Debug
-      console.log("Available Genders:", gender); // Debug
-
-      // ส่งข้อมูลตรง gender_id ที่เลือก
-      const payload = {
-        ...values,
-      };
-
+      const payload = { ...values };
       const res = await CreateTrainer(payload);
 
       if (res.status === 201 && res.data) {
@@ -65,7 +64,10 @@ function TrainerCreate() {
         throw new Error(res.error || "ไม่สามารถเพิ่มข้อมูลได้");
       }
     } catch (error: any) {
-      messageApi.error(error.message || "เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+      showErrorNotification(
+        "เกิดข้อผิดพลาด",
+        error.message || "เกิดข้อผิดพลาดในการบันทึกข้อมูล"
+      );
     }
   };
 
@@ -127,15 +129,6 @@ function TrainerCreate() {
                 rules={[{ required: true, message: "กรุณาเลือกวัน/เดือน/ปี เกิด !" }]}
               >
                 <DatePicker style={{ width: "100%" }} />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={24} md={12}>
-              <Form.Item
-                label="อายุ"
-                name="age"
-                rules={[{ required: true, message: "กรุณากรอกอายุ !" }]}
-              >
-                <InputNumber min={0} max={99} style={{ width: "100%" }} />
               </Form.Item>
             </Col>
             <Col xs={24} sm={24} md={12}>

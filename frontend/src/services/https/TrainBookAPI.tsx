@@ -12,7 +12,14 @@ export async function GetTrainbooks() {
   };
 
   const res = await fetch(`${apiUrl}/trainbook`, requestOptions)
-    .then((res) => (res.status === 200 ? res.json() : false));
+    .then((res) => {
+      if (res.ok) return res.json();
+      throw new Error(`Error fetching trainbooks: ${res.status}`);
+    })
+    .catch((error) => {
+      console.error("Error fetching trainbooks:", error);
+      return false;
+    });
 
   return res;
 }
@@ -27,13 +34,25 @@ export async function GetTrainbookById(id: number) {
   };
 
   const res = await fetch(`${apiUrl}/trainbook/${id}`, requestOptions)
-    .then((res) => (res.status === 200 ? res.json() : false));
+    .then((res) => {
+      if (res.ok) return res.json();
+      throw new Error(`Error fetching trainbook by ID (${id}): ${res.status}`);
+    })
+    .catch((error) => {
+      console.error("Error fetching trainbook by ID:", error);
+      return false;
+    });
 
   return res;
 }
 
 // POST (Create) a new trainbook
 export async function CreateTrainbook(data: TrainbookInterface) {
+  if (!data.RoomID || !data.DriverID || !data.Status) {
+    console.error("Missing required fields for creating a trainbook:", data);
+    return false;
+  }
+
   const requestOptions = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -41,13 +60,25 @@ export async function CreateTrainbook(data: TrainbookInterface) {
   };
 
   const res = await fetch(`${apiUrl}/trainbook`, requestOptions)
-    .then((res) => (res.status === 201 ? res.json() : false));
+    .then((res) => {
+      if (res.status === 201) return res.json();
+      throw new Error(`Error creating trainbook: ${res.status}`);
+    })
+    .catch((error) => {
+      console.error("Error creating trainbook:", error);
+      return false;
+    });
 
   return res;
 }
 
 // PATCH (Update) an existing trainbook
 export async function UpdateTrainbookById(data: TrainbookInterface) {
+  if (!data.ID) {
+    console.error("Missing ID for updating trainbook:", data);
+    return false;
+  }
+
   const requestOptions = {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
@@ -55,7 +86,14 @@ export async function UpdateTrainbookById(data: TrainbookInterface) {
   };
 
   const res = await fetch(`${apiUrl}/trainbook/${data.ID}`, requestOptions)
-    .then((res) => (res.status === 200 ? res.json() : false));
+    .then((res) => {
+      if (res.status === 200) return res.json();
+      throw new Error(`Error updating trainbook with ID (${data.ID}): ${res.status}`);
+    })
+    .catch((error) => {
+      console.error("Error updating trainbook:", error);
+      return false;
+    });
 
   return res;
 }
@@ -70,7 +108,14 @@ export async function DeleteTrainbookById(id: number) {
   };
 
   const res = await fetch(`${apiUrl}/trainbook/${id}`, requestOptions)
-    .then((res) => (res.status === 200 ? true : false));
+    .then((res) => {
+      if (res.status === 200) return true;
+      throw new Error(`Error deleting trainbook with ID (${id}): ${res.status}`);
+    })
+    .catch((error) => {
+      console.error("Error deleting trainbook:", error);
+      return false;
+    });
 
   return res;
 }

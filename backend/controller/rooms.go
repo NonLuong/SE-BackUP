@@ -1,25 +1,26 @@
 package controller
 
 import (
+	"log"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
-	"project-se/entity"
 	"project-se/config"
+	"project-se/entity"
+
+	"github.com/gin-gonic/gin"
 )
 
 // ดึงข้อมูล Room ทั้งหมด
 func GetRooms(c *gin.Context) {
-	var rooms []entity.Rooms
-	db := config.DB()
-	results := db.Preload("Trainer").Find(&rooms)
-
-	if results.Error != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": results.Error.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, rooms)
+    var rooms []entity.Rooms
+    db := config.DB()
+    if err := db.Preload("Trainer").Find(&rooms).Error; err != nil {
+        log.Printf("Error fetching rooms: %v\n", err)
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to fetch rooms"})
+        return
+    }
+    log.Printf("Rooms fetched: %+v\n", rooms)
+    c.JSON(http.StatusOK, rooms)
 }
 
 // ดึง Room ตาม ID
@@ -27,32 +28,42 @@ func GetRoomByID(c *gin.Context) {
 	id := c.Param("id")
 	var room entity.Rooms
 	db := config.DB()
-	results := db.Preload("Trainer").First(&room, id) // Preload Trainer เพื่อดึงข้อมูลเทรนเนอร์มาด้วย
 
-	if results.Error != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": results.Error.Error()})
+	// ใช้ Preload เพื่อดึงข้อมูลเทรนเนอร์
+	if err := db.Preload("Trainer").First(&room, "id = ?", id).Error; err != nil {
+		log.Printf("Error fetching room by ID (%s): %v\n", id, err)
+		c.JSON(http.StatusNotFound, gin.H{"error": "Room not found"})
 		return
 	}
 
-	c.JSON(http.StatusOK, room)
+	c.JSON(http.StatusOK, gin.H{"data": room})
 }
 
 // สร้าง Room ใหม่
 func CreateRoom(c *gin.Context) {
 	var room entity.Rooms
 	if err := c.ShouldBindJSON(&room); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request, unable to map payload"})
+		log.Printf("Invalid input data: %v\n", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
 		return
 	}
 
-	db := config.DB()
-	result := db.Create(&room)
-	if result.Error != nil {
+	// ตรวจสอบว่า TrainerID มีอยู่จริงในฐานข้อมูล
+	var trainer entity.Trainers
+	if err := config.DB().First(&trainer, "id = ?", room.TrainerID).Error; err != nil {
+		log.Printf("Invalid Trainer ID: %d\n", room.TrainerID)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Trainer ID"})
+		return
+	}
+
+	// บันทึกข้อมูลห้อง
+	if err := config.DB().Create(&room).Error; err != nil {
+		log.Printf("Error creating room: %v\n", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to create room"})
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message": "Room created successfully", "room": room})
+	c.JSON(http.StatusCreated, gin.H{"message": "Room created successfully", "data": room})
 }
 
 // อัปเดต Room
@@ -60,42 +71,59 @@ func UpdateRoom(c *gin.Context) {
 	id := c.Param("id")
 	var room entity.Rooms
 
-	db := config.DB()
-	result := db.First(&room, id)
-
-	if result.Error != nil {
+	// ตรวจสอบว่า Room มีอยู่จริง
+	if err := config.DB().First(&room, "id = ?", id).Error; err != nil {
+		log.Printf("Room not found for update: %s\n", id)
 		c.JSON(http.StatusNotFound, gin.H{"error": "Room not found"})
 		return
 	}
 
 	var payload entity.Rooms
 	if err := c.ShouldBindJSON(&payload); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request, unable to map payload"})
+		log.Printf("Invalid input data for update: %v\n", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
 		return
 	}
 
-	// อัปเดตข้อมูล
+	// ตรวจสอบว่า TrainerID มีอยู่จริง
+	var trainer entity.Trainers
+	if err := config.DB().First(&trainer, "id = ?", payload.TrainerID).Error; err != nil {
+		log.Printf("Invalid Trainer ID for update: %d\n", payload.TrainerID)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Trainer ID"})
+		return
+	}
+
+	// อัปเดตข้อมูลห้อง
 	room.RoomName = payload.RoomName
 	room.Capacity = payload.Capacity
 	room.TrainerID = payload.TrainerID
 	room.Detail = payload.Detail
 
-	result = db.Save(&room)
-	if result.Error != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Unable to update room"})
+	if err := config.DB().Save(&room).Error; err != nil {
+		log.Printf("Error updating room: %v\n", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to update room"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Room updated successfully"})
+	c.JSON(http.StatusOK, gin.H{"message": "Room updated successfully", "data": room})
 }
 
 // ลบ Room
 func DeleteRoom(c *gin.Context) {
 	id := c.Param("id")
+	var room entity.Rooms
 
-	db := config.DB()
-	if tx := db.Delete(&entity.Rooms{}, id); tx.RowsAffected == 0 {
+	// ตรวจสอบว่า Room มีอยู่จริง
+	if err := config.DB().First(&room, "id = ?", id).Error; err != nil {
+		log.Printf("Room not found for delete: %s\n", id)
 		c.JSON(http.StatusNotFound, gin.H{"error": "Room not found"})
+		return
+	}
+
+	// ลบ Room
+	if err := config.DB().Delete(&room).Error; err != nil {
+		log.Printf("Error deleting room: %v\n", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to delete room"})
 		return
 	}
 
@@ -104,35 +132,38 @@ func DeleteRoom(c *gin.Context) {
 
 // อัปเดตจำนวนการจอง
 func UpdateRoomBookings(c *gin.Context) {
-    id := c.Param("cid")
+	id := c.Param("id")
+	var room entity.Rooms
 
-    var room entity.Rooms
-    if err := config.DB().First(&room, id).Error; err != nil {
-        c.JSON(http.StatusNotFound, gin.H{"error": "Room not found"})
-        return
-    }
+	// ตรวจสอบว่า Room มีอยู่จริง
+	if err := config.DB().First(&room, "id = ?", id).Error; err != nil {
+		log.Printf("Room not found for bookings update: %s\n", id)
+		c.JSON(http.StatusNotFound, gin.H{"error": "Room not found"})
+		return
+	}
 
-    // รับข้อมูลการจองจาก JSON Request
-    var input struct {
-        CurrentBookings uint8 `json:"current_bookings"`
-    }
-    if err := c.ShouldBindJSON(&input); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
-        return
-    }
+	var input struct {
+		CurrentBookings uint `json:"current_bookings"`
+	}
 
-    // ตรวจสอบจำนวนการจองว่าเกินความจุหรือไม่
-    if input.CurrentBookings > room.Capacity {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Bookings exceed room capacity"})
-        return
-    }
+	if err := c.ShouldBindJSON(&input); err != nil {
+		log.Printf("Invalid input data for bookings update: %v\n", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		return
+	}
 
-    // อัปเดตจำนวนการจอง
-    room.CurrentBookings = input.CurrentBookings
-    if err := config.DB().Save(&room).Error; err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to update bookings"})
-        return
-    }
+	if input.CurrentBookings > uint(room.Capacity) {
+		log.Printf("Bookings exceed room capacity: %d > %d\n", input.CurrentBookings, room.Capacity)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Bookings exceed room capacity"})
+		return
+	}
 
-    c.JSON(http.StatusOK, gin.H{"message": "Room booked successfully", "room": room})
+	room.CurrentBookings = uint8(input.CurrentBookings)
+	if err := config.DB().Save(&room).Error; err != nil {
+		log.Printf("Error updating bookings: %v\n", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to update bookings"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Room bookings updated successfully", "data": room})
 }

@@ -10,7 +10,12 @@ import {
   Empty,
   Popconfirm,
 } from "antd";
-import { PlusOutlined, EditOutlined, DeleteOutlined, HomeOutlined } from "@ant-design/icons";
+import {
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  HomeOutlined,
+} from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import { GetRooms, DeleteRoomById } from "../../services/https/RoomAPI";
 import { RoomInterface } from "../../interfaces/IRoom";
@@ -21,31 +26,48 @@ function Rooms() {
   const [loading, setLoading] = useState<boolean>(true);
   const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
-  const userRole = "admin"; // สมมติว่ามีตัวแปรกำหนดสิทธิ์ของผู้ใช้
+  const userRole = "admin";
 
+  // ฟังก์ชันดึงข้อมูลห้อง
   const fetchRooms = async () => {
     setLoading(true);
     try {
       const res = await GetRooms();
-      if (res && Array.isArray(res)) {
-        const mappedRooms = res.map((room: any) => ({
+      console.log("API Response:", res); // ตรวจสอบข้อมูลที่ได้รับจาก API
+      if (res && res.status === 200 && Array.isArray(res.data)) {
+        const mappedRooms = res.data.map((room: any) => ({
           ID: room.ID,
           RoomName: room.room_name,
           Capacity: room.capacity,
           CurrentBookings: room.current_bookings || 0,
+          Trainer: room.trainer
+            ? {
+                FirstName: room.trainer.first_name || "ไม่ระบุชื่อ",
+                LastName: room.trainer.last_name || "ไม่ระบุนามสกุล",
+              }
+            : null,
+          Status:
+            (room.current_bookings || 0) >= (room.capacity || 0)
+              ? "เต็ม"
+              : room.current_bookings
+              ? "ว่างบางส่วน"
+              : "ว่าง",
         }));
         setRooms(mappedRooms);
       } else {
-        messageApi.error("ไม่สามารถดึงข้อมูลได้");
+        console.error("Unexpected API response:", res);
+        messageApi.error(res?.error || "ไม่สามารถดึงข้อมูลได้");
         setRooms([]);
       }
     } catch (error) {
-      messageApi.error("เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์");
       console.error("Error fetching rooms:", error);
+      messageApi.error("เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
+  // ฟังก์ชันลบห้อง
   const handleDelete = async (id: number) => {
     try {
       const res = await DeleteRoomById(id);
@@ -53,7 +75,7 @@ function Rooms() {
         messageApi.success("ลบห้องสำเร็จ");
         fetchRooms();
       } else {
-        messageApi.error("ไม่สามารถลบห้องได้");
+        messageApi.error(res?.error || "ไม่สามารถลบห้องได้");
       }
     } catch (error) {
       messageApi.error("เกิดข้อผิดพลาดในการลบห้อง");
@@ -61,14 +83,16 @@ function Rooms() {
     }
   };
 
+  // ฟังก์ชันไปหน้าการจอง
   const handleBooking = (id: number) => {
-    navigate(`/rooms/trainbook/${id}`);
+    if (id) navigate(`/rooms/trainbook/${id}`);
   };
 
   useEffect(() => {
     fetchRooms();
   }, []);
 
+  // กำหนด Columns ของ Table
   const columns: ColumnsType<RoomInterface> = [
     {
       title: "ลำดับ",
@@ -84,17 +108,27 @@ function Rooms() {
       title: "ความจุ",
       key: "Capacity",
       render: (record: RoomInterface) =>
-        `${record.CurrentBookings}/${record.Capacity}`,
+        `${record.CurrentBookings || 0}/${record.Capacity || 0}`,
+    },
+    {
+      title: "เทรนเนอร์",
+      key: "Trainer",
+      render: (record: RoomInterface) =>
+        record.Trainer
+          ? `${record.Trainer.FirstName} ${record.Trainer.LastName}`
+          : "ไม่ระบุเทรนเนอร์",
+    },
+    {
+      title: "สถานะ",
+      dataIndex: "Status",
+      key: "Status",
     },
     {
       title: "การกระทำ",
       key: "actions",
       render: (record: RoomInterface) => (
         <Space>
-          <Button
-            type="primary"
-            onClick={() => handleBooking(record.ID!)}
-          >
+          <Button type="primary" onClick={() => handleBooking(record.ID!)}>
             จอง
           </Button>
           {userRole === "admin" && (
@@ -135,7 +169,7 @@ function Rooms() {
         <Col span={12} style={{ textAlign: "right" }}>
           {userRole === "admin" && (
             <Space>
-              <Link to="/">
+              <Link to="/employees">
                 <Button type="default" icon={<HomeOutlined />}>
                   หน้าแรก
                 </Button>

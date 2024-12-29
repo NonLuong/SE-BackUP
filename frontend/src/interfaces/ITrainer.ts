@@ -17,4 +17,5 @@ export interface TrainersInterface {
   
     GenderID?: number;
   
+    rolesId: number;
   }

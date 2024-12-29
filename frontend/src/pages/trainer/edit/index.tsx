@@ -10,7 +10,6 @@ import {
   Card,
   message,
   DatePicker,
-  InputNumber,
   Select,
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
@@ -74,6 +73,7 @@ function TrainerEdit() {
       BirthDay: values.birthday?.toISOString(),
       Age: values.age,
       GenderID: values.gender_id,
+      rolesId: values.roleId,
       message: "",
     };
 
@@ -160,16 +160,6 @@ function TrainerEdit() {
 
             <Col xs={24} sm={24} md={12}>
               <Form.Item
-                label="อายุ"
-                name="age"
-                rules={[{ required: true, message: "กรุณากรอกอายุ!" }]}
-              >
-                <InputNumber min={1} max={99} style={{ width: "100%" }} />
-              </Form.Item>
-            </Col>
-
-            <Col xs={24} sm={24} md={12}>
-              <Form.Item
                 label="เพศ"
                 name="gender_id"
                 rules={[{ required: true, message: "กรุณาเลือกเพศ!" }]}
@@ -188,7 +178,7 @@ function TrainerEdit() {
           <Row justify="end">
             <Col>
               <Space>
-                <Button onClick={() => navigate("/trainers")}>ยกเลิก</Button>
+                <Button onClick={() => navigate("/trainer")}>ยกเลิก</Button>
                 <Button type="primary" htmlType="submit" icon={<PlusOutlined />}>
                   บันทึก
                 </Button>

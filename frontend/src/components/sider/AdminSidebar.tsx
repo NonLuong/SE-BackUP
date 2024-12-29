@@ -9,6 +9,7 @@ import {
   FundProjectionScreenOutlined,
   IdcardOutlined,
 } from "@ant-design/icons";
+import { AiOutlineHome } from "react-icons/ai";
 import { Layout, Menu } from "antd";
 import type { MenuProps } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -98,6 +99,8 @@ const items: MenuItem[] = [
   getItem("VEHICLE", "/vehicles", <CarOutlined />),
   getItem("TRAINING", "/trainer", <FundProjectionScreenOutlined />),
   getItem("PROMOTION", "/promotion", <GiftOutlined />),
+  getItem("TRAINER", "/trainer", <UserOutlined />),
+  getItem("ROOM", "/rooms", <AiOutlineHome />),
   getItem("Log out", "/login", <LogoutOutlined />),
 ];
 

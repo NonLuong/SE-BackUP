@@ -10,17 +10,15 @@ import (
 
 // ดึงข้อมูล Trainer ทั้งหมด
 func GetAllTrainer(c *gin.Context) {
-	var trainers []entity.Trainers
-	db := config.DB()
-	results := db.Preload("Gender").Find(&trainers)
-
-	if results.Error != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": results.Error.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, trainers)
+    var trainers []entity.Trainers
+    db := config.DB()
+    if err := db.Find(&trainers).Error; err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "ไม่สามารถดึงข้อมูลเทรนเนอร์ได้"})
+        return
+    }
+    c.JSON(http.StatusOK, trainers)
 }
+
 
 // ดึงข้อมูล Trainer ตาม ID
 func GetByIDTrainer(c *gin.Context) {

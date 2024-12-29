@@ -18,21 +18,22 @@ function Trainers() {
     setLoading(true);
     try {
       const res = await GetTrainers();
+      console.log("Trainer API Response:", res.data); // Debug ข้อมูล API
       if (res.status === 200 && Array.isArray(res.data)) {
-        setTrainers(res.data); // กำหนดค่า res.data หากเป็น array
+        setTrainers(res.data);
       } else {
         messageApi.error(res.error || "ไม่สามารถดึงข้อมูลเทรนเนอร์ได้");
-        setTrainers([]); // ตั้งค่าเป็น array เปล่าในกรณีที่ res.data ไม่ถูกต้อง
+        setTrainers([]);
       }
     } catch (error) {
       messageApi.error("เกิดข้อผิดพลาดในการดึงข้อมูล");
       console.error("Error fetching trainers:", error);
-      setTrainers([]); // ตั้งค่าเป็น array เปล่าในกรณีที่เกิดข้อผิดพลาด
+      setTrainers([]);
     }
     setLoading(false);
   };
+  
 
-  // ฟังก์ชันลบเทรนเนอร์
   // ฟังก์ชันลบเทรนเนอร์
   const deleteTrainer = async (id: number) => {
     try {
@@ -86,16 +87,19 @@ function Trainers() {
       ),
     },
     {
-      title: "อายุ",
-      dataIndex: "age",
-      key: "age",
-      render: (age) => age || "ไม่มีข้อมูล",
-    },
-    {
       title: "เพศ",
       key: "gender",
-      render: (record) => <>{record.gender?.gender || "ไม่มีข้อมูล"}</>,
-    },
+      render: (record) => {
+        switch (record.gender_id) {
+          case 1:
+            return "Male";
+          case 2:
+            return "Female";
+          default:
+            return "ไม่มีข้อมูล";
+        }
+      },
+    },    
     {
       title: "การกระทำ",
       render: (record) => (
@@ -130,7 +134,7 @@ function Trainers() {
         </Col>
         <Col span={12} style={{ textAlign: "end", alignSelf: "center" }}>
           <Space>
-            <Link to="/">
+            <Link to="/employees">
               <Button type="default" icon={<HomeOutlined />}>
                 หน้าแรก
               </Button>
