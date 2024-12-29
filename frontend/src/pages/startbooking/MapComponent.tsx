@@ -152,7 +152,6 @@ const MapComponent: React.FC = () => {
           pickupLocation,
           startLocationId,
         });
-  
         navigate('/mapdestination', { state: { pickupLocation, startLocationId } });
       } catch (error) {
         console.error('Error sending pickup location:', error);
