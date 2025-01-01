@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"project-se/config"
 	"project-se/controller"
-	"project-se/middlewares"
+	
 )
 
 
@@ -49,20 +49,25 @@ func registerRoutes(r *gin.Engine) {
 	r.GET("/bookings/:id", controller.GetBookingByID)
 	r.POST("/bookings/:id/accept", controller.AcceptBooking)
 	
-
-
 	// WebSocket
-	//r.GET("/ws", handleWebSocketConnections)
-	// เพิ่ม WebSocket Route
+	//socketdriverbooking
 	r.GET("/ws/driver/:driverID", controller.DriverWebSocketHandler)
 
-	// Route อื่น ๆ
 
+	// API ส่งข้อความไปยัง Passenger
+	r.POST("/passenger/:passengerId/notify", controller.NotifyPassengerHandler)
+	r.GET("/ws/passenger/:passengerId", controller.ConnectPassengerWebSocket)
+	
 
-	// Messages
-	r.GET("/messages", controller.GetAllMessages)                            // ดึงข้อความทั้งหมด
-	r.POST("/messages", controller.CreateMessage)                            // สร้างข้อความใหม่
+	// Route สำหรับ WebSocket Passenger chat
+	r.GET("/ws/chat/passenger/:bookingID", controller.PassengerWebSocketHandler)
+	// Route สำหรับ WebSocket Driver chat
+	r.GET("/ws/chat/driver/:bookingID", controller.DriverChatWebSocketHandler)
+	// chat
+	r.POST("/message", controller.CreateMessage)
 	r.GET("/messages/booking/:bookingID", controller.GetMessagesByBookingID) // ดึงข้อความตาม Booking ID
+
+
 
 	// Promotion Routes
 	r.GET("/promotions", controller.GetAllPromotion)
@@ -136,12 +141,7 @@ func registerRoutes(r *gin.Engine) {
 	r.GET("/vehicletype/:id", controller.GetVehicleType)
 	r.GET("/vehicletypes", controller.ListVehicleTypes)
 
-	// Protected Routes (ต้องตรวจสอบ JWT)
-	protected := r.Group("/api", middlewares.Authorizes())
-	{
-		protected.POST("/message", controller.CreateMessage)
-		protected.GET("/messages/booking/:bookingID", controller.GetMessagesByBookingID)
-	}
+	
 }
 
 // CORSMiddleware จัดการ Cross-Origin Resource Sharing (CORS)

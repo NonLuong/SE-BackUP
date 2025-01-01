@@ -96,13 +96,17 @@ const MapRoute: React.FC = () => {
         
         setTimeout(() => {
           const bookingId = result.data.data.ID;
+          console.log("booking: ",bookingId);
           navigate('/paid', {
             state: {
               total_price: bookingData.total_price,
               bookingId,
+              
             },
           });
         }, 2000); // รอ 2 วินาทีก่อน Navigate
+
+        
       
       } else {
         setSuccessMessage(`เกิดข้อผิดพลาด: ${result.message}`);

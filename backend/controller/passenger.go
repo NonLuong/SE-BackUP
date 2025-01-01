@@ -7,12 +7,14 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
-
 	"project-se/config"
 	"project-se/entity"
-
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+	"sync"
+	"github.com/gorilla/websocket"
+	"log"
+	
 )
 
 // CreatePassenger - สร้าง Passenger พร้อมจัดการข้อมูลและไฟล์โปรไฟล์
@@ -176,4 +178,139 @@ func DeletePassenger(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Passenger deleted successfully"})
+}
+
+
+//เก็บการเชื่อมต่อ WebSocket ของ Passenger แต่ละคน
+var passengerConnections = make(map[string]*websocket.Conn)
+// ใช้ Mutex สำหรับป้องกันการเข้าถึง Map พร้อมกัน
+var passengerMutex sync.Mutex
+
+// Upgrade HTTP Request เป็น WebSocket
+var passengerupgrader = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
+}
+
+// ConnectPassengerWebSocket
+// ใช้สำหรับเชื่อมต่อ WebSocket ของ Passenger
+func ConnectPassengerWebSocket(c *gin.Context) {
+	passengerId := c.Param("passengerId")
+
+	conn, err := passengerupgrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		log.Println("❌ WebSocket upgrade error:", err)
+		return
+	}
+	defer conn.Close()
+
+	// บันทึก Passenger การเชื่อมต่อ
+	passengerMutex.Lock()
+	passengerConnections[passengerId] = conn
+	log.Printf("✅ Passenger %s connected via WebSocket", passengerId)
+	log.Printf("🛠️ Current passenger connections: %+v", passengerConnections)
+	passengerMutex.Unlock()
+
+	// รอรับข้อความจาก Passenger
+	for {
+		_, msg, err := conn.ReadMessage()
+		if err != nil {
+			log.Printf("❌ Error reading message from passenger %s: %v", passengerId, err)
+			passengerMutex.Lock()
+			delete(passengerConnections, passengerId)
+			log.Printf("🛠️ Passenger %s removed from connections", passengerId)
+			passengerMutex.Unlock()
+			break
+		}
+		log.Printf("📩 Message from passenger %s: %s", passengerId, msg)
+	}
+
+	log.Printf("🔌 Passenger %s disconnected", passengerId)
+}
+
+// NotifyPassenger - ส่งข้อความแจ้งเตือน พร้อม driverId และ bookingId
+func NotifyPassenger(passengerId string, driverId string, bookingId string, message string) error {
+	passengerMutex.Lock()
+	defer passengerMutex.Unlock()
+
+	log.Printf("🛠️ Checking connection for Passenger ID: %s", passengerId)
+	conn, exists := passengerConnections[passengerId]
+	if !exists {
+		log.Printf("❌ Passenger %s is not connected", passengerId)
+		return fmt.Errorf("❌ Passenger %s is not connected", passengerId)
+	}
+
+	// 📦 JSON Payload ที่จะส่งไปยัง WebSocket
+	payload := fmt.Sprintf(
+		`{"type": "notification", "message": "%s", "driverId": "%s", "bookingId": "%s"}`,
+		message, driverId, bookingId,
+	)
+
+	// 📤 ส่งข้อความไปยัง Passenger ผ่าน WebSocket
+	err := conn.WriteMessage(websocket.TextMessage, []byte(payload))
+	if err != nil {
+		log.Printf("❌ Failed to send message to passenger %s: %v", passengerId, err)
+		delete(passengerConnections, passengerId)
+		return err
+	}
+
+	log.Printf("✅ Notification sent to passenger %s: %s", passengerId, message)
+	return nil
+}
+
+
+// NotifyPassengerHandler - ส่งการแจ้งเตือนถึง Passenger
+func NotifyPassengerHandler(c *gin.Context) {
+	passengerId := c.Param("passengerId")
+
+	// 📝 JSON Payload
+	var requestBody struct {
+		Message   string `json:"message"`
+		DriverId  string `json:"driverId"`
+		BookingId string `json:"bookingId"`
+	}
+
+	// 📥 ตรวจสอบ JSON Payload
+	if err := c.ShouldBindJSON(&requestBody); err != nil {
+		log.Println("❌ Invalid JSON payload:", err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid JSON payload",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	// ✅ ตรวจสอบฟิลด์ที่จำเป็น
+	if requestBody.DriverId == "" || requestBody.BookingId == "" || requestBody.Message == "" {
+		log.Println("❌ Missing required fields: driverId, bookingId, or message")
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Missing required fields: driverId, bookingId, or message",
+		})
+		return
+	}
+
+	log.Printf(
+		"🛠️ Sending notification to Passenger %s | DriverId: %s | BookingId: %s | Message: %s\n",
+		passengerId, requestBody.DriverId, requestBody.BookingId, requestBody.Message,
+	)
+
+	// 🚀 ส่งการแจ้งเตือน
+	if err := NotifyPassenger(passengerId, requestBody.DriverId, requestBody.BookingId, requestBody.Message); err != nil {
+		log.Printf("❌ Failed to notify passenger %s: %v\n", passengerId, err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": "Failed to notify passenger",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	// ✅ ส่ง Response กลับไปยัง Frontend
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": fmt.Sprintf("Message sent to passenger %s with driverId %s and bookingId %s", passengerId, requestBody.DriverId, requestBody.BookingId),
+	})
 }

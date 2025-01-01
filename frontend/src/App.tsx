@@ -7,7 +7,7 @@ import MapDestination from "./pages/MapDestination/MapDestination";
 import MapRoute from "./pages/MapRoute/MapRoute";
 import RideHistory from "./pages/RideHistory/RideHistory";
 import PassengerChat from "./pages/chat/PassengerChat";
-import DriverChat from "./pages/chat/DriverChat";
+//import DriverChat from "./pages/chat/DriverChat";
 import PromotionCreate from "./pages/promotion/create";
 import PromotionEdit from "./pages/promotion/edit";
 import Promotion from "./pages/promotion";
@@ -31,7 +31,10 @@ import EditEmployee from "./pages/Employee/EditEmployee";
 import AddEmployee from "./pages/Employee/AddEmployee";
 import Vehicle from "./pages/Vehicle/Vehicle";
 import DriverBooking from "./pages/DriverBooking/DriverBooking";
-
+import PassengerNotification from "./pages/passengerbooking/passengerbooking";
+import DriverChat from "./pages/chat/DriverChat";
+import PassengerChatPage from "./pages/chat/PassengerChat";
+//import PassengerNotification from "./pages/PassengerNotification/PassengerNotification";
 
 const App: React.FC = () => {
   return (
@@ -48,9 +51,11 @@ const App: React.FC = () => {
         <Route path="/mapdestination" element={<MapDestination />} /> {/* เส้นทางสำหรับ CompletedBooking */}
         <Route path="/maproute" element={<MapRoute />} /> {/* เส้นทางสำหรับ CompletedBooking */}
         <Route path="/RideHistory" element={<RideHistory />} /> {/* เส้นทางสำหรับ CompletedBooking */}
-        <Route path="/PassengerChat" element={<PassengerChat />} /> {/* เส้นทางสำหรับ CompletedBooking */}
-        <Route path="/DriverChat" element={<DriverChat />} /> {/* เส้นทางสำหรับ CompletedBooking */}
+        
         <Route path="/DriverBooking" element={<DriverBooking />} /> {/* เส้นทางสำหรับ CompletedBooking */}
+        <Route path="/PassengerNotification" element={<PassengerNotification />} /> {/* เส้นทางสำหรับ CompletedBooking */}
+        <Route path="/DriverChat" element={<DriverChat />} />
+        <Route path="/PassengerChat" element={<PassengerChatPage />} />
 
 
 

@@ -1,6 +1,6 @@
-// DriverBooking.tsx
 import React, { useEffect, useState } from 'react';
-import { getBookingById, acceptBooking } from '../../services/https'; // เพิ่ม acceptBooking
+import { useNavigate } from 'react-router-dom'; // เพิ่ม useNavigate
+import { getBookingById, acceptBooking, notifyPassenger } from '../../services/https';
 
 // 🛠️ กำหนดประเภทข้อมูลสำหรับการจอง
 interface Booking {
@@ -9,6 +9,7 @@ interface Booking {
   destination: string;
   bookingStatus: string;
   bookingTime: string;
+  passengerId: number;
 }
 
 // 🚗 DriverBooking Component
@@ -17,6 +18,8 @@ const DriverBooking: React.FC = () => {
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false); // สำหรับสถานะโหลดข้อมูล
   const driverID = 5; // แทนด้วย driverID ที่ได้จากระบบ Authentication
+
+  const navigate = useNavigate(); // สำหรับเปลี่ยนหน้า
 
   useEffect(() => {
     let socket: WebSocket;
@@ -39,25 +42,23 @@ const DriverBooking: React.FC = () => {
             console.log('🔍 Booking Details from API:', bookingDetails);
 
             setBooking({
-              bookingId: bookingDetails.id || bookingDetails.ID || 'Unknown', // รองรับ id หรือ ID
+              bookingId: bookingDetails.id || bookingDetails.ID || 'Unknown',
               startLocation: bookingDetails.beginning || 'Unknown',
               destination: bookingDetails.terminus || 'Unknown',
               bookingStatus: bookingDetails.booking_status || 'Unknown',
               bookingTime: bookingDetails.start_time
                 ? new Date(bookingDetails.start_time).toLocaleString()
                 : 'Unknown',
+              passengerId: bookingDetails.passenger_id,
             });
-            setLoading(false); // หยุดสถานะโหลด
+            setLoading(false);
           }
         } catch (error) {
           console.error('❌ Error processing message:', error);
-          setLoading(false); // หยุดสถานะโหลดหากเกิดข้อผิดพลาด
+          setLoading(false);
         }
       };
 
-      console.log('🔍 Booking State:', booking);
-
-      
       socket.onclose = () => {
         console.log('🔌 WebSocket disconnected, attempting to reconnect...');
         setIsConnected(false);
@@ -72,37 +73,73 @@ const DriverBooking: React.FC = () => {
     connectWebSocket();
 
     return () => {
-      socket.close();
+      if (socket) socket.close();
     };
   }, []);
 
   const handleAcceptBooking = async () => {
-    if (!booking || !booking.bookingId) {
-      console.error('❌ Booking ID is missing');
-      alert('❌ Booking ID is missing');
+    if (!booking || !booking.bookingId || !booking.passengerId) {
+      console.error('❌ Booking ID or Passenger ID is missing');
+      alert('❌ Booking ID or Passenger ID is missing');
       return;
     }
-    
+  
     try {
       setLoading(true);
+  
+      // 🚗 1. ยืนยันการรับงาน
       const response = await acceptBooking(String(booking.bookingId));
-      console.log(response)
   
       if (response.success) {
         alert('✅ Booking accepted successfully');
-        setBooking(null); // รีเซ็ตสถานะการจอง
+  
+        // 🐞 Debug ค่าที่จะส่งไปยัง `notifyPassenger`
+        console.log('📲 Sending notification with the following details:');
+        console.log('🆔 Passenger ID:', booking.passengerId);
+        console.log('🚗 Driver ID:', driverID);
+        console.log('📝 Message:', `Your driver has accepted the booking (ID: ${booking.bookingId}) and is on the way!`);
+        console.log('📦 Booking ID:', booking.bookingId);
+  
+        // 📲 2. แจ้งผู้โดยสารผ่าน API
+        const notifyResponse = await notifyPassenger(
+          String(booking.passengerId),
+          String(driverID),
+          String(booking.bookingId),
+          `Your driver has accepted the booking (ID: ${booking.bookingId}) and is on the way!`
+        );
+  
+        console.log('✅ Notification API Response:', notifyResponse);
+  
+        if (notifyResponse.success) {
+          alert('✅ Notification sent to passenger!');
+        } else {
+          console.error('❌ Failed to notify passenger via API');
+        }
       } else {
         alert(`❌ Failed to accept booking: ${response.message}`);
       }
     } catch (error: any) {
-      console.error('❌ Error accepting booking:', error.message || error);
+      console.error('❌ Error:', error.message || error);
       alert(`❌ Error: ${error.message || 'Failed to accept booking'}`);
     } finally {
       setLoading(false);
     }
   };
   
-  
+  const handleChatWithPassenger = () => {
+    if (!booking?.bookingId || !booking?.passengerId) {
+      alert('❌ Missing Booking ID or Passenger ID');
+      return;
+    }
+
+    navigate('/DriverChat', {
+      state: {
+        bookingId: booking.bookingId,
+        passengerId: booking.passengerId,
+        driverID
+      },
+    });
+  };
 
   return (
     <div style={styles.container}>
@@ -126,6 +163,9 @@ const DriverBooking: React.FC = () => {
           <button style={styles.acceptButton} onClick={handleAcceptBooking}>
             ✅ Accept Booking
           </button>
+          <button style={styles.chatButton} onClick={handleChatWithPassenger}>
+            💬 Chat with Passenger
+          </button>
         </div>
       ) : (
         <p>⏳ Waiting for new bookings...</p>
@@ -148,12 +188,8 @@ const styles = {
     marginTop: '50px',
     color: '#000',
   },
-  connected: {
-    color: 'green',
-  },
-  disconnected: {
-    color: 'red',
-  },
+  connected: { color: 'green' },
+  disconnected: { color: 'red' },
   bookingCard: {
     marginTop: '20px',
     padding: '15px',
@@ -164,10 +200,16 @@ const styles = {
   acceptButton: {
     marginTop: '10px',
     padding: '10px 20px',
-    fontSize: '14px',
     backgroundColor: '#28a745',
     color: '#fff',
-    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  },
+  chatButton: {
+    marginTop: '10px',
+    padding: '10px 20px',
+    backgroundColor: '#007bff',
+    color: '#fff',
     borderRadius: '5px',
     cursor: 'pointer',
   },

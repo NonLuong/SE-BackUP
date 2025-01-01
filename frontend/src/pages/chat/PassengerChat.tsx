@@ -1,155 +1,276 @@
-import React, { useState, useEffect } from "react";
-import { getBookingById } from "../../services/https"; // Import service
-import "./PassengerChat.css";
+import React, { useEffect, useState, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
+import { sendMessageToBackend, Message } from '../../services/https';
 
-interface Message {
+// 🛠️ ประเภทของข้อความในแชท
+interface ChatMessage {
   sender: string;
-  content: string;
-  isUser: boolean;
-  time?: string;
+  message: string;
+  timestamp: string;
 }
 
+// 🛎️ PassengerChat Component
 const PassengerChat: React.FC = () => {
-  const [socket, setSocket] = useState<WebSocket | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [message, setMessage] = useState("");
-  const [isConnected, setIsConnected] = useState(false);
-  const [roomID, setRoomID] = useState<string | null>(null);
+  const location = useLocation();
+  const { bookingId, driverId, passengerId } = location.state || {};
 
-  const bookingId = "booking123"; // ตัวอย่าง bookingId ที่ต้องการดึงข้อมูล
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [newMessage, setNewMessage] = useState<string>('');
+  const [isConnected, setIsConnected] = useState<boolean>(false);
+  const socketRef = useRef<WebSocket | null>(null);
+  const chatBoxRef = useRef<HTMLDivElement>(null);
 
-  // ดึง roomID จาก API
+  // ✅ ตั้งค่า WebSocket
   useEffect(() => {
-    const fetchRoomID = async () => {
-      try {
-        const booking = await getBookingById(bookingId); // ดึงข้อมูล booking จาก service
-        setRoomID(booking.room); // ตั้งค่า roomID จาก response
-      } catch (error) {
-        console.error("Error fetching room ID:", error);
-      }
-    };
+    if (!bookingId || socketRef.current) return;
 
-    fetchRoomID();
-  }, [bookingId]);
-
-  useEffect(() => {
-    if (!roomID) return;
-
-    // สร้าง WebSocket connection
-    const ws = new WebSocket(`ws://localhost:8080/ws?room=${roomID}`);
+    const ws = new WebSocket(`ws://localhost:8080/ws/chat/passenger/${bookingId}`);
 
     ws.onopen = () => {
-      console.log("WebSocket connection established.");
+      console.log('✅ Connected to Chat Room:', bookingId);
       setIsConnected(true);
     };
 
     ws.onmessage = (event) => {
       try {
-        const msg = JSON.parse(event.data);
-        if (msg.sender !== "Passenger") {
-          setMessages((prev) => [
-            ...prev,
-            { sender: msg.sender, content: msg.content, isUser: false, time: msg.time },
-          ]);
+        const data = JSON.parse(event.data);
+        if (data.sender !== 'You') {
+          setMessages((prev) => {
+            const isDuplicate = prev.some(
+              (msg) =>
+                msg.timestamp === data.timestamp &&
+                msg.message === data.message &&
+                msg.sender === data.sender
+            );
+
+            if (isDuplicate) {
+              console.warn('⚠️ Duplicate message detected');
+              return prev;
+            }
+
+            return [
+              ...prev,
+              {
+                sender: data.sender || 'Unknown',
+                message: data.message,
+                timestamp: data.timestamp || new Date().toLocaleTimeString(),
+              },
+            ];
+          });
         }
       } catch (error) {
-        console.error("Error parsing WebSocket message:", error);
+        console.error('❌ Error parsing message:', error);
       }
     };
 
-    ws.onclose = (event) => {
-      console.log(`WebSocket connection closed. Code: ${event.code}`);
+    ws.onclose = () => {
+      console.warn('🔌 WebSocket disconnected. Reconnecting in 5 seconds...');
       setIsConnected(false);
-      if (event.code !== 1000) {
-        console.log("Reconnecting...");
-        setTimeout(() => setSocket(new WebSocket(`ws://localhost:8080/ws?room=${roomID}`)), 3000);
-      }
+      socketRef.current = null;
+      setTimeout(() => {
+        if (!socketRef.current) {
+          socketRef.current = new WebSocket(`ws://localhost:8080/ws/chat/passenger/${bookingId}`);
+        }
+      }, 5000);
     };
 
     ws.onerror = (error) => {
-      console.error("WebSocket error:", error);
+      console.error('❌ WebSocket error:', error);
     };
 
-    setSocket(ws);
+    socketRef.current = ws;
 
     return () => {
-      console.log("Closing WebSocket connection.");
-      ws.close(1000, "Component unmounted");
+      if (socketRef.current) {
+        socketRef.current.close();
+        socketRef.current = null;
+      }
     };
-  }, [roomID]);
+  }, [bookingId]);
 
-  const sendMessage = () => {
-    // ตรวจสอบว่า WebSocket พร้อมใช้งานและเชื่อมต่อแล้ว
-    if (socket && socket.readyState === WebSocket.OPEN && message.trim()) {
-      const msg = { room: roomID, sender: "Passenger", content: message, time: new Date().toISOString() };
-
-      socket.send(JSON.stringify(msg));
-
-      setMessages((prev) => [
-        ...prev,
-        { sender: "Passenger", content: message, isUser: true, time: new Date().toLocaleTimeString() },
-      ]);
-
-      setMessage(""); // ล้างช่องข้อความหลังส่ง
-    } else {
-      console.warn("Cannot send message. WebSocket is not open.");
+  // ✅ Scroll ไปยังข้อความล่าสุด
+  useEffect(() => {
+    if (chatBoxRef.current) {
+      chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
     }
-  };
+  }, [messages.length]);
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      sendMessage();
+  // ✅ ส่งข้อความ
+  const handleSendMessage = async () => {
+    if (!socketRef.current || !newMessage.trim()) {
+      console.warn('❌ Cannot send empty message');
+      return;
     }
+
+    const timestamp = new Date().toLocaleTimeString();
+
+    // ✉️ ส่งข้อความไปยัง WebSocket
+    const messagePayload = {
+      type: 'chat_message',
+      bookingId,
+      sender: 'Passenger',
+      message: newMessage,
+      timestamp,
+    };
+
+    console.log('📤 Sending message:', messagePayload);
+
+    socketRef.current.send(JSON.stringify(messagePayload));
+    setMessages((prev) => [
+      ...prev,
+      {
+        sender: 'You',
+        message: newMessage,
+        timestamp,
+      },
+    ]);
+
+    // 💾 ส่งข้อความไปยัง Backend
+    const backendMessage: Message = {
+      content: newMessage,
+      message_type: 'text',
+      read_status: false,
+      send_time: timestamp,
+      passenger_id: Number(passengerId), // ไม่ใช้ passengerId
+      booking_id: Number(bookingId),
+      driver_id: Number(driverId), // ส่ง driverId ไปยัง backend
+    };
+
+    const res = await sendMessageToBackend(backendMessage);
+    if (!res) {
+      console.error('❌ Failed to save message to backend');
+    }
+
+    setNewMessage('');
   };
 
   return (
-    <div className="chat-container">
-      <div className="chat-header">
-        <img
-          src="https://via.placeholder.com/50"
-          alt="User Avatar"
-          className="chat-avatar"
-        />
-        <div className="chat-user-details">
-          <span className="chat-name">Passenger Chat</span>
-          <span className="chat-status">
-            {isConnected ? "ออนไลน์" : "ออฟไลน์"}
-          </span>
-        </div>
+    <div style={styles.container}>
+      <h1>💬 Chat with Driver</h1>
+      <p><strong>Booking ID:</strong> {bookingId}</p>
+      <p><strong>Driver ID:</strong> {driverId}</p>
+      {isConnected ? (
+        <p style={styles.connected}>🟢 Connected to Chat Room</p>
+      ) : (
+        <p style={styles.disconnected}>🔴 Disconnected from Chat Room</p>
+      )}
+
+      <div style={styles.chatBox} ref={chatBoxRef}>
+        {messages.map((msg, index) => (
+          <div
+            key={index}
+            style={{
+              ...styles.message,
+              alignSelf: msg.sender === 'You' ? 'flex-end' : 'flex-start',
+              backgroundColor: msg.sender === 'You' ? '#d1e7dd' : '#f8d7da',
+            }}
+          >
+            <p><strong>{msg.sender}:</strong> {msg.message}</p>
+            <p style={styles.timestamp}>{msg.timestamp}</p>
+          </div>
+        ))}
       </div>
 
-      <div className="messages-container">
-        {messages.length > 0 ? (
-          messages.map((msg, index) => (
-            <div
-              key={index}
-              className={`message-bubble ${msg.isUser ? "user" : "other"}`}
-            >
-              <span className="message-sender">{msg.sender}</span>
-              <p className="message-content">{msg.content}</p>
-              {msg.time && <span className="message-time">{msg.time}</span>}
-            </div>
-          ))
-        ) : (
-          <p className="no-messages">ไม่มีข้อความที่จะแสดง</p>
-        )}
-      </div>
-
-      <div className="input-container">
+      <div style={styles.inputSection}>
         <input
-          type="text"
-          placeholder="ส่งข้อความ..."
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          onKeyDown={handleKeyDown}
-          className="chat-input"
+          style={styles.input}
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+          placeholder="พิมพ์ข้อความที่นี่..."
         />
-        <button onClick={sendMessage} className="send-button">
-          ส่ง
+        <button style={styles.sendButton} onClick={handleSendMessage}>
+          ➤
         </button>
       </div>
     </div>
   );
 };
+
+
+// 🎨 CSS Styles
+const styles = {
+  container: {
+    fontFamily: 'Arial, sans-serif',
+    //padding: '20px',
+    textAlign: 'center' as const,
+    maxWidth: '100%',
+    margin: 'auto',
+    border: '1px solid #ccc',
+    borderRadius: '8px',
+    boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+    //marginTop: '50px',
+    backgroundColor: '#fff',
+    color: '#000', // สีตัวอักษรเป็นสีดำ
+  },
+  connected: {
+    color: 'green',
+    fontWeight: 'bold',
+  },
+  disconnected: {
+    color: 'red',
+    fontWeight: 'bold',
+  },
+  chatBox: {
+    marginTop: '20px',
+    height: '400px',
+    overflowY: 'scroll' as const,
+    border: '1px solid #ddd',
+    padding: '10px',
+    borderRadius: '5px',
+    backgroundColor: '#f9f9f9',
+    display: 'flex',
+    flexDirection: 'column' as const,
+    gap: '8px',
+    color: '#000', // สีตัวอักษรเป็นสีดำ
+  },
+  message: {
+    padding: '8px 12px',
+    borderRadius: '8px',
+    maxWidth: '70%',
+    wordWrap: 'break-word' as const,
+    color: '#000', // สีข้อความเป็นสีดำ
+  },
+  timestamp: {
+    fontSize: '10px',
+    color: '#666', // สีเวลาเป็นสีเทาเข้มเพื่อความแตกต่าง
+    marginTop: '4px',
+  },
+  inputSection: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: '10px',
+    width: '100%',
+    padding: '10px',
+    backgroundColor: '#D1C4E9',
+    borderRadius: '10px',
+    borderTop: '1px solid #ccc',
+  },
+  input: {
+    flex: 1,
+    padding: '12px 15px',
+    borderRadius: '25px',
+    border: '1px solid #ccc',
+    fontSize: '14px',
+    outline: 'none',
+    backgroundColor: '#fff',
+    color: '#000', // สีข้อความใน input เป็นสีดำ
+  },
+  sendButton: {
+    padding: '10px 15px',
+    backgroundColor: '#9575CD',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '50%',
+    fontSize: '20px',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '50px',
+    height: '50px',
+  },
+};
+
 
 export default PassengerChat;

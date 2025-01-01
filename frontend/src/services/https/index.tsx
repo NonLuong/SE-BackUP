@@ -1,26 +1,40 @@
-import { Message } from "../../interfaces/IMessage"; // ปรับ path ให้ตรงกับตำแหน่งจริงของ interface
+//import { Message } from "../../interfaces/IMessage"; // ปรับ path ให้ตรงกับตำแหน่งจริงของ interface
 
 const apiUrl = "http://localhost:8080";
 
-async function sendMessageToBackend(data: Message) {
+export interface Message {
+  content: string;
+  message_type: string;
+  read_status: boolean;
+  send_time: string;
+  passenger_id: number;
+  booking_id: number;
+  driver_id: number;
+}
+
+export async function sendMessageToBackend(data: Message) {
   const requestOptions = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data), // ใช้ `Message` Interface เป็นโครงสร้าง
+    body: JSON.stringify(data),
   };
 
-  let res = await fetch(`${apiUrl}/message`, requestOptions)
-    .then((res) => {
-      if (res.status === 201) {
-        return res.json(); // คืนค่าข้อมูลข้อความที่สร้างสำเร็จ
-      } else {
-        return false; // หากเกิดข้อผิดพลาด
-      }
-    });
+  try {
+    const res = await fetch(`${apiUrl}/message`, requestOptions);
 
-  return res;
+    if (res.status === 201) {
+      const result = await res.json();
+      console.log("✅ Message saved to backend:", result);
+      return result;
+    } else {
+      console.error("❌ Failed to save message to backend:", res.statusText);
+      return false;
+    }
+  } catch (error) {
+    console.error("❌ Error saving message to backend:", error);
+    return false;
+  }
 }
-
 // ฟังก์ชันสำหรับดึงข้อความจาก Backend
 export const fetchMessagesFromBackend = async (bookingID: number) => {
     const requestOptions = {
@@ -225,6 +239,77 @@ export const acceptBooking = async (bookingId: string) => {
   }
 };
 
-export 
-{ sendMessageToBackend };
-{fetchMessagesFromBackend};
+
+// services/https.ts
+export async function notifyPassenger(
+  passengerId: string,
+  driverId: string,
+  bookingId: string,
+  message: string
+) {
+  try {
+    console.log('📤 Sending notification API request:', {
+      passengerId,
+      driverId,
+      bookingId,
+      message,
+    });
+
+    const response = await fetch(`${apiUrl}/passenger/${passengerId}/notify`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        driverId,
+        bookingId,
+        message,
+      }),
+    });
+
+    console.log('🔄 Raw API Response:', response);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const responseData = await response.json();
+    console.log('✅ Parsed API Response:', responseData);
+
+    return responseData;
+  } catch (error) {
+    console.error('❌ Error notifying passenger:', error);
+    throw error;
+  }
+}
+
+
+
+
+
+// services/https.ts
+
+export const getNotifications = async () => {
+  try {
+    const response = await fetch('/api/notifications', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return {
+      notifications: data.notifications || [],
+    };
+  } catch (error) {
+    console.error('❌ Error fetching notifications:', error);
+    throw error;
+  }
+};
+
+

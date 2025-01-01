@@ -42,7 +42,7 @@ const Navbar: React.FC = () => {
           <Link to="/PassengerChat">ChatPassenger</Link>
         </li>
         <li>
-          <Link to="/DriveChat">ChatDriver</Link>
+          <Link to="/DriverChat">ChatDriver</Link>
         </li>
         <li>
           <Link to="/DriverBooking">Dirverbooking</Link>
