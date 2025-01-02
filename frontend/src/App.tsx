@@ -1,7 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/home/home"; // นำเข้าหน้า Home
-import Chat from "./pages/chat/chat"; // นำเข้าหน้า Chat
 import MapComponent from "./pages/startbooking/MapComponent";
 import MapDestination from "./pages/MapDestination/MapDestination";
 import MapRoute from "./pages/MapRoute/MapRoute";
@@ -46,7 +45,6 @@ const App: React.FC = () => {
 
       {/* ของเปิ้ล Booking and Chat */}
         <Route path="/" element={<Home />} /> {/* เส้นทางสำหรับหน้า Home */}
-        <Route path="/chat" element={<Chat />} /> {/* เส้นทางสำหรับหน้า Chat */}
         <Route path="/map" element={<MapComponent />} /> {/* เส้นทางสำหรับ CompletedBooking */}
         <Route path="/mapdestination" element={<MapDestination />} /> {/* เส้นทางสำหรับ CompletedBooking */}
         <Route path="/maproute" element={<MapRoute />} /> {/* เส้นทางสำหรับ CompletedBooking */}

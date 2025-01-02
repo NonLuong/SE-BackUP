@@ -53,6 +53,7 @@ func SetupDatabase() {
 		&entity.Trainers{},
 		&entity.Rooms{},
 		&entity.BankName{},
+		&entity.RoomChat{},
 
 
 	)

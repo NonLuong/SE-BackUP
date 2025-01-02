@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import { sendMessageToBackend, Message } from '../../services/https';
+import { sendMessageToBackend,getMessagesByRoomChatId, Message } from '../../services/https';
 
 // 🛠️ ประเภทของข้อความในแชท
 interface ChatMessage {
@@ -12,7 +12,9 @@ interface ChatMessage {
 // 🚗 DriverChat Component
 const DriverChat: React.FC = () => {
   const location = useLocation();
-  const { bookingId, passengerId ,driverID} = location.state || {};
+  const { bookingId, passengerId, driverID, roomChatId } = location.state || {};
+
+  console.log('🛠️ Location State:', { bookingId, passengerId, driverID, roomChatId });
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState<string>('');
@@ -89,6 +91,33 @@ const DriverChat: React.FC = () => {
     };
   }, [bookingId]);
 
+  // ✅ ดึงข้อความจาก Backend ตาม roomChatId
+  useEffect(() => {
+    const fetchMessages = async () => {
+      if (!roomChatId) {
+        console.warn('❌ Missing RoomChatId for fetching messages');
+        return;
+      }
+
+      try {
+        const fetchedMessages = await getMessagesByRoomChatId(String(roomChatId));
+        console.log('✅ Fetched Messages:', fetchedMessages);
+        setMessages(
+          fetchedMessages.map((msg: any) => ({
+            sender: msg.sender_type,
+            message: msg.content,
+            timestamp: msg.send_time,
+          }))
+        );
+      } catch (error) {
+        console.error('❌ Error fetching messages:', error);
+      }
+    };
+
+    fetchMessages();
+  }, [roomChatId]);
+
+
   // ✅ Scroll ไปยังข้อความล่าสุด
   useEffect(() => {
     if (chatBoxRef.current) {
@@ -131,11 +160,15 @@ const DriverChat: React.FC = () => {
       content: newMessage,
       message_type: 'text',
       read_status: false,
-      send_time: timestamp,
+      send_time: new Date().toISOString(),
       passenger_id: Number(passengerId),
       booking_id: Number(bookingId),
-      driver_id: Number(driverID), // ระบุ Driver ID
+      driver_id: Number(driverID),
+      sender_id: Number(driverID),
+      sender_type: 'Driver',
+      room_id: Number(roomChatId),
     };
+
 
     const res = await sendMessageToBackend(backendMessage);
     if (!res) {

@@ -230,7 +230,8 @@ func ConnectPassengerWebSocket(c *gin.Context) {
 }
 
 // NotifyPassenger - ส่งข้อความแจ้งเตือน พร้อม driverId และ bookingId
-func NotifyPassenger(passengerId string, driverId string, bookingId string, message string) error {
+// NotifyPassenger - ส่งข้อความแจ้งเตือน พร้อม driverId, bookingId และ roomChatId
+func NotifyPassenger(passengerId string, driverId string, bookingId string, roomChatId string, message string) error {
 	passengerMutex.Lock()
 	defer passengerMutex.Unlock()
 
@@ -243,8 +244,8 @@ func NotifyPassenger(passengerId string, driverId string, bookingId string, mess
 
 	// 📦 JSON Payload ที่จะส่งไปยัง WebSocket
 	payload := fmt.Sprintf(
-		`{"type": "notification", "message": "%s", "driverId": "%s", "bookingId": "%s"}`,
-		message, driverId, bookingId,
+		`{"type": "notification", "message": "%s", "driverId": "%s", "bookingId": "%s", "roomChatId": "%s"}`,
+		message, driverId, bookingId, roomChatId,
 	)
 
 	// 📤 ส่งข้อความไปยัง Passenger ผ่าน WebSocket
@@ -261,14 +262,16 @@ func NotifyPassenger(passengerId string, driverId string, bookingId string, mess
 
 
 // NotifyPassengerHandler - ส่งการแจ้งเตือนถึง Passenger
+
 func NotifyPassengerHandler(c *gin.Context) {
 	passengerId := c.Param("passengerId")
 
 	// 📝 JSON Payload
 	var requestBody struct {
-		Message   string `json:"message"`
-		DriverId  string `json:"driverId"`
-		BookingId string `json:"bookingId"`
+		Message    string `json:"message"`
+		DriverId   string `json:"driverId"`
+		BookingId  string `json:"bookingId"`
+		RoomChatId string `json:"roomChatId"` // ✅ เพิ่ม roomChatId
 	}
 
 	// 📥 ตรวจสอบ JSON Payload
@@ -283,22 +286,22 @@ func NotifyPassengerHandler(c *gin.Context) {
 	}
 
 	// ✅ ตรวจสอบฟิลด์ที่จำเป็น
-	if requestBody.DriverId == "" || requestBody.BookingId == "" || requestBody.Message == "" {
-		log.Println("❌ Missing required fields: driverId, bookingId, or message")
+	if requestBody.DriverId == "" || requestBody.BookingId == "" || requestBody.Message == "" || requestBody.RoomChatId == "" {
+		log.Println("❌ Missing required fields: driverId, bookingId, message, or roomChatId")
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
-			"message": "Missing required fields: driverId, bookingId, or message",
+			"message": "Missing required fields: driverId, bookingId, message, or roomChatId",
 		})
 		return
 	}
 
 	log.Printf(
-		"🛠️ Sending notification to Passenger %s | DriverId: %s | BookingId: %s | Message: %s\n",
-		passengerId, requestBody.DriverId, requestBody.BookingId, requestBody.Message,
+		"🛠️ Sending notification to Passenger %s | DriverId: %s | BookingId: %s | RoomChatId: %s | Message: %s\n",
+		passengerId, requestBody.DriverId, requestBody.BookingId, requestBody.RoomChatId, requestBody.Message,
 	)
 
 	// 🚀 ส่งการแจ้งเตือน
-	if err := NotifyPassenger(passengerId, requestBody.DriverId, requestBody.BookingId, requestBody.Message); err != nil {
+	if err := NotifyPassenger(passengerId, requestBody.DriverId, requestBody.BookingId, requestBody.RoomChatId, requestBody.Message); err != nil {
 		log.Printf("❌ Failed to notify passenger %s: %v\n", passengerId, err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"success": false,
@@ -311,6 +314,6 @@ func NotifyPassengerHandler(c *gin.Context) {
 	// ✅ ส่ง Response กลับไปยัง Frontend
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"message": fmt.Sprintf("Message sent to passenger %s with driverId %s and bookingId %s", passengerId, requestBody.DriverId, requestBody.BookingId),
+		"message": fmt.Sprintf("Message sent to passenger %s with driverId %s, bookingId %s, and roomChatId %s", passengerId, requestBody.DriverId, requestBody.BookingId, requestBody.RoomChatId),
 	})
 }

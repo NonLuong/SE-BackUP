@@ -27,4 +27,6 @@ type Passenger struct {
 	//  ความสัมพันธ์กับตาราง Role
 	RoleID uint `gorm:"not null"`
 	Role   Roles `gorm:"foreignKey:RoleID" valid:"-"` // ปิดการ Validate Nested Struct
+
+	RoomChats   []RoomChat `gorm:"foreignKey:PassengerID" json:"room_chats"`
 }

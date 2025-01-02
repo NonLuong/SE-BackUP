@@ -1,24 +1,28 @@
 package entity
 
-import "gorm.io/gorm"
+import (
+	"time"
+	"gorm.io/gorm"
+)
 
 type Message struct {
 	gorm.Model  
-    MessageID   int      `gorm:"primaryKey" json:"message_id"`
-    Content     string   `json:"content"`
-    MessageType string   `json:"message_type"`
-    ReadStatus  bool     `json:"read_status"`
-    SendTime    string   `json:"send_time"`
+	Content     string   `json:"content"`
+	MessageType string   `json:"message_type"`
+	ReadStatus  bool     `json:"read_status"`
+	SendTime    time.Time `json:"send_time"`
+	SenderID    uint      `json:"sender_id"`
+	SenderType  string    `json:"sender_type"`
 
-    PassengerID uint      `json:"passenger_id"`
-    Passenger   Passenger `gorm:"foreignKey:PassengerID" json:"passenger"` // ความสัมพันธ์ belongsTo
+	RoomID      uint      `json:"room_id"`
+	RoomChat    RoomChat  `gorm:"foreignKey:RoomID;constraint:OnDelete:CASCADE" json:"room_chat"`
 
-    BookingID   uint      `json:"booking_id"`
-    Booking     Booking  `gorm:"foreignKey:BookingID" json:"booking"` // ความสัมพันธ์ belongsTo
-	
-	DriverID    uint    `json:"driver_id"`    // เชื่อมกับ Driver
-	Driver      Driver `gorm:"foreignKey:DriverID" json:"driver"` // ความสัมพันธ์ belongsTo
+	PassengerID uint      `json:"passenger_id"`
+	Passenger   Passenger `gorm:"foreignKey:PassengerID;constraint:OnDelete:SET NULL" json:"passenger"`
 
-	
+	BookingID   uint      `json:"booking_id"`
+	Booking     Booking   `gorm:"foreignKey:BookingID;constraint:OnDelete:SET NULL" json:"booking"`
+
+	DriverID    uint      `json:"driver_id"`
+	Driver      Driver    `gorm:"foreignKey:DriverID;constraint:OnDelete:SET NULL" json:"driver"`
 }
-

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // เพิ่ม useNavigate
+import { useNavigate } from 'react-router-dom';
 import { getBookingById, acceptBooking, notifyPassenger } from '../../services/https';
+import { createRoomChat } from '../../services/https/Roomchat/roomchat';
 
 // 🛠️ กำหนดประเภทข้อมูลสำหรับการจอง
 interface Booking {
@@ -10,16 +11,17 @@ interface Booking {
   bookingStatus: string;
   bookingTime: string;
   passengerId: number;
+  roomChatId: number, // ส่ง roomChatId ไปยัง Backend
 }
 
 // 🚗 DriverBooking Component
 const DriverBooking: React.FC = () => {
   const [booking, setBooking] = useState<Booking | null>(null);
   const [isConnected, setIsConnected] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false); // สำหรับสถานะโหลดข้อมูล
-  const driverID = 5; // แทนด้วย driverID ที่ได้จากระบบ Authentication
+  const [loading, setLoading] = useState<boolean>(false);
+  const driverID = 5; // จำลอง driverID (สมมติได้จาก Authentication)
 
-  const navigate = useNavigate(); // สำหรับเปลี่ยนหน้า
+  const navigate = useNavigate();
 
   useEffect(() => {
     let socket: WebSocket;
@@ -37,10 +39,8 @@ const DriverBooking: React.FC = () => {
         try {
           const data = JSON.parse(event.data);
           if (data.type === 'new_booking' && data.bookingId) {
-            setLoading(true); // เริ่มสถานะโหลด
+            setLoading(true);
             const bookingDetails = await getBookingById(String(data.bookingId));
-            console.log('🔍 Booking Details from API:', bookingDetails);
-
             setBooking({
               bookingId: bookingDetails.id || bookingDetails.ID || 'Unknown',
               startLocation: bookingDetails.beginning || 'Unknown',
@@ -50,6 +50,7 @@ const DriverBooking: React.FC = () => {
                 ? new Date(bookingDetails.start_time).toLocaleString()
                 : 'Unknown',
               passengerId: bookingDetails.passenger_id,
+              roomChatId: bookingDetails.room_chat_id, 
             });
             setLoading(false);
           }
@@ -62,7 +63,7 @@ const DriverBooking: React.FC = () => {
       socket.onclose = () => {
         console.log('🔌 WebSocket disconnected, attempting to reconnect...');
         setIsConnected(false);
-        setTimeout(connectWebSocket, 5000); // ลองเชื่อมต่อใหม่หลัง 5 วินาที
+        setTimeout(connectWebSocket, 5000);
       };
 
       socket.onerror = (error) => {
@@ -77,44 +78,77 @@ const DriverBooking: React.FC = () => {
     };
   }, []);
 
+  // ✅ ฟังก์ชัน Accept Booking
   const handleAcceptBooking = async () => {
     if (!booking || !booking.bookingId || !booking.passengerId) {
       console.error('❌ Booking ID or Passenger ID is missing');
       alert('❌ Booking ID or Passenger ID is missing');
       return;
     }
-  
+
     try {
       setLoading(true);
-  
-      // 🚗 1. ยืนยันการรับงาน
+
+      // 🚗 ยืนยันการรับงาน
       const response = await acceptBooking(String(booking.bookingId));
-  
+
       if (response.success) {
         alert('✅ Booking accepted successfully');
-  
-        // 🐞 Debug ค่าที่จะส่งไปยัง `notifyPassenger`
-        console.log('📲 Sending notification with the following details:');
-        console.log('🆔 Passenger ID:', booking.passengerId);
+
+        // ✅ สร้าง RoomChat
+        console.log('📦 Creating RoomChat with the following details:');
+        console.log('🆔 Booking ID:', booking.bookingId);
+        console.log('🧑 Passenger ID:', booking.passengerId);
         console.log('🚗 Driver ID:', driverID);
-        console.log('📝 Message:', `Your driver has accepted the booking (ID: ${booking.bookingId}) and is on the way!`);
-        console.log('📦 Booking ID:', booking.bookingId);
-  
-        // 📲 2. แจ้งผู้โดยสารผ่าน API
-        const notifyResponse = await notifyPassenger(
-          String(booking.passengerId),
-          String(driverID),
-          String(booking.bookingId),
-          `Your driver has accepted the booking (ID: ${booking.bookingId}) and is on the way!`
-        );
-  
-        console.log('✅ Notification API Response:', notifyResponse);
-  
-        if (notifyResponse.success) {
-          alert('✅ Notification sent to passenger!');
+
+        const roomChatResponse = await createRoomChat({
+          booking_id: Number(booking.bookingId),
+          passenger_id: Number(booking.passengerId),
+          driver_id: Number(driverID),
+        });
+
+        console.log('🆔 RoomChat Response:', roomChatResponse); // เพิ่มบรรทัดนี้
+
+
+        if (roomChatResponse && roomChatResponse.id) {
+          console.log('✅ RoomChat created with ID:', roomChatResponse.id);
+          alert('✅ RoomChat created successfully');
+        
+          // ✅ อัปเดต State ของ booking ด้วย roomChatId
+          setBooking((prev) => ({
+            ...prev!,
+            roomChatId: roomChatResponse.id,
+          }));
+        
+          console.log('🛠️ Updated Booking State:', booking); // ตรวจสอบ State อัปเดตหรือไม่
+        
+          // 📲 แจ้ง Passenger
+          const notifyResponse = await notifyPassenger(
+            String(booking.passengerId),
+            String(driverID),
+            String(booking.bookingId),
+            `Your driver has accepted the booking (ID: ${booking.bookingId}) and a chat room is ready!`,
+            String(roomChatResponse.id)
+          );
+        
+          console.log('📤 NotifyPassenger API Request Payload:', {
+            passengerId: String(booking.passengerId),
+            driverId: String(driverID),
+            bookingId: String(booking.bookingId),
+            message: `Your driver has accepted the booking (ID: ${booking.bookingId}) and a chat room is ready!`,
+            roomChatId: String(roomChatResponse.id),
+          });
+        
+          if (notifyResponse.success) {
+            alert('✅ Passenger notified successfully');
+          } else {
+            console.error('❌ Failed to notify passenger');
+          }
         } else {
-          console.error('❌ Failed to notify passenger via API');
+          console.error('❌ Failed to create RoomChat');
+          alert('❌ Failed to create RoomChat');
         }
+        
       } else {
         alert(`❌ Failed to accept booking: ${response.message}`);
       }
@@ -125,21 +159,29 @@ const DriverBooking: React.FC = () => {
       setLoading(false);
     }
   };
-  
+
   const handleChatWithPassenger = () => {
-    if (!booking?.bookingId || !booking?.passengerId) {
-      alert('❌ Missing Booking ID or Passenger ID');
+    console.log('🛠️ Navigating to Chat with:');
+    console.log('📦 Booking ID:', booking?.bookingId);
+    console.log('🧑 Passenger ID:', booking?.passengerId);
+    console.log('💬 Room Chat ID:', booking?.roomChatId);
+  
+    if (!booking?.bookingId || !booking?.passengerId || !booking?.roomChatId) {
+      console.error('❌ Missing Booking ID, Passenger ID, or RoomChat ID');
+      alert('❌ Missing Booking ID, Passenger ID, or RoomChat ID');
       return;
     }
-
+  
     navigate('/DriverChat', {
       state: {
         bookingId: booking.bookingId,
         passengerId: booking.passengerId,
-        driverID
+        driverID,
+        roomChatId: booking.roomChatId,
       },
     });
   };
+  
 
   return (
     <div style={styles.container}>

@@ -2,6 +2,7 @@
 
 const apiUrl = "http://localhost:8080";
 
+// แก้ไขประเภท Message
 export interface Message {
   content: string;
   message_type: string;
@@ -10,7 +11,11 @@ export interface Message {
   passenger_id: number;
   booking_id: number;
   driver_id: number;
+  sender_id: number; // เพิ่ม SenderID
+  sender_type: string; // เพิ่ม SenderType
+  room_id: number;
 }
+
 
 export async function sendMessageToBackend(data: Message) {
   const requestOptions = {
@@ -35,26 +40,32 @@ export async function sendMessageToBackend(data: Message) {
     return false;
   }
 }
-// ฟังก์ชันสำหรับดึงข้อความจาก Backend
-export const fetchMessagesFromBackend = async (bookingID: number) => {
-    const requestOptions = {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    };
-  
-    let res = await fetch(`${apiUrl}/messages/booking/${bookingID}`, requestOptions)
-      .then((res) => {
-        if (res.status === 200) {
-          return res.json(); // คืนข้อความที่ดึงสำเร็จ
-        } else {
-          console.error("Failed to fetch messages from backend.");
-          return null;
-        }
-      });
-  
-    return res;
-  };
+export interface Message {
+  message_id: number;
+  content: string;
+  message_type: string;
+  read_status: boolean;
+  send_time: string;
+  passenger_id: number;
+  driver_id: number;
+  booking_id: number;
+}
 
+// ✅ ดึงข้อความทั้งหมดตาม Booking ID
+export const fetchMessagesByBookingID = async (bookingId: number): Promise<Message[]> => {
+  try {
+    const response = await fetch(`${apiUrl}/message/${bookingId}`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch messages, status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.data || [];
+  } catch (error) {
+    console.error('❌ Error fetching messages:', error);
+    return [];
+  }
+};
 
  
 
@@ -91,7 +102,6 @@ export const fetchMessagesFromBackend = async (bookingID: number) => {
     }
 };
 
-  
 
 export const sendDataDestinationToBackend = async (destinationLocation: { lat: number; lng: number; name: string }) => {
   try {
@@ -241,50 +251,42 @@ export const acceptBooking = async (bookingId: string) => {
 
 
 // services/https.ts
-export async function notifyPassenger(
+export const notifyPassenger = async (
   passengerId: string,
   driverId: string,
   bookingId: string,
-  message: string
-) {
-  try {
-    console.log('📤 Sending notification API request:', {
-      passengerId,
+  message: string,
+  roomChatId: string
+) => {
+  console.log('📤 Sending Notification with Payload:', {
+    passengerId,
+    driverId,
+    bookingId,
+    message,
+    roomChatId,
+  });
+
+  const response = await fetch(`${apiUrl}/passenger/${passengerId}/notify`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json', // ✅ ตรวจสอบว่า Content-Type ถูกตั้งค่าเป็น JSON
+    },
+    body: JSON.stringify({
       driverId,
       bookingId,
       message,
-    });
+      roomChatId,
+    }),
+  });
 
-    const response = await fetch(`${apiUrl}/passenger/${passengerId}/notify`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        driverId,
-        bookingId,
-        message,
-      }),
-    });
+  console.log('📥 Raw API Response:', response);
 
-    console.log('🔄 Raw API Response:', response);
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const responseData = await response.json();
-    console.log('✅ Parsed API Response:', responseData);
-
-    return responseData;
-  } catch (error) {
-    console.error('❌ Error notifying passenger:', error);
-    throw error;
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
   }
-}
 
-
-
+  return await response.json();
+};
 
 
 // services/https.ts
@@ -311,5 +313,32 @@ export const getNotifications = async () => {
     throw error;
   }
 };
+
+// Get Chat Messages by RoomChatId
+export const getMessagesByRoomChatId = async (roomChatId: string) => {
+  console.log('📥 Fetching messages by Room Chat ID:', roomChatId);
+
+  try {
+    const response = await fetch(`${apiUrl}/message/chat/${roomChatId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      console.error('❌ Error fetching chat messages:', data.error);
+      throw new Error(data.error || 'Failed to fetch chat messages');
+    }
+
+    console.log('✅ Chat messages fetched successfully:', data);
+    return data.messages;
+  } catch (error) {
+    console.error('❌ Failed to fetch chat messages:', error);
+    return [];
+  }
+};
+
 
 

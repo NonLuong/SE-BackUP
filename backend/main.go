@@ -65,7 +65,11 @@ func registerRoutes(r *gin.Engine) {
 	r.GET("/ws/chat/driver/:bookingID", controller.DriverChatWebSocketHandler)
 	// chat
 	r.POST("/message", controller.CreateMessage)
-	r.GET("/messages/booking/:bookingID", controller.GetMessagesByBookingID) // ดึงข้อความตาม Booking ID
+	r.GET("/message/:bookingID", controller.GetMessagesByBookingID) // ดึงข้อความตาม Booking ID
+	r.GET("/message/chat/:roomChatId", controller.GetChatMessages)
+
+	//roomchat
+	r.POST("/roomchat", controller.CreateRoomChat)
 
 
 

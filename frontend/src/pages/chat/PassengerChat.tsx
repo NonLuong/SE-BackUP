@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import { sendMessageToBackend, Message } from '../../services/https';
+import { sendMessageToBackend, getMessagesByRoomChatId, Message } from '../../services/https';
 
 // 🛠️ ประเภทของข้อความในแชท
 interface ChatMessage {
@@ -9,10 +9,18 @@ interface ChatMessage {
   timestamp: string;
 }
 
+
+
 // 🛎️ PassengerChat Component
 const PassengerChat: React.FC = () => {
   const location = useLocation();
-  const { bookingId, driverId, passengerId } = location.state || {};
+  const { bookingId, driverId, passengerId, roomChatId, } = location.state || {};
+
+  console.log('🛠️ Booking ID:', bookingId);
+  console.log('🛠️ Driver ID:', driverId);
+  console.log('🛠️ Passenger ID:', passengerId);
+  console.log('🛠️ RoomChat ID:', roomChatId);
+
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState<string>('');
@@ -88,6 +96,33 @@ const PassengerChat: React.FC = () => {
     };
   }, [bookingId]);
 
+  // ✅ ดึงข้อความจาก Backend ตาม roomChatId
+  useEffect(() => {
+    const fetchMessages = async () => {
+      if (!roomChatId) {
+        console.warn('❌ Missing RoomChatId for fetching messages');
+        return;
+      }
+
+      try {
+        const fetchedMessages = await getMessagesByRoomChatId(String(roomChatId));
+        console.log('✅ Fetched Messages:', fetchedMessages);
+        setMessages(
+          fetchedMessages.map((msg: any) => ({
+            sender: msg.sender_type,
+            message: msg.content,
+            timestamp: msg.send_time,
+          }))
+        );
+      } catch (error) {
+        console.error('❌ Error fetching messages:', error);
+      }
+    };
+
+    fetchMessages();
+  }, [roomChatId]);
+
+
   // ✅ Scroll ไปยังข้อความล่าสุด
   useEffect(() => {
     if (chatBoxRef.current) {
@@ -101,9 +136,9 @@ const PassengerChat: React.FC = () => {
       console.warn('❌ Cannot send empty message');
       return;
     }
-
+  
     const timestamp = new Date().toLocaleTimeString();
-
+  
     // ✉️ ส่งข้อความไปยัง WebSocket
     const messagePayload = {
       type: 'chat_message',
@@ -111,10 +146,11 @@ const PassengerChat: React.FC = () => {
       sender: 'Passenger',
       message: newMessage,
       timestamp,
+      roomChatId, // ✅ เพิ่ม chatroomId ไปยัง WebSocket payload
     };
-
+  
     console.log('📤 Sending message:', messagePayload);
-
+  
     socketRef.current.send(JSON.stringify(messagePayload));
     setMessages((prev) => [
       ...prev,
@@ -124,26 +160,31 @@ const PassengerChat: React.FC = () => {
         timestamp,
       },
     ]);
-
+  
     // 💾 ส่งข้อความไปยัง Backend
     const backendMessage: Message = {
       content: newMessage,
       message_type: 'text',
       read_status: false,
-      send_time: timestamp,
-      passenger_id: Number(passengerId), // ไม่ใช้ passengerId
+      send_time: new Date().toISOString(),
+      passenger_id: Number(passengerId),
       booking_id: Number(bookingId),
-      driver_id: Number(driverId), // ส่ง driverId ไปยัง backend
+      driver_id: Number(driverId),
+      sender_id: Number(passengerId),
+      sender_type: 'Passenger',
+      room_id: Number(roomChatId), // ✅ เพิ่ม chatroomId สำหรับ Backend
     };
-
+  
+    console.log('📤 Sending message to backend:', backendMessage);
+  
     const res = await sendMessageToBackend(backendMessage);
     if (!res) {
       console.error('❌ Failed to save message to backend');
     }
-
+  
     setNewMessage('');
   };
-
+  
   return (
     <div style={styles.container}>
       <h1>💬 Chat with Driver</h1>

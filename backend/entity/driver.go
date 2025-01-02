@@ -49,6 +49,8 @@ type Driver struct {
 	//  ความสัมพันธ์กับตาราง Message
 	Messages []Message `gorm:"foreignKey:DriverID" json:"messages" valid:"-"`
 
+	RoomChats   []RoomChat `gorm:"foreignKey:PassengerID" json:"room_chats"`
+
 	//  ความสัมพันธ์กับตาราง Role
 	RoleID uint  `gorm:"not null"`
 	Role   Roles `gorm:"foreignKey:RoleID" valid:"-"`

@@ -6,9 +6,12 @@ const PassengerNotification: React.FC = () => {
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const [bookingId, setBookingId] = useState<string | null>(null);
   const [driverId, setDriverId] = useState<string | null>(null);
+  const [roomChatId, setRoomChatId] = useState<string | null>(null);
+
   const passengerId = '1';
   const navigate = useNavigate();
 
+  // ✅ เชื่อมต่อ WebSocket
   useEffect(() => {
     let socket: WebSocket | null = null;
     let reconnectInterval: ReturnType<typeof setTimeout>;
@@ -31,16 +34,23 @@ const PassengerNotification: React.FC = () => {
 
             if (data.bookingId) {
               console.log('✅ BookingId Received:', data.bookingId);
-              setBookingId(data.bookingId); // เก็บค่า bookingId
+              setBookingId(data.bookingId);
             } else {
               console.warn('⚠️ No bookingId in the notification');
             }
 
             if (data.driverId) {
               console.log('✅ DriverId Received:', data.driverId);
-              setDriverId(data.driverId); // เก็บค่า driverId
+              setDriverId(data.driverId);
             } else {
               console.warn('⚠️ No driverId in the notification');
+            }
+
+            if (data.roomChatId) {
+              console.log('✅ RoomChatId Received:', data.roomChatId);
+              setRoomChatId(data.roomChatId);
+            } else {
+              console.warn('⚠️ No roomChatId in the notification');
             }
           } else {
             console.warn('⚠️ Unknown message type:', data.type);
@@ -76,18 +86,25 @@ const PassengerNotification: React.FC = () => {
     };
   }, [passengerId]);
 
+  // ✅ ไปยังหน้าแชท
   const handleGoToChat = () => {
-    if (bookingId && driverId) {
-      console.log('🔗 Navigating to Chat with bookingId:', bookingId, 'and driverId:', driverId);
+    console.log('🔗 Attempting to navigate with the following details:');
+    console.log('🆔 BookingId:', bookingId);
+    console.log('🚗 DriverId:', driverId);
+    console.log('💬 RoomChatId:', roomChatId);
+    if (bookingId && driverId && roomChatId) {
+      console.log('🔗 Navigating to Chat with:', { bookingId, driverId, roomChatId });
       navigate('/PassengerChat', {
         state: {
           bookingId,
           passengerId,
           driverId,
+          roomChatId,
         },
       });
     } else {
-      alert('❌ No bookingId or driverId available to start chat');
+      console.error('❌ Missing bookingId, driverId, or roomChatId:', { bookingId, driverId, roomChatId });
+      alert('❌ Missing bookingId, driverId, or roomChatId to start chat');
     }
   };
 
@@ -107,11 +124,11 @@ const PassengerNotification: React.FC = () => {
       <button
         style={{
           ...styles.chatButton,
-          backgroundColor: bookingId && driverId ? '#007bff' : '#ccc',
-          cursor: bookingId && driverId ? 'pointer' : 'not-allowed',
+          backgroundColor: bookingId && driverId && roomChatId ? '#007bff' : '#ccc',
+          cursor: bookingId && driverId && roomChatId ? 'pointer' : 'not-allowed',
         }}
         onClick={handleGoToChat}
-        disabled={!bookingId || !driverId}
+        disabled={!bookingId || !driverId || !roomChatId}
       >
         💬 Go to Chat
       </button>
