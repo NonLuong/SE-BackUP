@@ -6,13 +6,13 @@ import "./Navbar.css";
 const Navbar: React.FC = () => {
   return (
     <nav className="navbar">
-       <div className="logo">
+      <div className="logo">
         <Link to="/">
-          <img 
-            src="logo2.jpeg" 
-            alt="Cabana Logo" 
-            className="logo-image" 
-        
+          <img
+            src="logo2.jpeg"
+            alt="Cabana Logo"
+            className="logo-image"
+
             style={{
               width: "60px", // ความกว้างของวงกลม
               height: "60px", // ความสูงของวงกลม (เท่ากับความกว้าง)
@@ -20,12 +20,12 @@ const Navbar: React.FC = () => {
               objectFit: "cover", // ทำให้ภาพเต็มพื้นที่
               padding: "5px",
               marginLeft: "10px",
-             
-              
-            }} 
-            
+
+
+            }}
+
           />
-         
+
         </Link>
       </div>
       <ul className="nav-links">
@@ -36,7 +36,7 @@ const Navbar: React.FC = () => {
           <Link to="/RideHistory">Rides</Link>
         </li>
         <li>
-          <Link to="/Promotion">Promotion</Link>
+          <Link to="/Promotion/view">Promotion</Link>
         </li>
         <li>
           <Link to="/PassengerChat">ChatPassenger</Link>
@@ -47,30 +47,30 @@ const Navbar: React.FC = () => {
         <li>
           <Link to="/DriverBooking">Dirverbooking</Link>
         </li>
-        
+
         <li>
-         
-            <div
-              className="profile-icon-wrapper"
+
+          <div
+            className="profile-icon-wrapper"
+            style={{
+              width: "40px",
+              height: "40px",
+              borderRadius: "50%",
+              backgroundColor: "#464468", // พื้นหลังสีฟ้า
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+            }}
+          >
+            <UserOutlined
               style={{
-                width: "40px",
-                height: "40px",
-                borderRadius: "50%",
-                backgroundColor: "#464468", // พื้นหลังสีฟ้า
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
+                fontSize: "20px",
+                color: "#fff", // สีของไอคอน
               }}
-            >
-              <UserOutlined
-                style={{
-                  fontSize: "20px",
-                  color: "#fff", // สีของไอคอน
-                }}
-              />
-            </div>
-         
+            />
+          </div>
+
         </li>
       </ul>
     </nav>
