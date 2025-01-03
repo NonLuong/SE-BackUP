@@ -104,6 +104,7 @@ func registerRoutes(r *gin.Engine) {
 	r.POST("/withdrawal/money", controller.CreateWithdrawal)
 	r.GET("/withdrawal/statement", controller.GetAllWithdrawal)  // เพิ่มเส้นทางดึงข้อมูลการถอนเงินทั้งหมด
 	r.GET("/withdrawal/statement/:id", controller.GetWithdrawal) // เพิ่มเส้นทางดึงข้อมูลการถอนเงินตาม ID
+	r.GET("/commission", controller.GetAllCommission)
 	// Withdrawal Chrilden
 	r.GET("/bankname", controller.GetAllBankName)
 
