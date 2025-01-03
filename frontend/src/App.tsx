@@ -10,7 +10,7 @@ import PassengerChat from "./pages/chat/PassengerChat";
 import PromotionCreate from "./pages/promotion/create";
 import PromotionEdit from "./pages/promotion/edit";
 import Promotion from "./pages/promotion";
-import View from "./pages/promotion/promotionview/promotion";
+import PromotionView from "./pages/promotion/view";
 import HomePayment from "./pages/payment/paid/Home";
 import Review from "./pages/review/review";
 import Payment from "./pages/payment/payment";
@@ -61,7 +61,7 @@ const App: React.FC = () => {
         <Route path="/promotion" element={< Promotion />} />
         <Route path="/promotion/create" element={< PromotionCreate />} />
         <Route path="/promotion/edit/:id" element={< PromotionEdit />} />
-        <Route path="/promotion/view" element={< View />} />
+        <Route path="/promotion/view" element={< PromotionView />} />
         
 
         {/*ฟร้อง Payment and Review */}

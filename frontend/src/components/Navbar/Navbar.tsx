@@ -36,13 +36,13 @@ const Navbar: React.FC = () => {
           <Link to="/RideHistory">Rides</Link>
         </li>
         <li>
-          <Link to="/Promotion">Promotion</Link>
+          <Link to="/Promotion/view">Promotion</Link>
         </li>
         <li>
           <Link to="/PassengerChat">ChatPassenger</Link>
         </li>
         <li>
-          <Link to="/DriverChat">ChatDriver</Link>
+          <Link to="/DriveChat">ChatDriver</Link>
         </li>
         <li>
           <Link to="/DriverBooking">Dirverbooking</Link>

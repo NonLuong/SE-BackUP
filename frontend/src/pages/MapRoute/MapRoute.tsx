@@ -96,8 +96,8 @@ const MapRoute: React.FC = () => {
         
         setTimeout(() => {
           const bookingId = result.data.data.ID;
-          console.log("booking: ",bookingId);
-          navigate('/paid', {
+          console.log("bookingid ส่งไปให้หน้า paid : ",bookingId);
+          navigate('/paid/:id', {
             state: {
               total_price: bookingData.total_price,
               bookingId,
@@ -119,7 +119,7 @@ const MapRoute: React.FC = () => {
 
   return (
     <div className="MapRoute">
-      <LoadScript googleMapsApiKey="api key" onLoad={handleApiLoaded}>
+      <LoadScript googleMapsApiKey="AIzaSyBCporibkdPqd7yC4nJEWMZI2toIlY23jM" onLoad={handleApiLoaded}>
         <GoogleMap
           mapContainerStyle={{ width: '100%', height: '400px' }}
           zoom={12}
