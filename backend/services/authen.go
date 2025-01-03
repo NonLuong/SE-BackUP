@@ -1,71 +1,72 @@
 package services
 
 import (
-    "errors"
-    "time"
+	"errors"
+	"fmt"
+	"time"
 
-    jwt "github.com/golang-jwt/jwt/v4"
+	"github.com/golang-jwt/jwt/v4"
 )
 
 // JwtWrapper wraps the signing key and the issuer
 type JwtWrapper struct {
-    SecretKey       string // คีย์ลับที่ใช้ในการเข้ารหัสและตรวจสอบ
-    Issuer          string // ผู้ให้บริการที่ออกโทเค็น
-    ExpirationHours int64  // ระยะเวลาหมดอายุของโทเค็น (ชั่วโมง)
+	SecretKey       string
+	Issuer          string
+	ExpirationHours int64
 }
 
-// JwtClaim adds username as a claim to the token
+// JwtClaim adds email and role as claims to the token
 type JwtClaim struct {
-    Username string // ชื่อผู้ใช้
-    jwt.StandardClaims
+	Email    string `json:"email"`
+	Role     string `json:"role"`
+	jwt.RegisteredClaims // เปลี่ยนเป็น RegisteredClaims
 }
 
-// GenerateToken generates a jwt token
-func (j *JwtWrapper) GenerateToken(username string) (signedToken string, err error) {
-    claims := &JwtClaim{
-        Username: username, // ใช้ชื่อผู้ใช้แทนที่ Email
-        StandardClaims: jwt.StandardClaims{
-            ExpiresAt: time.Now().Local().Add(time.Hour * time.Duration(j.ExpirationHours)).Unix(),
-            Issuer:    j.Issuer,
-        },
-    }
+// GenerateToken generates a JWT token with email and role
+func (j *JwtWrapper) GenerateToken(email string, role string) (signedToken string, err error) {
+	claims := &JwtClaim{
+		Email: email,
+		Role:  role,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * time.Duration(j.ExpirationHours))),
+			Issuer:    j.Issuer,
+		},
+	}
 
-    token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	signedToken, err = token.SignedString([]byte(j.SecretKey))
+	if err != nil {
+		return "", err
+	}
 
-    signedToken, err = token.SignedString([]byte(j.SecretKey))
-    if err != nil {
-        return "", err // ส่งค่ากลับเป็น error ถ้ามีปัญหาในการสร้างโทเค็น
-    }
-
-    return signedToken, nil
+	return signedToken, nil
 }
 
-// ValidateToken validates the jwt token
+// ValidateToken validates the JWT token and extracts the claims
 func (j *JwtWrapper) ValidateToken(signedToken string) (claims *JwtClaim, err error) {
-    token, err := jwt.ParseWithClaims(
-        signedToken,
-        &JwtClaim{},
-        func(token *jwt.Token) (interface{}, error) {
-            // ตรวจสอบว่าประเภทของการเข้ารหัสตรงกับที่คาดหวัง
-            if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-                return nil, errors.New("unexpected signing method")
-            }
-            return []byte(j.SecretKey), nil // คืนค่าคีย์ลับสำหรับการตรวจสอบ
-        },
-    )
+	token, err := jwt.ParseWithClaims(
+		signedToken,
+		&JwtClaim{},
+		func(token *jwt.Token) (interface{}, error) {
+			return []byte(j.SecretKey), nil
+		},
+	)
 
-    if err != nil {
-        return nil, err // ส่งค่ากลับเป็น error ถ้ามีปัญหาในการตรวจสอบโทเค็น
-    }
+	if err != nil {
+		return nil, err
+	}
 
-    claims, ok := token.Claims.(*JwtClaim)
-    if !ok {
-        return nil, errors.New("Couldn't parse claims") // ข้อผิดพลาดในการแปลง claims
-    }
+	claims, ok := token.Claims.(*JwtClaim)
+	if !ok {
+		return nil, errors.New("could not parse claims") // แก้ข้อความ error
+	}
 
-    if claims.ExpiresAt < time.Now().Local().Unix() {
-        return nil, errors.New("JWT is expired") // ตรวจสอบว่าโทเค็นหมดอายุหรือไม่
-    }
+	if claims.ExpiresAt.Time.Before(time.Now()) {
+		return nil, errors.New("JWT is expired")
+	}
 
-    return claims, nil // คืนค่า claims ที่ถูกต้อง
+	// เพิ่ม Log เพื่อ Debug ค่า Claims
+	fmt.Printf("JWT Claims: Email=%s, Role=%s\n", claims.Email, claims.Role)
+
+	return claims, nil
 }
