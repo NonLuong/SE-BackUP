@@ -20,7 +20,7 @@ import dayjs from "dayjs";
 import ImgCrop from "antd-img-crop"; // Image crop for upload
 import { useSpring, animated } from "@react-spring/web"; // Animation
 import { FileImageOutlined } from "@ant-design/icons";
-
+import AdminSidebar from "../../../components/sider/AdminSidebar";
 
 function PromotionEdit() {
   const navigate = useNavigate();
@@ -134,6 +134,15 @@ function PromotionEdit() {
   });
 
   return (
+    <div
+      style={{
+        display: 'flex',
+        height: '100vh',
+        width: '100%',
+        backgroundColor: 'rgba(233, 213, 255, 0.4)',
+      }}
+    >
+      <AdminSidebar /> {/* Include AdminSidebar */}
     <div style={{ display: "flex", justifyContent: "center", padding: "20px", backgroundColor: "rgba(233, 213, 255, 0.4)" }}>
       {contextHolder}
       <animated.div style={cardAnimation}>
@@ -315,10 +324,12 @@ function PromotionEdit() {
               </Row>
             </Form>
           </animated.div>
-        </Card>
-      </animated.div>
+          </Card>
+        </animated.div>
+      </div>
     </div>
   );
-}
+};
+
 
 export default PromotionEdit;
