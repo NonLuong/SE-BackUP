@@ -19,7 +19,7 @@ const DriverBooking: React.FC = () => {
   const [booking, setBooking] = useState<Booking | null>(null);
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const driverID = 5; // จำลอง driverID (สมมติได้จาก Authentication)
+  const driverID = 6; // จำลอง driverID (สมมติได้จาก Authentication)
 
   const navigate = useNavigate();
 
