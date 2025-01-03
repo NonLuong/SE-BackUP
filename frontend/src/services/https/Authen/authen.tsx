@@ -1,13 +1,24 @@
 import axios from "axios";
+import { SignInInterface } from "../../../interfaces/Signln";
 
-const apiUrl = "http://localhost:8080/api";
+const apiUrl = "http://localhost:8080";
 
-function getAuthHeaders() {
-  const token = localStorage.getItem("authToken");
-  return {
+const Authorization = localStorage.getItem("token");
+const Bearer = localStorage.getItem("token_type");
+
+const apiClient = axios.create({
+  baseURL: apiUrl,
+  headers: {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
-  };
+    Authorization: `${Bearer} ${Authorization}`,
+  },
+});
+
+async function SignIn(data: SignInInterface) {
+  return await apiClient
+    .post("/signin", data)
+    .then((res) => res)
+    .catch((e) => e.response);
 }
 
 async function authenticateUser(email: string, password: string) {
@@ -49,4 +60,4 @@ async function authenticateUser(email: string, password: string) {
   return null;
 }
 
-export { authenticateUser, getAuthHeaders };
+export { authenticateUser,SignIn};

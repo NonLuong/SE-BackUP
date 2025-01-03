@@ -5,7 +5,6 @@ go 1.22.5
 require (
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2
 	github.com/gin-gonic/gin v1.9.1
-	github.com/golang-jwt/jwt/v4 v4.5.1
 	github.com/gorilla/websocket v1.5.3
 	github.com/onsi/gomega v1.36.2
 	golang.org/x/crypto v0.31.0
@@ -13,17 +12,7 @@ require (
 	gorm.io/gorm v1.25.12
 )
 
-require (
-	github.com/andybalholm/brotli v1.1.0 // indirect
-	github.com/google/uuid v1.6.0 // indirect
-	github.com/klauspost/compress v1.17.9 // indirect
-	github.com/mattn/go-colorable v0.1.13 // indirect
-	github.com/mattn/go-runewidth v0.0.16 // indirect
-	github.com/rivo/uniseg v0.2.0 // indirect
-	github.com/valyala/bytebufferpool v1.0.0 // indirect
-	github.com/valyala/fasthttp v1.51.0 // indirect
-	github.com/valyala/tcplisten v1.0.0 // indirect
-)
+require github.com/golang-jwt/jwt/v4 v4.5.1
 
 require (
 	github.com/bytedance/sonic v1.12.4 // indirect
@@ -34,9 +23,8 @@ require (
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/go-playground/validator/v10 v10.17.0 // indirect
+	github.com/go-playground/validator/v10 v10.17.0
 	github.com/goccy/go-json v0.10.3 // indirect
-	github.com/gofiber/fiber/v2 v2.52.6
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect

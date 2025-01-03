@@ -40,11 +40,11 @@ const App: React.FC = () => {
     <Router>
       <Routes>
 
-      <Route path="/login" element={<Login />} />
+      <Route path="/" element={<Login />} />
 
 
       {/* ของเปิ้ล Booking and Chat */}
-        <Route path="/" element={<Home />} /> {/* เส้นทางสำหรับหน้า Home */}
+        <Route path="/home" element={<Home />} /> {/* เส้นทางสำหรับหน้า Home */}
         <Route path="/map" element={<MapComponent />} /> {/* เส้นทางสำหรับ CompletedBooking */}
         <Route path="/mapdestination" element={<MapDestination />} /> {/* เส้นทางสำหรับ CompletedBooking */}
         <Route path="/maproute" element={<MapRoute />} /> {/* เส้นทางสำหรับ CompletedBooking */}

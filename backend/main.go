@@ -62,6 +62,10 @@ func main() {
 
 // ฟังก์ชันสำหรับ Register Routes
 func registerRoutes(r *gin.Engine) {
+		// Route สำหรับ Auth
+	r.POST("/signup", controller.SignUp)
+	r.POST("/signin", controller.SignIn)
+
 	// Booking
 	r.POST("/startlocation", controller.CreateStartLocation)
 	r.POST("/destination", controller.CreateDestination)
@@ -124,8 +128,6 @@ func registerRoutes(r *gin.Engine) {
 	r.GET("/gender", controller.GetAllGender)      // ดึงข้อมูล Gender ทั้งหมด
 	r.GET("/gender/:id", controller.GetGenderByID) // ดึงข้อมูล Gender ตาม ID
 
-	r.POST("/auth/signin", controller.UniversalSignin)
-
 	// Position Routes
 	r.GET("/positions", controller.ListPositions)
 	r.GET("/position/:id", controller.GetPosition)
@@ -168,7 +170,7 @@ func registerRoutes(r *gin.Engine) {
 func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// อนุญาตเฉพาะ Origin ที่ต้องการ
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE, PATCH")

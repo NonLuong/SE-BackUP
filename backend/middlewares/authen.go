@@ -1,52 +1,66 @@
 package middlewares
 
 import (
-    "net/http"
-    "strings"
-    "project-se/services"
-    "project-se/config" // นำเข้า config เพื่อใช้คีย์ลับ
-    "github.com/gin-gonic/gin"
-    "fmt" // นำเข้า fmt สำหรับการพิมพ์ข้อความ
+	"fmt"
+	"net/http"
+	"strings"
+
+	"project-se/services"
+
+	"github.com/gin-gonic/gin"
 )
 
-// Authorizes เป็นฟังก์ชันตรวจเช็คโทเค็น
-func Authorizes() gin.HandlerFunc {
-    return func(c *gin.Context) {
-        // รับค่า Authorization header
-        clientToken := c.Request.Header.Get("Authorization")
+// Authorizes เป็นฟังก์ชันตรวจเช็ค Authorization พร้อม Role
+func Authorizes(allowedRoles ...string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		clientToken := c.Request.Header.Get("Authorization")
+		if clientToken == "" {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "No Authorization header provided"})
+			return
+		}
 
-        // ตรวจสอบว่ามี Authorization header หรือไม่
-        if clientToken == "" {
-            fmt.Println("No Authorization header provided") // พิมพ์ข้อความเมื่อไม่มี header
-            c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "No Authorization header provided"})
-            return
-        }
+		// แยก Bearer ออกจาก Token
+		extractedToken := strings.Split(clientToken, "Bearer ")
+		if len(extractedToken) != 2 {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Incorrect Format of Authorization Token"})
+			return
+		}
 
-        // ตรวจสอบรูปแบบของโทเค็น
-        if !strings.HasPrefix(clientToken, "Bearer ") {
-            fmt.Println("Incorrect Format of Authorization Token") // พิมพ์ข้อความเมื่อรูปแบบไม่ถูกต้อง
-            c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Incorrect Format of Authorization Token"})
-            return
-        }
+		clientToken = strings.TrimSpace(extractedToken[1])
 
-        // ตัด "Bearer " ออกเพื่อให้เหลือแค่โทเค็น
-        clientToken = strings.TrimSpace(strings.TrimPrefix(clientToken, "Bearer "))
+		// Validate Token
+		jwtWrapper := services.JwtWrapper{
+			SecretKey: "SvNQpBN8y3qlVrsGAYYWoJJk56LtzFHx",
+			Issuer:    "AuthService",
+		}
 
-        // สร้าง JwtWrapper สำหรับการตรวจสอบโทเค็น
-        jwtWrapper := services.JwtWrapper{
-            SecretKey: config.GetSecretKey(), // ใช้คีย์จาก config
-            Issuer:    "AuthService",
-        }
+		claims, err := jwtWrapper.ValidateToken(clientToken)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+			return
+		}
 
-        // ตรวจสอบความถูกต้องของโทเค็น
-        _, err := jwtWrapper.ValidateToken(clientToken)
-        if err != nil {
-            fmt.Printf("Token validation error: %v\n", err) // พิมพ์ข้อผิดพลาดที่เกิดขึ้น
-            c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
-            return
-        }
+		// Debug Log สำหรับตรวจสอบค่า Claims
+		fmt.Printf("Debug - Email: %s, Role: %s\n",claims.Email, claims.Role)
 
-        fmt.Println("Token validated successfully") // พิมพ์เมื่อโทเค็นถูกต้อง
-        c.Next() // ถ้าโทเค็นถูกต้องให้ดำเนินการต่อไป
-    }
+		// ตรวจสอบ Role
+		isAllowed := false
+		for _, role := range allowedRoles {
+			if claims.Role == role {
+				isAllowed = true
+				break
+			}
+		}
+
+		if !isAllowed {
+			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "Access Denied"})
+			return
+		}
+
+		// เซ็ตข้อมูลลง Context
+		c.Set("email", claims.Email)
+		c.Set("role", claims.Role)
+
+		c.Next()
+	}
 }
