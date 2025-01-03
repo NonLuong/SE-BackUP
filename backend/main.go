@@ -2,21 +2,38 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	
+
 	"log"
 	"net/http"
+	"project-se/adapter/db"
+	"project-se/adapter/handler"
+
 	"project-se/config"
 	"project-se/controller"
-	
+	"project-se/repository"
+	"project-se/router"
 )
-
 
 func main() {
 	const PORT = "8080" // ระบุพอร์ตที่ต้องการรัน
 
 	// เชื่อมต่อฐานข้อมูล
+	db.ConnectDB()
 	config.ConnectionDB()
 	config.SetupDatabase()
+
+	// Repositories และ Handlers
+	bookingRepo := repository.NewBookingRepository(db.DB)
+	bookingHandler := handler.NewBookingHandler(bookingRepo)
+
+	promotionRepo := repository.NewPromotionRepository(db.DB)
+	promotionHandler := handler.NewPromotionHandler(promotionRepo)
+
+	paymentRepo := repository.NewPaymentRepository(db.DB)
+	paymentHandler := handler.NewPaymentHandler(paymentRepo)
+
+	reviewRepo := repository.NewReviewRepository(db.DB)
+	reviewHandler := handler.NewReviewHandler(reviewRepo)
 
 	// สร้าง Gin Router
 	r := gin.Default()
@@ -32,11 +49,15 @@ func main() {
 	// Routes ที่เกี่ยวข้องกับ Booking และ Messages
 	registerRoutes(r)
 
+	// Router
+	router.SetupRoutes(r, bookingHandler, promotionHandler, paymentHandler, reviewHandler)
+
 	// เริ่มต้น Goroutine สำหรับ handleMessages()
 	//go handleMessages()
 
 	log.Printf("Server running on localhost:%s", PORT)
 	r.Run("localhost:" + PORT)
+
 }
 
 // ฟังก์ชันสำหรับ Register Routes
@@ -48,16 +69,14 @@ func registerRoutes(r *gin.Engine) {
 	r.GET("/bookings", controller.GetAllBookings)
 	r.GET("/bookings/:id", controller.GetBookingByID)
 	r.POST("/bookings/:id/accept", controller.AcceptBooking)
-	
+
 	// WebSocket
 	//socketdriverbooking
 	r.GET("/ws/driver/:driverID", controller.DriverWebSocketHandler)
 
-
 	// API ส่งข้อความไปยัง Passenger
 	r.POST("/passenger/:passengerId/notify", controller.NotifyPassengerHandler)
 	r.GET("/ws/passenger/:passengerId", controller.ConnectPassengerWebSocket)
-	
 
 	// Route สำหรับ WebSocket Passenger chat
 	r.GET("/ws/chat/passenger/:bookingID", controller.PassengerWebSocketHandler)
@@ -71,8 +90,6 @@ func registerRoutes(r *gin.Engine) {
 	//roomchat
 	r.POST("/roomchat", controller.CreateRoomChat)
 
-
-
 	// Promotion Routes
 	r.GET("/promotions", controller.GetAllPromotion)
 	r.GET("/promotion/:id", controller.GetPromotion)
@@ -84,11 +101,11 @@ func registerRoutes(r *gin.Engine) {
 	r.GET("/statuspromotion", controller.GetAllStatus)
 
 	// Withdrawal Routes
-	r.POST("/withdrawal/money", controller.CreateWithdrawal) 
-	r.GET("/withdrawal/statement", controller.GetAllWithdrawal) // เพิ่มเส้นทางดึงข้อมูลการถอนเงินทั้งหมด
-	r.GET("/withdrawal/statement/:id", controller.GetWithdrawal)  // เพิ่มเส้นทางดึงข้อมูลการถอนเงินตาม ID
+	r.POST("/withdrawal/money", controller.CreateWithdrawal)
+	r.GET("/withdrawal/statement", controller.GetAllWithdrawal)  // เพิ่มเส้นทางดึงข้อมูลการถอนเงินทั้งหมด
+	r.GET("/withdrawal/statement/:id", controller.GetWithdrawal) // เพิ่มเส้นทางดึงข้อมูลการถอนเงินตาม ID
 	// Withdrawal Chrilden
-	r.GET("/bankname", controller.GetAllBankName) 
+	r.GET("/bankname", controller.GetAllBankName)
 
 	// Routes สำหรับ Room
 	r.GET("/rooms", controller.GetRooms)          // ดึงข้อมูลห้องทั้งหมด
@@ -145,7 +162,6 @@ func registerRoutes(r *gin.Engine) {
 	r.GET("/vehicletype/:id", controller.GetVehicleType)
 	r.GET("/vehicletypes", controller.ListVehicleTypes)
 
-	
 }
 
 // CORSMiddleware จัดการ Cross-Origin Resource Sharing (CORS)
@@ -167,4 +183,3 @@ func CORSMiddleware() gin.HandlerFunc {
 		c.Next()
 	}
 }
-

@@ -64,10 +64,8 @@ const App: React.FC = () => {
         <Route path="/promotion/view" element={< View />} />
         
 
-
-
         {/*ฟร้อง Payment and Review */}
-        <Route path="/paid" element={< HomePayment />} /> 
+        <Route path="/paid/:id" element={< HomePayment />} /> 
         <Route path="/review" element={<Review/>} /> 
         <Route path="/payment" element={<Payment/>} /> 
         <Route path="/review/history" element={<History/>} /> 
