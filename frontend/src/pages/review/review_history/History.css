@@ -1,7 +1,7 @@
 /* Global Styling */
 .gg {
   margin: 0;
-  font-family: "Poppins", sans-serif;
+  font-family: "Comic Sans MS", sans-serif; /* Font family */
   color: #4a4a4a; /* Neutral text color */
   display: flex;
   justify-content: center;
@@ -122,12 +122,12 @@
   border-radius: 12px; /* Rounded corners */
   padding: 10px 20px;
   display: inline-block;
-  font-family: "Poppins", sans-serif;
+  font-family: "Comic Sans MS", sans-serif; /* Font family */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
   text-align: center;
 }
 .h2 {
-  font-family: "Poppins", sans-serif;
+  font-family: "Comic Sans MS", sans-serif; /* Font family */
 }
 
 /* Table Styling */
@@ -135,7 +135,7 @@
   width: 100%;
   border-collapse: collapse;
   margin: 20px 0;
-  font-family: "Poppins", sans-serif;
+  font-family: "Comic Sans MS", sans-serif; /* Font family */
   border-radius: 12px; /* Rounded corners for the entire table */
   overflow: hidden; /* Ensures rounded corners apply to the table content */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Slight shadow for the table */
@@ -146,7 +146,7 @@
   text-align: center;
   padding: 12px 15px; /* Slightly larger padding for better spacing */
   border: 1px solid #e0e0e0;
-  font-family: "Poppins", sans-serif;
+  font-family: "Comic Sans MS", sans-serif; /* Font family */
 }
 
 .review-table th {
@@ -155,7 +155,7 @@
   font-weight: 700;
   text-transform: uppercase; /* Optional: for a more formal look */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for the header */
-  font-family: "Poppins", sans-serif;
+  font-family: "Comic Sans MS", sans-serif; /* Font family */
 }
 
 .review-table td {
@@ -245,6 +245,7 @@
   text-transform: uppercase;
   transition: all 0.3s ease;
   box-shadow: 0 4px 6px rgba(106, 99, 255, 0.3);
+  font-family: "Comic Sans MS", sans-serif; /* Font family */
 }
 
 /* Edit Button */
@@ -346,3 +347,23 @@
   justify-content: space-between;
   gap: 10px;
 }
+/* Back to Home Button Styles */
+.back-to-home-button {
+  background: linear-gradient(135deg, #6a63ff, #8e82ff); /* Purple gradient */
+  color: #fff; /* White text */
+  border: none; /* Remove default border */
+  padding: 10px 20px; /* Adjust padding for better size */
+  border-radius: 8px; /* Rounded corners */
+  font-family: "Comic Sans MS", sans-serif; /* Font family */
+  font-size: 16px; /* Adjust font size */
+  cursor: pointer; /* Change cursor to pointer on hover */
+  transition: all 0.3s ease; /* Smooth transitions */
+  box-shadow: 0px 4px 6px rgba(143, 124, 235, 0.5); /* Soft shadow */
+}
+
+.back-to-home-button:hover {
+  background: linear-gradient(135deg, #5843d8, #7c74e8); /* Darker gradient on hover */
+  transform: scale(1.05); /* Slight enlargement */
+  box-shadow: 0px 6px 10px rgba(143, 124, 235, 0.7); /* Enhanced shadow */
+}
+

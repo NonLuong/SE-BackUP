@@ -9,7 +9,7 @@
   position: relative; /* For stacking child elements */
   overflow: hidden; /* Prevent video overflow */
   box-sizing: border-box; /* Include padding in dimensions */
-  font-family: "Poppins", sans-serif;
+  font-family: "Comic Sans MS", sans-serif; /* Font family */
 }
 
 /* Gradient Overlay */
@@ -116,7 +116,7 @@
   text-transform: uppercase;
   letter-spacing: 2px;
   position: relative;
-  font-family: "Poppins", sans-serif;
+  font-family: "Comic Sans MS", sans-serif; /* Font family */
 }
 
 .edit-title::after {
@@ -214,6 +214,7 @@
   ); /* Gradient for modern look */
   color: #fff;
   box-shadow: 0px 4px 6px rgba(143, 124, 235, 0.5);
+  font-family: "Comic Sans MS", sans-serif; /* Font family */
 }
 
 .back-btn:hover {
@@ -238,6 +239,7 @@
   background: linear-gradient(135deg, #f5f5f5, #ebebeb); /* Subtle gradient */
   color: #8f7ceb;
   box-shadow: 0px 4px 6px rgba(200, 200, 200, 0.5);
+  font-family: "Comic Sans MS", sans-serif; /* Font family */
 }
 
 .save-btx:hover {
@@ -278,6 +280,7 @@
   position: relative;
   transition: all 0.3s ease;
   text-align: left;
+  font-family: "Comic Sans MS", sans-serif; /* Font family */
 }
 
 .error-message:hover {

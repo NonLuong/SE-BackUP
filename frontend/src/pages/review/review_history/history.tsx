@@ -61,6 +61,11 @@ const History: React.FC = () => {
     }
   };
 
+
+  const handleBackToHome = (event: MouseEvent<HTMLButtonElement>): void => {
+    navigate("/home");
+  };
+
   return (
     <div className="gg">
       <video autoPlay muted loop className="background-video">
@@ -119,6 +124,13 @@ const History: React.FC = () => {
               ))}
             </tbody>
           </table>
+           {/* Back to Home Button */}
+        <button
+          className="back-to-home-button"
+          onClick={handleBackToHome}
+        >
+          Back to Home
+        </button>
         </div>
 
         <Outlet />
