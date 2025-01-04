@@ -12,7 +12,7 @@ const HomePayment: React.FC = () => {
   const navigate = useNavigate();
   const [hovered, setHovered] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
-
+//Good luck
   // Detail Payment Booking & Promotion Discount
   const [bookingNew, setBookingNew] = useState<BookingInterface | null>(null);
   const [isLoadBooking, setisLoadBooking] = useState(true);
