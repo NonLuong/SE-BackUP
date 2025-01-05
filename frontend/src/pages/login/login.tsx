@@ -40,10 +40,10 @@ const Login: React.FC = () => {
         switch (res.data.role) {
           case "Admin":
           case "Employee":
-            navigate("/employees");
+            navigate("/dashboard");
             break;
           case "Driver":
-            navigate("/drivers");
+            navigate("/dashboards");
             break;
           case "Passenger":
             navigate("/home");

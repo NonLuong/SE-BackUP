@@ -36,6 +36,11 @@ import DriverBooking from "./pages/DriverBooking/DriverBooking";
 import PassengerNotification from "./pages/passengerbooking/passengerbooking";
 import DriverChat from "./pages/chat/DriverChat";
 import PassengerChatPage from "./pages/chat/PassengerChat";
+import AddDriver from "./pages/Driver/Adddriver";
+import Passenger from "./pages/Passenger/Passenger";
+import Dashboard from "./pages/Dashboard/Admindashboard";
+import Dashboards from "./pages/Dashboard/Driverdashboard";
+
 //import PassengerNotification from "./pages/PassengerNotification/PassengerNotification";
 
 const App: React.FC = () => {
@@ -86,7 +91,12 @@ const App: React.FC = () => {
         <Route path="/trainer/edit/:id" element={<EditTrainer />} />
 
         {/*น้ำฝน Admin*/}
+        <Route path="/Dashboard" element={<Dashboard />} />
+        <Route path="/Dashboards" element={<Dashboards />} />
+
         <Route path="/Drivers" element={<Driver />} />
+        <Route path="/Driver/create" element={<AddDriver />} />
+        <Route path="/Members" element={<Passenger />} />
         <Route path="/Employees" element={<Employee />} />
         <Route path="/Employee/create" element={<AddEmployee />} />
         <Route path="/Employee/edit" element={<EditEmployee />} />

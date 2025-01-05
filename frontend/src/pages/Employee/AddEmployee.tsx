@@ -93,7 +93,7 @@ const AddEmployee: React.FC = () => {
         type: "success",
         content: "บันทึกข้อมูลพนักงานสำเร็จ!",
       });
-      //setTimeout(() => navigate("/employees"), 2000);
+      setTimeout(() => navigate("/employees"), 2000);
     } catch (error: any) {
       console.error("Error in handleFinish:", error.message || error);
 
