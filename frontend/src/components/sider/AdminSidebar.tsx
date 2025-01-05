@@ -101,7 +101,7 @@ const items: MenuItem[] = [
   getItem("PROMOTION", "/promotion", <GiftOutlined />),
   getItem("TRAINER", "/trainer", <UserOutlined />),
   getItem("ROOM", "/rooms", <AiOutlineHome />),
-  getItem("Log out", "/login", <LogoutOutlined />),
+  getItem("Log out", "/", <LogoutOutlined />),
 ];
 
 const AdminSidebar: React.FC = () => {
