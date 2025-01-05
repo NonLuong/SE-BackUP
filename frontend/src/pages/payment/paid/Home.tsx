@@ -160,7 +160,8 @@ const HomePayment: React.FC = () => {
   };
 
   const handleCancel = () => {
-    // console.log("Cancelled");
+    alert("Cancel Payment"); // Show the alert
+    navigate("/home");
   };
   const handleEdit = () => {
     setIsEditMode(true);
