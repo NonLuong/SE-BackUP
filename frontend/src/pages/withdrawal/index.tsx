@@ -1,32 +1,34 @@
-import { useState, useEffect } from "react";
-import { Button, Col, Row, Divider, message, Card } from "antd";
-import { LoginOutlined, HistoryOutlined, CreditCardOutlined } from "@ant-design/icons"; // เพิ่ม WalletOutlined และ HistoryOutlined
+import React, { useEffect, useState } from "react";
+import AdminSidebar from "../../components/sider/DriverSidebar";
+import { Button, Card, Row, Col, Modal, Divider } from "antd";
+import { listDrivers, deleteDriver } from "../../services/https/Driver/index";
 import { useNavigate } from "react-router-dom";
-import logo from "../../assets/wallet.png"; // อย่าลืมนำเข้าภาพโลโก้
-import { getDriver } from "../../services/https/Driver/index"; // Import the correct function
+import logo from "../../assets/wallet.png";
+import { LoginOutlined, HistoryOutlined, CreditCardOutlined } from "@ant-design/icons";
+import './DriverWithWithdrawal.css'; // Import external CSS file
 
-function Withdrawal() {
-  const navigate = useNavigate();
-  const [driverIncome, setDriverIncome] = useState<number>(0);
-  const [messageApi, contextHolder] = message.useMessage();
+const DriverWithWithdrawal: React.FC = () => {
+  const [drivers, setDrivers] = useState<any[]>([]);
+  const [totalDrivers, setTotalDrivers] = useState(0);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [currentDriverId, setCurrentDriverId] = useState<number | null>(null);
   const myId = localStorage.getItem("id");
 
-  // Use the imported getDriver function directly
-  const fetchDriverData = async () => {
-    if (!myId) return;
-    let res = await getDriver(myId); // Call the correct function with lowercase 'g'
-    if (res.status === 200) {
-      setDriverIncome(res.data.income);
-    } else {
-      messageApi.open({
-        type: "error",
-        content: res.data.error,
-      });
-    }
-  };
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetchDriverData();
+    const fetchDrivers = async () => {
+      try {
+        const data = await listDrivers();
+        const filteredDrivers = data.filter((drv: any) => drv.ID === parseInt(myId || "0"));
+        setDrivers(filteredDrivers);
+        setTotalDrivers(filteredDrivers.length);
+      } catch (error) {
+        console.error("Error fetching drivers:", error);
+      }
+    };
+
+    fetchDrivers();
   }, [myId]);
 
   const handleWithdrawClick = () => {
@@ -37,81 +39,92 @@ function Withdrawal() {
     navigate("/withdrawal/statement");
   };
 
-  return (
-    <>
-      {contextHolder}
-      <Divider />
-      <Row>
-        <Col xs={24} sm={24} md={24} lg={24} xl={24}>
-          <Card
-            style={{
-              background: "rgba(255, 255, 255, 0.8)",
-              backdropFilter: "blur(10px)",
-              textAlign: "center",
-              padding: "30px",
-              boxShadow: "rgba(0, 0, 0, 0.1) 0px 4px 12px",
-              borderRadius: "10px",
-              border: "none",
-              maxWidth: "2000px",
-              margin: "0 auto",
-            }}
-          >
-            <h2 style={{ fontSize: "50px", fontWeight: "bold", color: "#9333EA", marginBottom: "20px" }}>
-              กระเป๋าเงิน
-            </h2>
-            <img
-              src={logo}
-              alt="logo"
-              style={{
-                width: "200px",
-                marginBottom: "20px",
-                borderRadius: "8px",
-              }}
-            />
-            <h3 style={{ fontSize: "20px", color: "#47456C", marginBottom: "20px" }}>
-              ยอดเงินของคุณ
-            </h3>
-            <h3 style={{ fontSize: "25px", color: "#47456C" }}>
-              <CreditCardOutlined style={{ color: "#7F6BCC", marginRight: "8px" }} />
-              {driverIncome} บาท
-            </h3>
-            <Button
-              type="primary"
-              size="large"
-              style={{
-                backgroundColor: "#7F6BCC",
-                borderColor: "#7F6BCC",
-                marginTop: "20px",
-                width: "100%",
-                borderRadius: "5px",
-                fontSize: "18px",
-              }}
-              onClick={handleWithdrawClick}
-              icon={<LoginOutlined />}
-            >
-              เบิกเงิน
-            </Button>
-            <Button
-              type="default"
-              size="large"
-              style={{
-                backgroundColor: "#DAD6EF",
-                borderColor: "#DAD6EF",
-                marginTop: "10px",
-                width: "100%",
-                borderRadius: "5px",
-                fontSize: "18px",
-              }}
-              onClick={handleHistoryClick}
-              icon={<HistoryOutlined />}
-            >
-              ประวัติการทำรายการ
-            </Button>
-          </Card>
-        </Col>
-      </Row>
-    </>
-  );
-}
+  const handleDelete = async (id: number) => {
+    try {
+      const success = await deleteDriver(id);
+      if (success) {
+        setDrivers(drivers.filter((drv: any) => drv.ID !== id));
+        setTotalDrivers(totalDrivers - 1);
+      }
+    } catch (error) {
+      console.error("Error deleting driver:", error);
+    } finally {
+      setIsModalVisible(false);
+    }
+  };
 
-export default Withdrawal;
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    setCurrentDriverId(null);
+  };
+
+  return (
+    <div className="container">
+      <AdminSidebar />
+      <div className="content">
+        <Row gutter={[32, 32]} style={{ marginBottom: "30px" }}></Row>
+
+        {/* Delete Confirmation Modal */}
+        <Modal
+          title="Confirm Delete"
+          open={isModalVisible}
+          onOk={() => handleDelete(currentDriverId!)}
+          onCancel={handleCancel}
+          okText="Confirm"
+          cancelText="Cancel"
+        >
+          <p>Are you sure you want to delete?</p>
+        </Modal>
+
+        <Divider />
+
+        {/* กระเป๋าเงิน Section (Moved outside Card) */}
+        <Row>
+          <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+            <h2 className="wallet-header">กระเป๋าเงิน</h2>
+          </Col>
+        </Row>
+
+        {/* Withdrawal Section */}
+        <Row>
+          <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+          <Card className="wallet-card">
+  <img
+    src={logo}
+    alt="logo"
+    className="wallet-logo"
+  />
+  <h3 className="balance-text" style={{ fontSize: '25px', fontWeight: 'bold', color: '#47456C' }}>ยอดเงินของคุณ</h3>
+  <h3 className="balance-amount" style={{ fontSize: '40px', fontWeight: 'bold', color: '#47456C' }}>
+  <CreditCardOutlined className="balance-icon" style={{ fontSize: '40px', marginRight: '10px', color: '#7F6BCC' }} />
+  {drivers.length > 0 ? drivers[0].Income : 0} บาท
+</h3>
+
+  <Button
+    type="primary"
+    size="large"
+    className="withdraw-button"
+    onClick={handleWithdrawClick}
+    icon={<LoginOutlined />}
+  >
+    เบิกเงิน
+  </Button>
+  <Button
+    type="default"
+    size="large"
+    className="history-button"
+    onClick={handleHistoryClick}
+    icon={<HistoryOutlined />}
+  >
+    ประวัติการทำรายการ
+  </Button>
+</Card>
+
+          </Col>
+        </Row>
+      </div>
+    </div>
+  );
+};
+
+export default DriverWithWithdrawal;
