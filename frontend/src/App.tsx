@@ -36,18 +36,13 @@ import DriverBooking from "./pages/DriverBooking/DriverBooking";
 import PassengerNotification from "./pages/passengerbooking/passengerbooking";
 import DriverChat from "./pages/chat/DriverChat";
 import PassengerChatPage from "./pages/chat/PassengerChat";
-<<<<<<< HEAD
 import PassengerProfile from "./pages/historypassenger/passengerprofile";
 import PreBooking from "./pages/prebooking/prebooking";
-import EditProfile from "./pages/editprofile/editprofile";
-=======
 import AddDriver from "./pages/Driver/Adddriver";
 import Passenger from "./pages/Passenger/Passenger";
 import Dashboard from "./pages/Dashboard/Admindashboard";
 import Dashboards from "./pages/Dashboard/Driverdashboard";
 
-//import PassengerNotification from "./pages/PassengerNotification/PassengerNotification";
->>>>>>> d383394524c0907168efc1373dc187d43b2baf91
 
 const App: React.FC = () => {
   return (
@@ -69,7 +64,7 @@ const App: React.FC = () => {
         <Route path="/DriverChat" element={<DriverChat />} />
         <Route path="/PassengerChat" element={<PassengerChatPage />} />
         <Route path="/Passengerprofile" element={<PassengerProfile />} />
-        <Route path="/Editprofile " element={<EditProfile  />} />
+        
         <Route path="/Prebooking" element={<PreBooking />} />
 
 
