@@ -8,31 +8,11 @@ import {
 } from "../interfaces/PaidInterface";
 import { apiRequest } from "../../../config/ApiService";
 import { Endpoint } from "../../../config/Endpoint";
-import { useLocation } from "react-router-dom";
-
 const HomePayment: React.FC = () => {
   const navigate = useNavigate();
   const [hovered, setHovered] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
-
-  const location = useLocation();
-  const { state } = location;
-  const { bookingId } = state || {};
-
-  // ตรวจสอบว่าค่า bookingId ถูกส่งมาหรือไม่
-  useEffect(() => {
-    console.log("Booking ID received in HomePayment:", bookingId);
-    if (!bookingId) {
-      console.error("No booking ID found in state.");
-    }
-  }, [bookingId]);
-
-  // แสดงข้อความหากไม่มี bookingId
-  if (!bookingId) {
-    return <div>No booking ID found in state. Please try again.</div>;
-  }
-
-
+//Good luck
   // Detail Payment Booking & Promotion Discount
   const [bookingNew, setBookingNew] = useState<BookingInterface | null>(null);
   const [isLoadBooking, setisLoadBooking] = useState(true);
@@ -43,28 +23,22 @@ const HomePayment: React.FC = () => {
   const [discountType, setDiscountType] = useState("");
   const [deliveryCost, setDeliveryCost] = useState("FREE");
 
-  /*const { id } = useParams<{ id: string }>();
+  const { id } = useParams<{ id: string }>();
   if (!id) {
     alert("No booking ID found in URL");
     return;
-  }*/
+  }
 
   function formatPrice(value: number): string {
     return value.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }
 
   const loadBooking = async () => {
-    if (!bookingId) {
-      console.error("No booking ID provided.");
-      return;
-    }
-  
     try {
-      const data = await fetchBooking(bookingId); // ใช้ bookingId ตรง ๆ จาก state
-      console.log("Fetched booking data:", data);
-  
+      const bookingId = parseInt(id, 10);
+      const data = await fetchBooking(bookingId);
+
       setBookingNew(data);
-  
       if (data.distance > 5) {
         let sumDeliveryCost: number = (data.distance - 5) * 10;
         setDeliveryCost(`${sumDeliveryCost.toFixed(2)}`);
@@ -78,13 +52,10 @@ const HomePayment: React.FC = () => {
       setisLoadBooking(false);
     }
   };
-  
 
   useEffect(() => {
-    console.log("Calling loadBooking with bookingId:", bookingId);
     loadBooking();
-  }, [bookingId]);
-  
+  }, []);
 
   const handleCheckPomotion = async () => {
     if (!promotionCode.trim() || promotionCode === "None") {
@@ -189,7 +160,8 @@ const HomePayment: React.FC = () => {
   };
 
   const handleCancel = () => {
-    // console.log("Cancelled");
+    alert("Cancel Payment"); // Show the alert
+    navigate("/home");
   };
   const handleEdit = () => {
     setIsEditMode(true);

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import AdminSidebar from "../../components/sider/AdminSidebar";
+import { useNavigate } from "react-router-dom";
 import { Table, Button, Space, Card, Row, Col, Statistic, Modal } from "antd";
 import {
   EditOutlined,
@@ -12,12 +13,13 @@ import Female from "../../assets/female.png";
 import { listDrivers, deleteDriver } from "../../services/https/Driver/index";
 
 const Driver: React.FC = () => {
-  const [drivers, setDrivers] = useState<any[]>([]);
+  const [drivers, setDrivers] = useState([]);
   const [totalDrivers, setTotalDrivers] = useState(0);
   const [maleCount, setMaleCount] = useState(0);
   const [femaleCount, setFemaleCount] = useState(0);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [currentDriverId, setCurrentDriverId] = useState<number | null>(null);
+  const navigate = useNavigate(); // ใช้สำหรับนำทาง
 
   useEffect(() => {
     const fetchDrivers = async () => {
@@ -27,8 +29,8 @@ const Driver: React.FC = () => {
         setDrivers(data);
         setTotalDrivers(data.length);
 
-        const maleDrivers = data.filter((drv: any) => drv.Gender?.gender === "Male");
-        const femaleDrivers = data.filter((drv: any) => drv.Gender?.gender === "Female");
+        const maleDrivers = data.filter((drv: any) => drv.Gender && drv.Gender.gender === "Male");
+        const femaleDrivers = data.filter((drv: any) => drv.Gender && drv.Gender.gender === "Female");
 
         setMaleCount(maleDrivers.length);
         setFemaleCount(femaleDrivers.length);
@@ -102,7 +104,7 @@ const Driver: React.FC = () => {
     },
     {
       title: "เพศ",
-      dataIndex: ["Gender", "gender"], // อัปเดต dataIndex ให้ถูกต้อง
+      dataIndex: ["Gender", "gender"],
       key: "gender",
     },
     {
@@ -235,6 +237,7 @@ const Driver: React.FC = () => {
             type="primary"
             style={{ backgroundColor: "#4CAF50", borderColor: "#4CAF50" }}
             icon={<PlusOutlined />}
+            onClick={() => navigate("/driver/create")} // นำไปยังหน้าสร้าง
           >
             Add Driver
           </Button>

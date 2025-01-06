@@ -1,313 +1,233 @@
-// import { useState, useEffect } from "react";
-// import { Button, Col, Row, Divider, Form, Input, Card, message, DatePicker, InputNumber, Select } from "antd";
-// import { PlusOutlined, CopyrightOutlined } from "@ant-design/icons";
-// import { WithdrawalInterface } from "../../../interfaces/IWithdrawal";
-// import { UsersInterface } from "../../../interfaces/IUser";
-// import { GetUsers } from "../../../services/https"; // ใช้ GetUsers ดึงข้อมูลผู้ใช้
-// import { CreateWithdrawal } from "../../../services/https/Driver/withdrawalAPI";
-// import { useNavigate, Link } from "react-router-dom";
-// import { useSpring, animated } from "@react-spring/web";
-// import dayjs from 'dayjs';
-// import logo from "../../../assets/with.png"; // อย่าลืมนำเข้าภาพโลโก้
+import { useState, useEffect } from "react";
+import { Button, Col, Row, Divider, Card, message, Input, Select, InputNumber, } from "antd";
+import { CreditCardOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
+import { CreateWithdrawal } from "../../../services/https/Driver/withdrawalAPI";
+import { Link } from "react-router-dom";
+import AdminSidebar from "../../../components/sider/DriverSidebar";
+import { WithdrawalInterface } from "../../../interfaces/IWithdrawal";
+import { listDrivers } from "../../../services/https/Driver/index";
+import logo from "../../../assets/money.png";
 
-// function WithdrawalCreate() {
-//   const navigate = useNavigate();
-//   const [messageApi, contextHolder] = message.useMessage();
-//   const [selectedBankName, setSelectedBank] = useState<string>("");
-//   const [form] = Form.useForm();
-//   const [userIncome, setUserIncome] = useState<number>(0); // เก็บยอดเงินของผู้ใช้ที่กำลังใช้งาน
-//   const [userId, setUserId] = useState<number | null>(null); // เก็บ userId ของผู้ใช้ที่กำลังใช้งาน
-//   const [bankname] = useState<any[]>([
-//     { ID: "1", bank_name: "ธนาคารกรุงเทพ" },
-//     { ID: "2", bank_name: "ธนาคารกสิกรไทย" },
-//     { ID: "3", bank_name: "ธนาคารไทยพาณิชย์" },
-//     { ID: "4", bank_name: "ธนาคารกรุงไทย" },
-//     { ID: "5", bank_name: "ธนาคารทหารไทย" },
-//   ]);
+const bankname = [
+    { ID: "1", bank_name: "ธนาคารกรุงเทพ" },
+    { ID: "2", bank_name: "ธนาคารกสิกรไทย" },
+    { ID: "3", bank_name: "ธนาคารไทยพาณิชย์" },
+    { ID: "4", bank_name: "ธนาคารกรุงไทย" },
+    { ID: "5", bank_name: "ธนาคารทหารไทย" },
+];
 
-//   // ดึงข้อมูลผู้ใช้งานปัจจุบัน
-//   const getCurrentUser = async () => {
-//     const myId = localStorage.getItem("id");
-//     let res = await GetUsers(); // ใช้ API ที่คุณมีเพื่อดึงข้อมูลผู้ใช้
-//     if (res.status === 200) {
-//       const currentUser = res.data.filter(
-//         (user: UsersInterface) => user.ID?.toString() === myId
-//       );
-//       if (currentUser.length > 0) {
-//         setUserIncome(currentUser[0].income);
-//         setUserId(currentUser[0].ID); // เก็บ userId ที่กำลังใช้งาน
-//       }
-//     } else {
-//       messageApi.open({
-//         type: "error",
-//         content: res.data.error,
-//       });
-//     }
-//   };
+function WithdrawalCreate() {
+    const navigate = useNavigate();
+    const [messageApi, contextHolder] = message.useMessage();
+    const [drivers, setDrivers] = useState<any[]>([]);
+    const [withdrawalAmount, setWithdrawalAmount] = useState<number>(0);
+    const [withdrawalCommission, setWithdrawalCommission] = useState<number>(0);
+    const [withdrawalNetAmount, setWithdrawalNetAmount] = useState<number>(0);
+    const [withdrawalBankNumber, setWithdrawalBankNumber] = useState<string>("");
+    const [selectedBank, setSelectedBank] = useState<string>("1");
+    const myId = localStorage.getItem("id");
 
-//   useEffect(() => {
-//     getCurrentUser();
-//   }, []);
+    if (!myId || myId === "0") {
+        messageApi.open({
+            type: "error",
+            content: "ไม่พบข้อมูลผู้ใช้ที่กำลังใช้งาน",
+        });
+        return;
+    }
 
-//   // ฟังก์ชันสำหรับส่งข้อมูลการถอนเงิน
-//   const onFinish = async (values: WithdrawalInterface) => {
-//     if (!userId) {
-//       messageApi.open({
-//         type: "error",
-//         content: "ไม่สามารถระบุผู้ใช้ที่กำลังใช้งานได้",
-//       });
-//       return;
-//     }
+    const [currentDriverId, setCurrentDriverId] = useState<number | null>(null);
 
-//     const withdrawalData = {
-//       ...values,
-//       bank_name_id: Number(selectedBankName),
-//       user_id: userId, // เพิ่ม userId ในข้อมูลการถอน
-//     };
+    useEffect(() => {
+        const fetchDrivers = async () => {
+            try {
+                const data = await listDrivers();
+                const filteredDrivers = data.filter((drv: any) => drv.ID === parseInt(myId || "0"));
+                setDrivers(filteredDrivers);
+                if (filteredDrivers.length > 0) {
+                    setCurrentDriverId(filteredDrivers[0].ID);
+                } else {
+                    messageApi.open({
+                        type: "error",
+                        content: "ไม่พบข้อมูลไดรเวอร์ที่ตรงกับข้อมูลผู้ใช้",
+                    });
+                }
+            } catch (error) {
+                console.error("Error fetching drivers:", error);
+            }
+        };
 
-//     let res = await CreateWithdrawal(withdrawalData);
+        fetchDrivers();
+    }, [myId]);
 
-//     if (res.status === 200) {
-//       messageApi.open({
-//         type: "success",
-//         content: res.data.message,
-//       });
-//       setTimeout(() => {
-//         navigate("/withdrawal");
-//       }, 2000);
-//     } else {
-//       messageApi.open({
-//         type: "error",
-//         content: res.data.error,
-//       });
-//     }
-//   };
+    const calculateCommission = (amount: number) => {
+        const commission = Math.floor(amount * 0.30 * 100) / 100; // ปัดเศษลงให้เป็นสองตำแหน่ง
+        const netAmount = Math.floor((amount - commission) * 100) / 100; // ปัดเศษลงให้เป็นสองตำแหน่ง
+        setWithdrawalCommission(commission);
+        setWithdrawalNetAmount(netAmount);
+    };
 
-//   // คำนวณค่าคอมมิชชั่นและยอดสุทธิ
-//   const handleWithdrawalAmountChange = (value: number | null) => {
-//     if (value === null) return;
-//     const commission = value * 0.3;
-//     const netAmount = value - commission;
-//     form.setFieldsValue({
-//       withdrawal_commission: commission,
-//       withdrawal_net_amount: netAmount,
-//     });
-//   };
 
-//   const cardAnimation = useSpring({
-//     opacity: 1,
-//     transform: "translateY(0)",
-//     from: { opacity: 0, transform: "translateY(-50px)" },
-//     config: { tension: 250, friction: 20 },
-//   });
+    const handleWithdrawalAmountChange = (value: number | null) => {
+        if (value !== null) {
+            // ตรวจสอบว่า amount มากกว่าหรือเท่ากับ 100 หรือไม่
+            if (value < 100) {
+                value = 100;
+                messageApi.open({
+                    type: "warning",
+                    content: "จำนวนเงินที่ถอนต้องไม่น้อยกว่า 100 บาท, จะรีเซ็ตเป็น 100 บาท",
+                });
+            }
 
-//   const formAnimation = useSpring({
-//     opacity: 1,
-//     transform: "translateY(0)",
-//     from: { opacity: 0, transform: "translateY(20px)" },
-//     delay: 100,
-//     config: { tension: 200, friction: 30 },
-//   });
+            // ตรวจสอบว่า amount มากกว่าหรือเท่ากับ Income หรือไม่
+            if (value > (drivers.length > 0 ? drivers[0].Income : 0)) {
+                messageApi.open({
+                    type: "error",
+                    content: `จำนวนเงินที่ถอนไม่สามารถเกิน ${drivers.length > 0 ? drivers[0].Income : 0} บาท`,
+                });
+                return;
+            }
 
-//   return (
-//     <div
-//       style={{
-//         display: "flex",
-//         justifyContent: "center",
-//         alignItems: "center",
-//         height: "110vh",
-//         padding: "20px",
-//         backgroundColor: "rgba(233, 255, 255, 0.7)",
-//       }}
-//     >
-//       {contextHolder}
-//       <animated.div style={cardAnimation}>
-//         <Card
-//           style={{
-//             width: "100%",
-//             maxWidth: "2000px",
-//             backgroundColor: "rgba(254, 246, 255, 0.65)",
-//             borderRadius: "8px",
-//             padding: "20px",
-//             display: "flex",
-//             flexDirection: "column",
-//           }}
-//         >
-//           <h2
-//             style={{
-//               textAlign: "center",
-//               fontSize: "39px",
-//               fontWeight: "bold",
-//               marginTop: 0,
-//               padding: "10px", // เพิ่ม padding เพื่อให้ข้อความไม่ติดขอบ
-//               borderRadius: "5px", // เพิ่มมุมมน
-//               color: "#47456C", // เปลี่ยนสีข้อความให้ขาวเพื่อให้อ่านง่าย
-//             }}
-//           >
-//             เบิกเงินพนักงาน
-//           </h2>
-//           <Divider style={{ margin: "10px 0" }} />
+            setWithdrawalAmount(value);
+            calculateCommission(value);
+        }
+    };
 
-//           <img
-//             src={logo}
-//             alt="Logo"
-//             style={{
-//               width: "200px",
-//               marginBottom: "20px",
-//               borderRadius: "8px",
-//               display: "block",  // This makes the image behave like a block element
-//               marginLeft: "auto",  // This centers the image horizontally
-//               marginRight: "auto", // This ensures it's centered on both sides
-//             }}
-//           />
+    const handleBankNumberChange = (value: string | null) => {
+        if (value !== null && /^\d{0,10}$/.test(value)) {
+            setWithdrawalBankNumber(value);
+        }
+    };
 
-//           {/* แสดงยอดเงินผู้ใช้ที่กำลังใช้งาน */}
-//           <div style={{ textAlign: "center", marginBottom: "20px" }}>
-//             <h3 style={{ fontSize: "25px", color: "#47456C" }}>
-//               <CopyrightOutlined style={{ color: "#7F6BCC" }} /> {userIncome} บาท
-//             </h3>
-//           </div>
+    const handleWithdrawalSubmit = async () => {
+        if (withdrawalBankNumber.length !== 10) {
+            messageApi.open({
+                type: "error",
+                content: "กรุณากรอกหมายเลขบัญชีธนาคารให้ครบ 10 หลัก",
+            });
+            return;
+        }
 
-//           <animated.div style={formAnimation}>
-//             <Form
-//               name="withdrawalCreate"
-//               layout="vertical"
-//               onFinish={onFinish}
-//               autoComplete="off"
-//               style={{
-//                 backgroundColor: "rgba(118, 72, 179, 0.13)",
-//                 padding: "20px",
-//                 borderRadius: "8px",
-//               }}
-//               form={form}
-//             >
-//               <Row gutter={[16, 16]}>
-//                 {/* Withdrawal Amount and Commission on the same row */}
-//                 <Col xs={24} sm={12}>
-//                   <Form.Item
-//                     label="จำนวนเงินที่ถอน"
-//                     name="withdrawal_amount"
-//                     rules={[{ required: true, message: "กรุณากรอกจำนวนเงินที่ถอน !" }]}
-//                   >
-//                     <InputNumber
-//                       min={0}
-//                       max={userIncome}
-//                       style={{ width: "100%" }}
-//                       step={1}
-//                       precision={0}
-//                       onChange={handleWithdrawalAmountChange}
-//                     />
-//                   </Form.Item>
-//                 </Col>
+        const withdrawalData: WithdrawalInterface = {
+            withdrawal_amount: withdrawalAmount,
+            withdrawal_commission: withdrawalCommission,
+            withdrawal_net_amount: withdrawalNetAmount,
+            withdrawal_bank_number: withdrawalBankNumber,
+            withdrawal_date: new Date().toISOString(),  // ให้แน่ใจว่าได้ตั้งค่าทุกครั้ง
+            bank_name_id: parseInt(selectedBank),
+            driver_id: currentDriverId!,
+        };
 
-//                 <Col xs={24} sm={12}>
-//                   <Form.Item
-//                     label="ค่าคอมมิชชั่นจากการถอน"
-//                     name="withdrawal_commission"
-//                     rules={[{ required: true, message: "กรุณากรอกค่าคอมมิชชั่นจากการถอน !" }]}
-//                   >
-//                     <InputNumber min={0} style={{ width: "100%" }} disabled />
-//                   </Form.Item>
-//                 </Col>
 
-//                 {/* Net Amount and Withdrawal Date on the same row */}
-//                 <Col xs={24} sm={12}>
-//                   <Form.Item
-//                     label="จำนวนเงินสุทธิหลังหักค่าคอมมิชชั่น"
-//                     name="withdrawal_net_amount"
-//                     rules={[{ required: true, message: "กรุณากรอกจำนวนเงินสุทธิ !" }]}
-//                   >
-//                     <InputNumber min={0} style={{ width: "100%" }} disabled />
-//                   </Form.Item>
-//                 </Col>
+        await CreateWithdrawal(withdrawalData);
 
-//                 <Col xs={24} sm={12}>
-//                   <Form.Item
-//                     label="วันที่ทำการถอน"
-//                     name="withdrawal_date"
-//                     initialValue={dayjs()}
-//                     rules={[{ required: true, message: "กรุณาเลือกวันที่ทำการถอน !" }]}
-//                   >
-//                     <DatePicker
-//                       style={{ width: "100%" }}
-//                       disabled
-//                       defaultValue={dayjs()}
-//                     />
-//                   </Form.Item>
-//                 </Col>
+        // แสดงข้อความเสมอว่า "Withdrawal created successfully"
+        messageApi.success("Withdrawal created successfully");
 
-//                 {/* Bank and Account Number on the same row */}
-//                 <Col xs={24} sm={12}>
-//                   <Form.Item
-//                     label="ธนาคาร"
-//                     name="bank_name_id"
-//                     rules={[{ required: true, message: "กรุณาเลือกธนาคาร !" }]}
-//                   >
-//                     <Select
-//                       value={selectedBankName}
-//                       onChange={(value) => setSelectedBank(value)}
-//                       placeholder="เลือกธนาคาร"
-//                     >
-//                       {bankname.map((bank) => (
-//                         <Select.Option key={bank.ID} value={bank.ID}>
-//                           {bank.bank_name}
-//                         </Select.Option>
-//                       ))}
-//                     </Select>
-//                   </Form.Item>
-//                 </Col>
+        // นำผู้ใช้งานไปยังหน้า /withdrawal เสมอ
+        setTimeout(() => {
+            navigate("/withdrawal");
+        }, 2000);
 
-//                 <Col xs={24} sm={12}>
-//                   <Form.Item
-//                     label="หมายเลขบัญชีธนาคาร"
-//                     name="withdrawal_bank_number"
-//                     rules={[
-//                       { required: true, message: "กรุณากรอกหมายเลขบัญชีธนาคาร !" },
-//                       {
-//                         pattern: /^[0-9]{10}$/,
-//                         message: "หมายเลขบัญชีธนาคารต้องเป็นตัวเลข 10 หลัก",
-//                       },
-//                     ]}
-//                   >
-//                     <Input
-//                       placeholder="กรอกหมายเลขบัญชีธนาคาร"
-//                       maxLength={10}
-//                       onChange={(e) => {
-//                         e.target.value = e.target.value.replace(/\D/g, "");
-//                       }}
-//                     />
-//                   </Form.Item>
-//                 </Col>
 
-//                 <Col xs={24} sm={24} style={{ textAlign: "center" }}>
-//                   <Form.Item>
-//                       <Link to="/withdrawal">
-//                         <Button block style={{ width: "150px" }}>ยกเลิก</Button>
-//                       </Link>
-//                       <Button
-//                         type="primary"
-//                         htmlType="submit"
-//                         icon={<PlusOutlined />}
-//                         block
-//                         style={{
-//                           backgroundColor: "#9333EA",
-//                           borderColor: "#9333EA",
-//                           color: "#fff",
-//                           width: "150px",
-//                         }}
-//                       >
-//                         บันทึก
-//                       </Button>
-//                   </Form.Item>
-//                 </Col>
-//               </Row>
-//             </Form>
-//           </animated.div>
+    };
 
-//         </Card>
-//       </animated.div>
-//     </div>
-//   );
-// }
+    return (
+        <div style={{ display: 'flex', height: '100vh', width: '100%', backgroundColor: 'rgba(233, 213, 255, 0.4)' }}>
+            <AdminSidebar />
+            <div style={{ flex: 1, padding: '20px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                {contextHolder}
+                <Row gutter={16} style={{ width: '100%' }}>
+                    {/* Left Card - Information */}
+                    <Col xs={24} sm={12} style={{ display: 'flex', justifyContent: 'center' }}>
+                        <Card style={{ width: "100%", backgroundColor: "rgba(254, 246, 255, 0.8)", borderRadius: "8px", textAlign: 'center' }}>
+                            <h2 style={{ fontSize: "49px", fontWeight: "bold", color: "#47456C" }}>
+                                เบิกเงินพนักงาน
+                            </h2>
+                            <Divider style={{ margin: "10px 0" }} />
+                            <img src={logo} alt="Logo" style={{ width: "650px", marginBottom: "20px", borderRadius: "8px" }} />
+                            <h3 style={{ fontSize: "40px", color: "#47456C" }}>
+                                <div style={{ fontSize: "30px", fontWeight: "bold", color: "#47456C", marginBottom: "8px" }}>
+                                    ยอดเงินของคุณ
+                                </div>
+                                <CreditCardOutlined style={{ color: "#7F6BCC", marginRight: "8px" }} />
+                                {drivers.length > 0 ? drivers[0].Income.toFixed(2) : "0.00"} บาท
+                            </h3>
+                        </Card>
+                    </Col>
 
-// export default WithdrawalCreate;
+                    {/* Right Card - Form */}
+                    <Col xs={24} sm={12}>
+                        <Card style={{ width: "100%", backgroundColor: "rgba(254, 246, 255, 0.8)", borderRadius: "8px", padding: "20px" }}>
+                            {/* Title for the form */}
+                            <h3 style={{ fontSize: "30px", fontWeight: "bold", color: "#47456C", marginBottom: "20px" }}>
+                                กรอกข้อมูลเบิกเงิน
+                            </h3>
+
+                            <div style={{ marginBottom: "20px" }}>
+                                <label style={{ fontWeight: "bold" }}>จำนวนเงินที่ถอน:</label>
+                                <InputNumber
+                                    min={100}
+                                    max={drivers.length > 0 ? drivers[0].Income : 0}
+                                    style={{ width: "100%" }}
+                                    step={1}
+                                    precision={0}
+                                    value={withdrawalAmount}
+                                    onChange={handleWithdrawalAmountChange}
+                                />
+                            </div>
+
+                            <div style={{ marginBottom: "20px" }}>
+                                <label style={{ fontWeight: "bold" }}>ค่าคอมมิชชั่น (30%):</label>
+                                <InputNumber value={withdrawalCommission} disabled style={{ width: "100%" }} />
+                            </div>
+
+                            <div style={{ marginBottom: "20px" }}>
+                                <label style={{ fontWeight: "bold" }}>จำนวนเงินสุทธิ:</label>
+                                <InputNumber value={withdrawalNetAmount} disabled style={{ width: "100%" }} />
+                            </div>
+
+                            <div style={{ marginBottom: "20px" }}>
+                                <label style={{ fontWeight: "bold" }}>หมายเลขบัญชีธนาคาร:</label>
+                                <Input type="text" value={withdrawalBankNumber} onChange={(e) => handleBankNumberChange(e.target.value)} maxLength={10} />
+                            </div>
+
+                            <div style={{ marginBottom: "20px" }}>
+                                <label style={{ fontWeight: "bold" }}>เลือกธนาคาร:</label>
+                                <Select value={selectedBank} onChange={(value) => setSelectedBank(value)} style={{ width: '100%' }}>
+                                    {bankname.map((bank) => (
+                                        <Select.Option key={bank.ID} value={bank.ID}>
+                                            {bank.bank_name}
+                                        </Select.Option>
+                                    ))}
+                                </Select>
+                            </div>
+
+                            <Row justify="center">
+                                <Col xs={24} style={{ display: 'flex', justifyContent: 'flex-end', gap: '20px' }}>
+                                    <Link to="/withdrawal">
+                                        <Button block style={{ width: '150px' }}>ย้อนกลับ</Button>
+                                    </Link>
+                                    <Button block type="primary" style={{ width: '150px' }} onClick={handleWithdrawalSubmit}>ยืนยันการเบิกเงิน</Button>
+                                </Col>
+                            </Row>
+                        </Card>
+
+                        {/* New Card - Additional Information */}
+                        <Card style={{ width: "100%", backgroundColor: "rgba(254, 246, 255, 0.8)", borderRadius: "8px", padding: "2px", marginTop: "20px" }}>
+                            <h3 style={{ fontSize: "25px", fontWeight: "bold", color: "#47456C", marginBottom: "1px" }}>
+                                ข้อตกลงในการเบิกเงิน
+                            </h3>
+                            <p style={{ fontSize: "15px", color: "#47456C", fontWeight: "bold" }}>
+                                พนักงานสามารถเบิกเงินได้ขั้นต่ำ 100 บาท และจะถูกทางบริษัทหักค่าคอมมิชชั่นออกเป็นจำนวน 30%
+                            </p>
+                        </Card>
+
+                    </Col>
+                </Row>
+            </div>
+        </div>
+    );
+}
+
+export default WithdrawalCreate;

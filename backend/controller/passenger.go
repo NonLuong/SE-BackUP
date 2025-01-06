@@ -103,10 +103,11 @@ func GetPassengers(c *gin.Context) {
 	var passengers []entity.Passenger
 
 	if err := config.DB().Preload("Gender").Find(&passengers).Error; err != nil {
+		fmt.Println("Error retrieving passenger:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch passengers"})
 		return
 	}
-
+	fmt.Println("passenger retrieved successfully:", passengers)
 	c.JSON(http.StatusOK, gin.H{"passengers": passengers})
 }
 

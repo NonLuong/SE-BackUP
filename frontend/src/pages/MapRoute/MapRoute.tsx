@@ -73,7 +73,7 @@ const MapRoute: React.FC = () => {
 
     const selectedVehicleData = vehicles.find((v) => v.id === selectedVehicle);
 
-    const bookingData = {
+    const bookingData:any = {
       beginning: pickupLocation.name || '',
       terminus: destinationLocation.name || '',
       start_time: new Date().toISOString(),
@@ -96,15 +96,19 @@ const MapRoute: React.FC = () => {
         
         setTimeout(() => {
           const bookingId = result.data.data.ID;
-          console.log("bookingid ส่งไปให้หน้า paid : ",bookingId);
-          navigate('/paid/:id', {
-            state: {
-              total_price: bookingData.total_price,
-              bookingId,
+          console.log("booking: ",bookingId);
+          navigate(`/paid/${bookingId}`);
+          // navigate('/paid', {
+          //   state: {
+          //     total_price: bookingData.total_price,
+          //     bookingId,
               
-            },
-          });
+          //   },
+          // });
         }, 2000); // รอ 2 วินาทีก่อน Navigate
+
+        
+      
 
         
       
