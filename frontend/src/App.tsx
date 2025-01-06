@@ -11,9 +11,9 @@ import PromotionCreate from "./pages/promotion/create";
 import PromotionEdit from "./pages/promotion/edit";
 import Promotion from "./pages/promotion";
 import PromotionView from "./pages/promotion/view";
-import Withdrawal from "./pages/withdrawal";
-// import WithdrawalCreate from "./pages/withdrawal/money";
-// import Statement from "./pages/withdrawal/statement";
+import DriverWithWithdrawal from "./pages/withdrawal";
+import WithdrawalCreate from "./pages/withdrawal/money";
+import Statement from "./pages/withdrawal/statement";
 import HomePayment from "./pages/payment/paid/Home";
 import Review from "./pages/review/review";
 import Payment from "./pages/payment/payment";
@@ -66,13 +66,13 @@ const App: React.FC = () => {
 
 
        {/*ต้อง* promotion */}
-        <Route path="/promotion" element={< Promotion />} />
+       <Route path="/promotion" element={< Promotion />} />
         <Route path="/promotion/create" element={< PromotionCreate />} />
         <Route path="/promotion/edit/:id" element={< PromotionEdit />} />
         <Route path="/promotion/view" element={< PromotionView />} />
-        <Route path="/withdrawal" element={< Withdrawal />} />
-        {/* <Route path="/withdrawal/money" element={< WithdrawalCreate />} />
-        <Route path="/withdrawal/statement" element={< Statement />} /> */}
+        <Route path="/withdrawal" element={< DriverWithWithdrawal />} />
+        <Route path="/withdrawal/money" element={< WithdrawalCreate />} />
+        <Route path="/withdrawal/statement" element={< Statement />} />
 
         {/*ฟร้อง Payment and Review */}
         <Route path="/paid/:id" element={< HomePayment />} /> 
