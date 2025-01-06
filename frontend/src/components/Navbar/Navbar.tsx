@@ -6,13 +6,12 @@ import "./Navbar.css";
 const Navbar: React.FC = () => {
   return (
     <nav className="navbar">
-       <div className="logo">
+      <div className="logo">
         <Link to="/">
-          <img 
-            src="logo2.jpeg" 
-            alt="Cabana Logo" 
-            className="logo-image" 
-        
+          <img
+            src="logo2.jpeg"
+            alt="Cabana Logo"
+            className="logo-image"
             style={{
               width: "60px", // ความกว้างของวงกลม
               height: "60px", // ความสูงของวงกลม (เท่ากับความกว้าง)
@@ -20,12 +19,8 @@ const Navbar: React.FC = () => {
               objectFit: "cover", // ทำให้ภาพเต็มพื้นที่
               padding: "5px",
               marginLeft: "10px",
-             
-              
-            }} 
-            
+            }}
           />
-         
         </Link>
       </div>
       <ul className="nav-links">
@@ -47,9 +42,11 @@ const Navbar: React.FC = () => {
         <li>
           <Link to="/DriverBooking">Dirverbooking</Link>
         </li>
-        
         <li>
-         
+          <Link to="/Prebooking">Prebooking</Link>
+        </li>
+        <li>
+          <Link to="/PassengerProfile">
             <div
               className="profile-icon-wrapper"
               style={{
@@ -70,7 +67,7 @@ const Navbar: React.FC = () => {
                 }}
               />
             </div>
-         
+          </Link>
         </li>
       </ul>
     </nav>

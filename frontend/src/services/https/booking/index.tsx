@@ -134,14 +134,18 @@ export const sendDataDestinationToBackend = async (destinationLocation: { lat: n
 };
 
 export const sendBookingToBackend = async (bookingData: {
-  pickup_location_name: string;
-  destination_location_name: string;
+  beginning: string;
+  terminus: string;
+  start_time: string;
+  end_time: string;
+  distance: number;
+  total_price: number;
+  booking_time: string;
+  booking_status: string;
+  vehicle: string;
   start_location_id: number;
   destination_id: number;
-  vehicle: string;
-  distance: string;
-  fare: string;
-  booking_status: string;
+  passenger_id: number;
 }) => {
   try {
     const response = await fetch(`${apiUrl}/bookings`, {
@@ -162,11 +166,16 @@ export const sendBookingToBackend = async (bookingData: {
     console.log("Booking response from backend:", data); // Log ข้อมูลที่ได้จาก backend
     return { success: true, data };
   } catch (error) {
-    console.error("Error creating booking:", error);
-    return { success: false, message: error.message };
+    if (error instanceof Error) {
+      console.error("Error creating booking:", error.message);
+      return { success: false, message: error.message };
+    } else {
+      console.error("Unknown error:", error);
+      return { success: false, message: "An unknown error occurred" };
+    }
   }
+  
 };
-
 
 
 // ฟังก์ชันสำหรับดึง booking ทั้งหมด

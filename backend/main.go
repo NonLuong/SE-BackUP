@@ -66,6 +66,9 @@ func registerRoutes(r *gin.Engine) {
 	r.POST("/signup", controller.SignUp)
 	r.POST("/signin", controller.SignIn)
 
+	//passenger
+	r.GET("/passenger/:id", controller.GetPassengerByID)
+
 	// Booking
 	r.POST("/startlocation", controller.CreateStartLocation)
 	r.POST("/destination", controller.CreateDestination)

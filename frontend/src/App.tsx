@@ -5,7 +5,7 @@ import MapComponent from "./pages/startbooking/MapComponent";
 import MapDestination from "./pages/MapDestination/MapDestination";
 import MapRoute from "./pages/MapRoute/MapRoute";
 import RideHistory from "./pages/RideHistory/RideHistory";
-import PassengerChat from "./pages/chat/PassengerChat";
+//import PassengerChat from "./pages/chat/PassengerChat";
 //import DriverChat from "./pages/chat/DriverChat";
 import PromotionCreate from "./pages/promotion/create";
 import PromotionEdit from "./pages/promotion/edit";
@@ -36,7 +36,9 @@ import DriverBooking from "./pages/DriverBooking/DriverBooking";
 import PassengerNotification from "./pages/passengerbooking/passengerbooking";
 import DriverChat from "./pages/chat/DriverChat";
 import PassengerChatPage from "./pages/chat/PassengerChat";
-//import PassengerNotification from "./pages/PassengerNotification/PassengerNotification";
+import PassengerProfile from "./pages/historypassenger/passengerprofile";
+import PreBooking from "./pages/prebooking/prebooking";
+import EditProfile from "./pages/editprofile/editprofile";
 
 const App: React.FC = () => {
   return (
@@ -57,6 +59,9 @@ const App: React.FC = () => {
         <Route path="/PassengerNotification" element={<PassengerNotification />} /> {/* เส้นทางสำหรับ CompletedBooking */}
         <Route path="/DriverChat" element={<DriverChat />} />
         <Route path="/PassengerChat" element={<PassengerChatPage />} />
+        <Route path="/Passengerprofile" element={<PassengerProfile />} />
+        <Route path="/Editprofile " element={<EditProfile  />} />
+        <Route path="/Prebooking" element={<PreBooking />} />
 
 
 

@@ -29,7 +29,30 @@ interface PromotionInterface {
 const Home: React.FC = () => {
   const [promotions, setPromotions] = useState<PromotionInterface[]>([]);
   const [messageApi] = message.useMessage();
- 
+ // เพิ่ม State สำหรับ id และ role
+ const [passengerId, setPassengerId] = useState<string | null>(null);
+ const [passengerRole, setPassengerRole] = useState<string | null>(null);
+
+ useEffect(() => {
+   // ดึงข้อมูล id และ role จาก localStorage
+   const id = localStorage.getItem("id");
+   const role = localStorage.getItem("role");
+
+   // ตรวจสอบว่า id และ role มีค่าหรือไม่
+   if (!id || !role || role.toLowerCase() !== "passenger") {
+     message.error("Unauthorized access. Redirecting to login.");
+     navigate("/login"); // Redirect ไปหน้า Login
+     return;
+   }
+
+   // เก็บ id และ role ใน State
+   setPassengerId(id);
+   setPassengerRole(role);
+
+   console.log("id passenger:",id)
+   console.log("role passenger:",role)
+  })
+
   // Fetch promotions data
   const getPromotions = async () => {
     try {
@@ -74,8 +97,11 @@ const Home: React.FC = () => {
   const navigate = useNavigate(); // ใช้ useNavigate สำหรับการนำทาง
 
   const handleBooking = () => {
-    navigate("/map"); // ไปยังหน้า Booking
+    navigate("/map", {
+      state: { id: passengerId, role: passengerRole },
+    });
   };
+  
 
   return (
     <div className="home-container">

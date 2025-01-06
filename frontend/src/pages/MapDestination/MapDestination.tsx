@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './MapDestination.css';
-import { sendDataDestinationToBackend } from '../../services/https';
+import { sendDataDestinationToBackend } from '../../services/https/booking';
 
 const containerStyle = {
   width: '100%',

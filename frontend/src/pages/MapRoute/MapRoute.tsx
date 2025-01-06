@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { GoogleMap, LoadScript, DirectionsRenderer, Marker } from '@react-google-maps/api';
 import { FaMotorcycle, FaCar, FaTruckPickup } from 'react-icons/fa';
 import './MapRoute.css';
-import { sendBookingToBackend } from '../../services/https';
+import { sendBookingToBackend } from '../../services/https/booking';
 
 const vehicles = [
   { id: 1, name: 'cabanabike', baseFare: 20, perKm: 5, capacity: 2, type: 'motorcycle', icon: <FaMotorcycle size={50} /> },

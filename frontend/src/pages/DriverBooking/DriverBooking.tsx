@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getBookingById, acceptBooking, notifyPassenger } from '../../services/https';
+import { getBookingById, acceptBooking, notifyPassenger } from '../../services/https/booking';
 import { createRoomChat } from '../../services/https/Roomchat/roomchat';
 
 // 🛠️ กำหนดประเภทข้อมูลสำหรับการจอง
