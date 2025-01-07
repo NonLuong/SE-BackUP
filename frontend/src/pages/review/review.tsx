@@ -54,7 +54,7 @@ const Review: React.FC = () => {
 
   const handleReviewLater = () => {
     alert("You can review later!");
-    navigate("/");
+    navigate("/home");
   };
 
   const handleSubmit = async () => {
