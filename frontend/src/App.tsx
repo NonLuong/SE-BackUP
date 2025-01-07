@@ -42,6 +42,7 @@ import AddDriver from "./pages/Driver/Adddriver";
 import Passenger from "./pages/Passenger/Passenger";
 import Dashboard from "./pages/Dashboard/Admindashboard";
 import Dashboards from "./pages/Dashboard/Driverdashboard";
+import FinishJob from "./pages/finishjob/finishjob";
 
 
 const App: React.FC = () => {
@@ -66,6 +67,7 @@ const App: React.FC = () => {
         <Route path="/Passengerprofile" element={<PassengerProfile />} />
         
         <Route path="/Prebooking" element={<PreBooking />} />
+        <Route path="/Finishjob" element={<FinishJob/>} />
 
 
 

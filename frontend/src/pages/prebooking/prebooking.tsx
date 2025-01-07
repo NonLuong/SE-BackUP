@@ -35,6 +35,7 @@ const PreBooking: React.FC = () => {
   };
 
   return (
+    <div className="pagesprebooking">
     <div className="pre-booking">
       <h1>Pre-Booking</h1>
       <form onSubmit={handleSubmit(onSubmit)} className="booking-form">
@@ -96,6 +97,7 @@ const PreBooking: React.FC = () => {
       </form>
 
       {bookingStatus && <p className="status">{bookingStatus}</p>}
+    </div>
     </div>
   );
 };

@@ -150,9 +150,58 @@ useEffect(() => {
     return Object.keys(validationErrors).length === 0;
   };
 
-  const [isPaid, setIsPaid] = useState(false); // ติดตามสถานะ paid
+  const [isPaid, setIsPaid] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
-   const [isSubmitting, setIsSubmitting] = useState(false); // เพิ่ม state สำหรับป้องกันการส่งซ้ำ
+  // ตรวจสอบว่า `bookingId` มีค่า
+  useEffect(() => {
+    if (!bookingId) {
+      console.error("Booking ID not found in location.state");
+    }
+  }, [bookingId]);
+  
+  // ฟังก์ชันตรวจสอบข้อมูลการชำระเงิน
+  const validatePaymentData = () => {
+    if (!paymenyAmount || !method) {
+      setError("Payment data is invalid or missing. Please try again.");
+      alert("Payment data is invalid or missing. Please try again.");
+      return false;
+    }
+    if (method === "wallet" && !wallet) {
+      setError("Please select a wallet payment method.");
+      alert("Please select a wallet payment method.");
+      return false;
+    }
+    if (method === "card" && !validateForm()) {
+      return false;
+    }
+    return true;
+  };
+  
+  // ฟังก์ชันอัปเดตสถานะการจอง
+  const updateBookingStatus = async (status: string, bookingId: string) => {
+    try {
+      const response = await patchBookingStatus(status, bookingId);
+      if (response.success) {
+        setIsPaid(true);
+        alert(`Booking status updated to '${status}'!`);
+        return true;
+      } else {
+        console.error("Failed to update booking status:", response.message);
+        alert(`Failed to update booking status: ${response.message}`);
+        return false;
+      }
+    } catch (error) {
+      console.error("Error updating booking status:", error);
+      alert("Failed to update booking status. Please try again.");
+      return false;
+    }
+  };
+
+
+
+
+  
 
    // ตรวจสอบว่า `bookingId` มีค่า
    useEffect(() => {
@@ -173,7 +222,6 @@ useEffect(() => {
       console.log("Already submitting. Please wait...");
       return;
     }
-  
     setIsSubmitting(true); // ตั้งสถานะกำลังส่ง
   
     try {
@@ -198,81 +246,78 @@ useEffect(() => {
   };
   
 
-  const handleConfirm = async () => {
+
+
+
+
+  
+  
+  // ฟังก์ชันหลัก
+  /*const handleConfirmebooking = async () => {
+    if (!bookingId) {
+      alert("Booking ID is required.");
+      return;
+    }
+  
+    if (isSubmitting) {
+      console.log("Already submitting. Please wait...");
+      return;
+    }
+  
+    setIsSubmitting(true);
+  
     try {
-      if (!bookingId || !passengerId || !driverId) {
-        alert("Please check the information on the home page first.");
-        return;
-      }
-
-      if (!paymenyAmount || !bookingId) {
-        setError("Invalid payment data. Please try again.");
-        return;
-      }
-
-      if (!method) {
-        setError("Please Select Payment Method.");
-        return;
-      }
-
-      let card: string = "";
-
-      if (method === "wallet") {
-        if (!wallet) {
-          setError("Please Select Wallet Payment.");
-          return;
-        } else {
-          setError("");
-        }
-      } else if (method === "card") {
-        if (!validateForm()) {
-          return;
-        } else {
-          card = `?card_type=${cardType}`;
-        }
-      }
-
+      // ตรวจสอบข้อมูลการชำระเงิน
+      if (!validatePaymentData()) return;
+  
+      const paymentMethod =
+        method === "wallet" ? wallet : method === "card" ? `?card_type=${cardType}` : cardType;
+  
       const paymentData = {
         payment_amount: paymenyAmount,
-        payment_method: method === "wallet" ? wallet : cardType,
+        payment_method: paymentMethod,
         booking_id: bookingId,
-        promotion_id: promotionId === undefined ? null : promotionId,
+        promotion_id: promotionId || null,
       };
-
-      const response = await apiRequest(
+  
+      // ส่งคำขอชำระเงิน
+      const paymentResponse = await apiRequest(
         "POST",
-        Endpoint.PAYMENT + card,
+        Endpoint.PAYMENT + (method === "card" ? paymentMethod : ""),
         paymentData
       );
-
-      if (promotionId != undefined || promotionId != null) {
+  
+      // อัปเดตโปรโมชั่นหากมี
+      if (promotionId) {
         await apiRequest(
           "PUT",
           `${Endpoint.PROMOTION_USECOUNT}?promotion_id=${promotionId}`
         );
       }
-
-      if (response) {
-        alert("Payment successfully!");
-        navigate("/review", {
-          state: {
-            bookingId: bookingId,
-            driverId: driverId,
-            passengerId: passengerId,
-          },
-        });
+  
+      if (paymentResponse) {
+        alert("Payment successful!");
+  
+        // อัปเดตสถานะการจอง
+        const isUpdated = await updateBookingStatus("paid", bookingId);
+        if (isUpdated) {
+          navigate("/review", {
+            state: { bookingId, driverId, passengerId },
+          });
+        }
       } else {
         setError("Payment failed. Please try again.");
       }
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        setError(`An error occurred: ${error.message}`);
-      } else {
-        setError("An unknown error occurred.");
-      }
-      console.error("Error during payment:", error);
+      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred.";
+      console.error("Error during booking/payment:", error);
+      setError(errorMessage);
+      alert(`Error: ${errorMessage}`);
+    } finally {
+      setIsSubmitting(false);
     }
-  };
+  };*/
+  
 
   // const handleMenuClick = (item: {
   //   name: string;
