@@ -2,10 +2,12 @@ package config
 
 import (
 	"fmt"
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
+	"project-se/entities"
 	"project-se/entity"
 	"time"
+
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 var db *gorm.DB
@@ -55,9 +57,9 @@ func SetupDatabase() {
 		&entity.BankName{},
 		&entity.RoomChat{},
 		&entity.BookingStatus{},
-		
-
-
+		&entities.Payment{},
+		&entities.Review{},
+		&entities.Paid{},
 	)
 
 	GenderMale := entity.Gender{Gender: "Male"}

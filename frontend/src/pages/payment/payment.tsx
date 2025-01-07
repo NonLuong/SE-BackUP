@@ -37,11 +37,11 @@ const Payment: React.FC = () => {
     location.state || {};
 
   // ตรวจสอบว่า bookingId มีค่า
-useEffect(() => {
-  if (!bookingId) {
-    console.error("Booking ID not found in location.state");
-  }
-}, [bookingId]);
+  useEffect(() => {
+    if (!bookingId) {
+      console.error("Booking ID not found in location.state");
+    }
+  }, [bookingId]);
 
   useEffect(() => {
     setWallet(null);
@@ -150,174 +150,135 @@ useEffect(() => {
     return Object.keys(validationErrors).length === 0;
   };
 
-  const [isPaid, setIsPaid] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  
+  const [isPaid, setIsPaid] = useState(false); // ติดตามสถานะ paid
+
+  const [isSubmitting, setIsSubmitting] = useState(false); // เพิ่ม state สำหรับป้องกันการส่งซ้ำ
+
   // ตรวจสอบว่า `bookingId` มีค่า
   useEffect(() => {
     if (!bookingId) {
       console.error("Booking ID not found in location.state");
     }
   }, [bookingId]);
-  
-  // ฟังก์ชันตรวจสอบข้อมูลการชำระเงิน
-  const validatePaymentData = () => {
-    if (!paymenyAmount || !method) {
-      setError("Payment data is invalid or missing. Please try again.");
-      alert("Payment data is invalid or missing. Please try again.");
-      return false;
-    }
-    if (method === "wallet" && !wallet) {
-      setError("Please select a wallet payment method.");
-      alert("Please select a wallet payment method.");
-      return false;
-    }
-    if (method === "card" && !validateForm()) {
-      return false;
-    }
-    return true;
-  };
-  
-  // ฟังก์ชันอัปเดตสถานะการจอง
-  const updateBookingStatus = async (status: string, bookingId: string) => {
-    try {
-      const response = await patchBookingStatus(status, bookingId);
-      if (response.success) {
-        setIsPaid(true);
-        alert(`Booking status updated to '${status}'!`);
-        return true;
-      } else {
-        console.error("Failed to update booking status:", response.message);
-        alert(`Failed to update booking status: ${response.message}`);
-        return false;
-      }
-    } catch (error) {
-      console.error("Error updating booking status:", error);
-      alert("Failed to update booking status. Please try again.");
-      return false;
-    }
-  };
-
-
-
-
-  
-
-   // ตรวจสอบว่า `bookingId` มีค่า
-   useEffect(() => {
-    if (!bookingId) {
-      console.error("Booking ID not found in location.state");
-    }
-  }, [bookingId]);
 
   // ฟังก์ชันส่งคำขออัปเดตสถานะ
-  const handleConfirmebooking = async (): Promise<void> => {
-    if (!bookingId) {
-      alert("Booking ID is required.");
-      return;
-    }
-  
-    // ป้องกันการส่งคำขอซ้ำ
-    if (isSubmitting) {
-      console.log("Already submitting. Please wait...");
-      return;
-    }
-    setIsSubmitting(true); // ตั้งสถานะกำลังส่ง
-  
+  // const handleConfirmebooking = async (): Promise<void> => {
+  //   if (!bookingId) {
+  //     alert("Booking ID is required.");
+  //     return;
+  //   }
+
+  //   // ป้องกันการส่งคำขอซ้ำ
+  //   if (isSubmitting) {
+  //     console.log("Already submitting. Please wait...");
+  //     return;
+  //   }
+
+  //   setIsSubmitting(true); // ตั้งสถานะกำลังส่ง
+
+  //   try {
+  //     // เรียก API เพื่ออัปเดตสถานะเป็น "paid"
+  //     const data = await patchBookingStatus("paid", bookingId);
+
+  //     // ตรวจสอบผลลัพธ์
+  //     if (data.success) {
+  //       console.log("Booking status updated to paid:", data);
+  //       setIsPaid(true); // ตั้งสถานะใน Frontend เป็น "paid"
+  //       alert("Booking status successfully updated to 'paid'!");
+  //     } else {
+  //       console.error("Failed to update booking status:", data.message);
+  //       alert(`Failed to update booking status: ${data.message}`);
+  //     }
+  //   } catch (error) {
+  //     console.error("Failed to update booking status:", error);
+  //     alert("Failed to update booking status. Please try again.");
+  //   } finally {
+  //     setIsSubmitting(false); // รีเซ็ตสถานะกำลังส่ง
+  //   }
+  // };
+
+  const handleConfirm = async () => {
     try {
-      // เรียก API เพื่ออัปเดตสถานะเป็น "paid"
-      const data = await patchBookingStatus("paid", bookingId);
-  
-      // ตรวจสอบผลลัพธ์
-      if (data.success) {
-        console.log("Booking status updated to paid:", data);
-        setIsPaid(true); // ตั้งสถานะใน Frontend เป็น "paid"
-        alert("Booking status successfully updated to 'paid'!");
-      } else {
-        console.error("Failed to update booking status:", data.message);
-        alert(`Failed to update booking status: ${data.message}`);
+      if (!bookingId) {
+        alert("Please check bookinID ");
+        return;
       }
-    } catch (error) {
-      console.error("Failed to update booking status:", error);
-      alert("Failed to update booking status. Please try again.");
-    } finally {
-      setIsSubmitting(false); // รีเซ็ตสถานะกำลังส่ง
-    }
-  };
-  
 
+      if (!method) {
+        setError("Please Select Payment Method.");
+        return;
+      }
 
+      let card: string = "";
 
+      if (method === "wallet") {
+        if (!wallet) {
+          setError("Please Select Wallet Payment.");
+          return;
+        } else {
+          setError("");
+        }
+      } else if (method === "card") {
+        if (!validateForm()) {
+          return;
+        } else {
+          card = `?card_type=${cardType}`;
+        }
+      }
 
-
-  
-  
-  // ฟังก์ชันหลัก
-  /*const handleConfirmebooking = async () => {
-    if (!bookingId) {
-      alert("Booking ID is required.");
-      return;
-    }
-  
-    if (isSubmitting) {
-      console.log("Already submitting. Please wait...");
-      return;
-    }
-  
-    setIsSubmitting(true);
-  
-    try {
-      // ตรวจสอบข้อมูลการชำระเงิน
-      if (!validatePaymentData()) return;
-  
-      const paymentMethod =
-        method === "wallet" ? wallet : method === "card" ? `?card_type=${cardType}` : cardType;
-  
       const paymentData = {
         payment_amount: paymenyAmount,
-        payment_method: paymentMethod,
+        payment_method: method === "wallet" ? wallet : cardType,
         booking_id: bookingId,
-        promotion_id: promotionId || null,
+        promotion_id: promotionId === undefined ? null : promotionId,
       };
-  
-      // ส่งคำขอชำระเงิน
-      const paymentResponse = await apiRequest(
+
+      const response = await apiRequest(
         "POST",
-        Endpoint.PAYMENT + (method === "card" ? paymentMethod : ""),
+        Endpoint.PAYMENT + card,
         paymentData
       );
-  
-      // อัปเดตโปรโมชั่นหากมี
-      if (promotionId) {
+
+      if (promotionId != undefined || promotionId != null) {
         await apiRequest(
           "PUT",
           `${Endpoint.PROMOTION_USECOUNT}?promotion_id=${promotionId}`
         );
       }
-  
-      if (paymentResponse) {
-        alert("Payment successful!");
-  
-        // อัปเดตสถานะการจอง
-        const isUpdated = await updateBookingStatus("paid", bookingId);
-        if (isUpdated) {
-          navigate("/review", {
-            state: { bookingId, driverId, passengerId },
-          });
-        }
+
+      const data = await patchBookingStatus("paid", bookingId);
+
+      if (data.success) {
+        console.log("Booking status updated to paid:", data);
+        setIsPaid(true); // ตั้งสถานะใน Frontend เป็น "paid"
+      } else {
+        console.error("Failed to update booking status:", data.message);
+        alert(`Failed to update booking status: ${data.message}`);
+      }
+
+      if (response) {
+        alert("Payment successfully!");
+        navigate("/review", {
+          state: {
+            bookingId: bookingId,
+            driverId: driverId,
+            passengerId: passengerId,
+          },
+        });
       } else {
         setError("Payment failed. Please try again.");
       }
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred.";
-      console.error("Error during booking/payment:", error);
-      setError(errorMessage);
-      alert(`Error: ${errorMessage}`);
+      if (error instanceof Error) {
+        setError(`An error occurred: ${error.message}`);
+      } else {
+        setError("An unknown error occurred.");
+      }
+      console.error("Error during payment:", error);
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false); // รีเซ็ตสถานะกำลังส่ง
     }
-  };*/
-  
+  };
 
   // const handleMenuClick = (item: {
   //   name: string;
@@ -597,13 +558,13 @@ useEffect(() => {
         )}
 
         <div className="button-container">
-        <button
-          className="ax"
-          onClick={handleConfirmebooking} // ใช้ handleConfirmebooking โดยตรง
-          disabled={isSubmitting} // ปิดการใช้งานปุ่มขณะกำลังส่ง
-        >
-          {isSubmitting ? "Processing..." : "Confirm Payment"}
-        </button>
+          <button
+            className="ax"
+            onClick={handleConfirm} // ใช้ handleConfirmebooking โดยตรง
+            disabled={isSubmitting} // ปิดการใช้งานปุ่มขณะกำลังส่ง
+          >
+            {isSubmitting ? "Processing..." : "Confirm Payment"}
+          </button>
           <button className="cx" onClick={() => navigate(-1)}>
             Cancel
           </button>
