@@ -10,40 +10,7 @@
   overflow: hidden; /* Prevent video overflow */
   box-sizing: border-box; /* Include padding in dimensions */
   font-family: "Comic Sans MS", sans-serif; /* Font family */
-}
-
-/* Gradient Overlay */
-.em::before {
-  content: ""; /* Pseudo-element for gradient overlay */
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1; /* Above video, below content */
-  opacity: 0.8; /* Adjust transparency for blending */
-}
-
-/* Video Background */
-.tan {
-  position: absolute; /* Cover entire container */
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* Ensures the video covers the entire container */
-  z-index: 0; /* Places the video behind the gradient and content */
-  opacity: 0.7; /* Adjust transparency */
-}
-
-/* Gradient Animation */
-@keyframes gradientAnimation {
-  0% {
-    background: linear-gradient(135deg, #cfe8f8, #d5c6f8);
-  }
-  100% {
-    background: linear-gradient(135deg, #d5c6f8, #cfe8f8);
-  }
+  background: linear-gradient(135deg, #cfe8f8, #d5c6f8);
 }
 
 /* Card */
@@ -60,17 +27,8 @@
   text-align: center; /* Align text content */
   position: relative; /* For stacking child elements */
   overflow: hidden; /* Prevent content overflow */
-  z-index: 2; /* Ensure content is above gradient and video */
-}
-
-.xox {
-  position: absolute; /* Absolute positioning for full coverage */
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* Ensures the video covers the entire container */
-  z-index: -1; /* Places the video behind the content */
+  z-index: 1; /* Ensure content is above gradient and video */
+  background: linear-gradient(135deg, #cfe8f8, #d5c6f8);
 }
 
 /* Hover Effects */

@@ -2,7 +2,7 @@
 .gg {
   margin: 0;
   font-family: "Comic Sans MS", sans-serif; /* Font family */
-  color: #4a4a4a; /* Neutral text color */
+  color: #000000; /* Neutral text color */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -12,16 +12,7 @@
   overflow: hidden; /* Prevent content overflow */
   text-align: center; /* Center text alignment */
   z-index: 1; /* Ensure content stays above the video */
-}
-
-.background-video {
-  position: absolute; /* Absolute positioning for full coverage */
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* Ensures the video covers the entire container */
-  z-index: -1; /* Places the video behind the content */
+  background: linear-gradient(135deg, #cfe8f8, #d5c6f8);
 }
 
 /* Review History Container */
@@ -114,9 +105,9 @@
 
 /* Review History Title Styling */
 .lol {
-  font-size: 1.8rem;
+  font-size: 3rem;
   font-weight: 700;
-  color: #4a4a4a;
+  color: #000000;
   margin-bottom: 20px;
   background: linear-gradient(135deg, #c3d8ff, #e4cbff);
   border-radius: 12px; /* Rounded corners */
@@ -154,12 +145,11 @@
   color: #6a63ff;
   font-weight: 700;
   text-transform: uppercase; /* Optional: for a more formal look */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for the header */
   font-family: "Comic Sans MS", sans-serif; /* Font family */
 }
 
 .review-table td {
-  color: #4a4a4a;
+  color: #000000;
 }
 
 .review-table tr:nth-child(odd) {

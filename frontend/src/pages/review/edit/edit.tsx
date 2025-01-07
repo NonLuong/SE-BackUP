@@ -177,21 +177,7 @@ const Edit: React.FC = () => {
 
   return (
     <div className="em">
-      <video className="tan" autoPlay muted loop>
-        <source
-          src="https://media.istockphoto.com/id/1585424976/th/%E0%B8%A7%E0%B8%B4%E0%B8%94%E0%B8%B5%E0%B9%82%E0%B8%AD/%E0%B8%9E%E0%B8%B7%E0%B9%89%E0%B8%99%E0%B8%AB%E0%B8%A5%E0%B8%B1%E0%B8%87%E0%B8%A2%E0%B9%89%E0%B8%AD%E0%B8%99%E0%B8%A2%E0%B8%B8%E0%B8%84-80-%E0%B8%A7%E0%B8%87%E0%B8%88%E0%B8%A3%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%81%E0%B8%82%E0%B9%88%E0%B8%87%E0%B8%82%E0%B8%B1%E0%B8%99%E0%B8%99%E0%B8%B5%E0%B8%AD%E0%B8%AD%E0%B8%99.mp4?s=mp4-640x640-is&k=20&c=KumjBe-2tg2EqD9rVxtmanQvlfCZgwpXLoI9Qo6FN0U="
-          type="video/mp4"
-        />
-        Your browser does not support the video tag.
-      </video>
       <div className="edit-card">
-        <video autoPlay muted loop className="xox">
-          <source
-            src="https://videos.pexels.com/video-files/2053100/2053100-sd_640_360_30fps.mp4"
-            type="video/mp4"
-          />
-          Your browser does not support the video tag.
-        </video>
         <h2 className="edit-title">Edit Review</h2>
         <div className="edit-form">
           <div className="form-row">
