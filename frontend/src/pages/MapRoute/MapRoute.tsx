@@ -4,6 +4,7 @@ import { GoogleMap, LoadScript, DirectionsRenderer, Marker } from '@react-google
 import { FaMotorcycle, FaCar, FaTruckPickup } from 'react-icons/fa';
 import './MapRoute.css';
 import { sendBookingToBackend } from '../../services/https/booking';
+import { sendBookingStatusToBackend } from '../../services/https/statusbooking/statusbooking';
 
 const vehicles = [
   { id: 1, name: 'cabanabike', baseFare: 20, perKm: 5, capacity: 2, type: 'motorcycle', icon: <FaMotorcycle size={50} /> },
@@ -65,15 +66,15 @@ const MapRoute: React.FC = () => {
       setSuccessMessage('กรุณาเลือกยานพาหนะและตรวจสอบข้อมูลให้ครบถ้วน');
       return;
     }
-
+  
     if (!pickupLocation || !destinationLocation || !startLocationId || !destinationId) {
       setSuccessMessage('ข้อมูลสถานที่เริ่มต้นหรือจุดหมายปลายทางไม่ครบถ้วน');
       return;
     }
-
+  
     const selectedVehicleData = vehicles.find((v) => v.id === selectedVehicle);
-
-    const bookingData:any = {
+  
+    const bookingData: any = {
       beginning: pickupLocation.name || '',
       terminus: destinationLocation.name || '',
       start_time: new Date().toISOString(),
@@ -87,31 +88,36 @@ const MapRoute: React.FC = () => {
       destination_id: destinationId,
       passenger_id: 1,
     };
-
+  
     try {
       const result = await sendBookingToBackend(bookingData);
-
+  
       if (result.success) {
         setSuccessMessage('🎉 การจองสำเร็จ!');
-        
-        setTimeout(() => {
-          const bookingId = result.data.data.ID;
-          console.log("booking: ",bookingId);
-          navigate(`/paid/${bookingId}`);
-          // navigate('/paid', {
-          //   state: {
-          //     total_price: bookingData.total_price,
-          //     bookingId,
-              
-          //   },
-          // });
-        }, 2000); // รอ 2 วินาทีก่อน Navigate
-
-        
-      
-
-        
-      
+  
+        const bookingId = result.data.data.ID; // ดึง bookingId จาก response
+  
+        // บันทึกสถานะในตาราง bookingstatus
+        const bookingStatusData = {
+          booking_id: bookingId,
+          status_booking: 'Pending', // กำหนดสถานะเริ่มต้น
+        };
+  
+        try {
+          const bookingStatusResult = await sendBookingStatusToBackend(bookingStatusData);
+  
+          if (bookingStatusResult.success) {
+            console.log('Booking status saved successfully:', bookingStatusResult.data);
+  
+            setTimeout(() => {
+              navigate(`/paid/${bookingId}`);
+            }, 2000); // รอ 2 วินาทีก่อน Navigate
+          } else {
+            console.error('Failed to save booking status:', bookingStatusResult.message);
+          }
+        } catch (error) {
+          console.error('Error saving booking status:', error);
+        }
       } else {
         setSuccessMessage(`เกิดข้อผิดพลาด: ${result.message}`);
       }
@@ -120,7 +126,7 @@ const MapRoute: React.FC = () => {
       setSuccessMessage('ไม่สามารถบันทึกข้อมูลการจองได้');
     }
   };
-
+  
   return (
     <div className="MapRoute">
       <LoadScript googleMapsApiKey="AIzaSyBCporibkdPqd7yC4nJEWMZI2toIlY23jM" onLoad={handleApiLoaded}>

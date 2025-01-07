@@ -4,6 +4,7 @@ const apiUrl = "http://localhost:8080";
 
 // แก้ไขประเภท Message
 export interface Message {
+  
   content: string;
   message_type: string;
   read_status: boolean;
