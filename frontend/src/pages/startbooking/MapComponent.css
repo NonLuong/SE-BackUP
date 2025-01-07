@@ -60,3 +60,20 @@
 .pickup-button:hover {
     background-color: #a696e0; /* สีเมื่อ hover */
 }
+
+/* MapComponent.css */
+.search-input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #99D7EF;
+  box-sizing: border-box;
+}
+
+ .searchContainerStyle {
+  width: 100%,
+  /*padding: 10px,
+  backgroundColor: '#D9D7EF',
+  left: '0',
+  zIndex: '1000',*/
+};

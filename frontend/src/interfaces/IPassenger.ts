@@ -1,9 +1,11 @@
 export interface Passenger {
-    PassengerID?: number;
-    Name?: string;
-    PhoneNumber?: string;
-    Email?: string;
-    Password?: string;
-    GenderID?: number;
+    ID?: number;
+    username?: string;
+    first_name?: string;
+    last_name?: string;
+    phone_number?: string;
+    email?: string;
+    password?: string;
+    gender_id?: number;
   }
   

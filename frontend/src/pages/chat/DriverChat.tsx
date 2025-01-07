@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import { sendMessageToBackend,getMessagesByRoomChatId, Message } from '../../services/https';
+import { sendMessageToBackend,getMessagesByRoomChatId, Message } from '../../services/https/booking';
 
 // 🛠️ ประเภทของข้อความในแชท
 interface ChatMessage {

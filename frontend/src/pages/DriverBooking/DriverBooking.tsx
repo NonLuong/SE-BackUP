@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getBookingById, acceptBooking, notifyPassenger } from '../../services/https';
+import { getBookingById, acceptBooking, notifyPassenger } from '../../services/https/booking';
 import { createRoomChat } from '../../services/https/Roomchat/roomchat';
-
+import './DriverBooking.css'; // นำเข้าการจัดสไตล์จากไฟล์ CSS
 // 🛠️ กำหนดประเภทข้อมูลสำหรับการจอง
 interface Booking {
   bookingId: number;
@@ -184,28 +184,28 @@ const DriverBooking: React.FC = () => {
   
 
   return (
-    <div style={styles.container}>
+    <div className="driverbooking">
       <h1>🚗 Driver Booking Page</h1>
       {isConnected ? (
-        <p style={styles.connected}>🟢 WebSocket Connected</p>
+        <p className="connected">🟢 WebSocket Connected</p>
       ) : (
-        <p style={styles.disconnected}>🔴 WebSocket Disconnected</p>
+        <p className="disconnected">🔴 WebSocket Disconnected</p>
       )}
-
+  
       {loading ? (
         <p>⏳ Loading booking details...</p>
       ) : booking ? (
-        <div style={styles.bookingCard}>
+        <div className="bookingCard">
           <h2>📦 New Booking Received!</h2>
           <p><strong>Booking ID:</strong> {booking.bookingId}</p>
           <p><strong>Start Location:</strong> {booking.startLocation}</p>
           <p><strong>Destination:</strong> {booking.destination}</p>
           <p><strong>Status:</strong> {booking.bookingStatus}</p>
           <p><strong>Time:</strong> {booking.bookingTime}</p>
-          <button style={styles.acceptButton} onClick={handleAcceptBooking}>
+          <button className="acceptButton" onClick={handleAcceptBooking}>
             ✅ Accept Booking
           </button>
-          <button style={styles.chatButton} onClick={handleChatWithPassenger}>
+          <button className="chatButton" onClick={handleChatWithPassenger}>
             💬 Chat with Passenger
           </button>
         </div>
@@ -216,45 +216,6 @@ const DriverBooking: React.FC = () => {
   );
 };
 
-// 🎨 CSS-in-JS Styles
-const styles = {
-  container: {
-    fontFamily: 'Arial, sans-serif',
-    padding: '20px',
-    textAlign: 'center' as const,
-    maxWidth: '400px',
-    margin: 'auto',
-    border: '1px solid #ccc',
-    borderRadius: '8px',
-    boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-    marginTop: '50px',
-    color: '#000',
-  },
-  connected: { color: 'green' },
-  disconnected: { color: 'red' },
-  bookingCard: {
-    marginTop: '20px',
-    padding: '15px',
-    border: '1px solid #ddd',
-    borderRadius: '8px',
-    backgroundColor: '#f9f9f9',
-  },
-  acceptButton: {
-    marginTop: '10px',
-    padding: '10px 20px',
-    backgroundColor: '#28a745',
-    color: '#fff',
-    borderRadius: '5px',
-    cursor: 'pointer',
-  },
-  chatButton: {
-    marginTop: '10px',
-    padding: '10px 20px',
-    backgroundColor: '#007bff',
-    color: '#fff',
-    borderRadius: '5px',
-    cursor: 'pointer',
-  },
-};
+
 
 export default DriverBooking;

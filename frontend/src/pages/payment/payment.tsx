@@ -15,6 +15,7 @@ import UnionPayIcon from "../../assets/unionpay.png";
 import OtherCardIcon from "../../assets/OtherCard.png";
 import { apiRequest } from "../../config/ApiService";
 import { Endpoint } from "../../config/Endpoint";
+import { patchBookingStatus } from "../../services/https/statusbooking/statusbooking"; //อัพเดตสถานนะการจ่ายเงิน
 
 const Payment: React.FC = () => {
   const [method, setMethod] = useState<string | null>(null);
@@ -34,6 +35,13 @@ const Payment: React.FC = () => {
   const location = useLocation();
   const { paymenyAmount, promotionId, bookingId, driverId, passengerId } =
     location.state || {};
+
+  // ตรวจสอบว่า bookingId มีค่า
+useEffect(() => {
+  if (!bookingId) {
+    console.error("Booking ID not found in location.state");
+  }
+}, [bookingId]);
 
   useEffect(() => {
     setWallet(null);
@@ -141,6 +149,54 @@ const Payment: React.FC = () => {
     setErrors(validationErrors);
     return Object.keys(validationErrors).length === 0;
   };
+
+  const [isPaid, setIsPaid] = useState(false); // ติดตามสถานะ paid
+  
+   const [isSubmitting, setIsSubmitting] = useState(false); // เพิ่ม state สำหรับป้องกันการส่งซ้ำ
+
+   // ตรวจสอบว่า `bookingId` มีค่า
+   useEffect(() => {
+    if (!bookingId) {
+      console.error("Booking ID not found in location.state");
+    }
+  }, [bookingId]);
+
+  // ฟังก์ชันส่งคำขออัปเดตสถานะ
+  const handleConfirmebooking = async (): Promise<void> => {
+    if (!bookingId) {
+      alert("Booking ID is required.");
+      return;
+    }
+  
+    // ป้องกันการส่งคำขอซ้ำ
+    if (isSubmitting) {
+      console.log("Already submitting. Please wait...");
+      return;
+    }
+  
+    setIsSubmitting(true); // ตั้งสถานะกำลังส่ง
+  
+    try {
+      // เรียก API เพื่ออัปเดตสถานะเป็น "paid"
+      const data = await patchBookingStatus("paid", bookingId);
+  
+      // ตรวจสอบผลลัพธ์
+      if (data.success) {
+        console.log("Booking status updated to paid:", data);
+        setIsPaid(true); // ตั้งสถานะใน Frontend เป็น "paid"
+        alert("Booking status successfully updated to 'paid'!");
+      } else {
+        console.error("Failed to update booking status:", data.message);
+        alert(`Failed to update booking status: ${data.message}`);
+      }
+    } catch (error) {
+      console.error("Failed to update booking status:", error);
+      alert("Failed to update booking status. Please try again.");
+    } finally {
+      setIsSubmitting(false); // รีเซ็ตสถานะกำลังส่ง
+    }
+  };
+  
 
   const handleConfirm = async () => {
     try {
@@ -496,9 +552,13 @@ const Payment: React.FC = () => {
         )}
 
         <div className="button-container">
-          <button className="ax" onClick={handleConfirm}>
-            Confirm
-          </button>
+        <button
+          className="ax"
+          onClick={handleConfirmebooking} // ใช้ handleConfirmebooking โดยตรง
+          disabled={isSubmitting} // ปิดการใช้งานปุ่มขณะกำลังส่ง
+        >
+          {isSubmitting ? "Processing..." : "Confirm Payment"}
+        </button>
           <button className="cx" onClick={() => navigate(-1)}>
             Cancel
           </button>

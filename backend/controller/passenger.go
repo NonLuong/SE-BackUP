@@ -103,10 +103,11 @@ func GetPassengers(c *gin.Context) {
 	var passengers []entity.Passenger
 
 	if err := config.DB().Preload("Gender").Find(&passengers).Error; err != nil {
+		fmt.Println("Error retrieving passenger:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch passengers"})
 		return
 	}
-
+	fmt.Println("passenger retrieved successfully:", passengers)
 	c.JSON(http.StatusOK, gin.H{"passengers": passengers})
 }
 
@@ -131,6 +132,36 @@ func GetPassengerDetail(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"passenger": passenger})
 }
+
+// ดึงข้อมูลผู้โดยสารตาม ID
+func GetPassengerByID(c *gin.Context) {
+    id := c.Param("id") // รับ ID จาก URL
+    var passenger entity.Passenger
+
+    db := config.DB()
+
+    // ดึงข้อมูล Passenger พร้อมกับ Role
+    if err := db.Preload("Role").Preload("Gender").First(&passenger, id).Error; err != nil {
+        c.JSON(http.StatusNotFound, gin.H{"error": "Passenger not found"})
+        return
+    }
+
+    // ส่งข้อมูลกลับไปยัง Frontend
+    c.JSON(http.StatusOK, gin.H{
+        "id":         passenger.ID,
+        "username":   passenger.UserName,
+        "first_name": passenger.FirstName,
+        "last_name":  passenger.LastName,
+        "phone":      passenger.PhoneNumber,
+        "email":      passenger.Email,
+        "role":       passenger.Role, // ส่ง Role ทั้ง Object หรือเฉพาะชื่อก็ได้
+    })
+}
+
+
+
+
+
 
 // UpdatePassenger - อัปเดตข้อมูล Passenger
 func UpdatePassenger(c *gin.Context) {

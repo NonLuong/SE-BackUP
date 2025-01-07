@@ -1,64 +1,46 @@
-/* Container ของการจอง */
-.driver-booking {
-    padding: 20px;
-    font-family: Arial, sans-serif;
-    background-color: #f9f9f9;
-    max-width: 600px;
-    margin: 0 auto;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* หัวข้อการจอง */
-  .driver-booking h2 {
-    text-align: center;
-    font-size: 24px;
-    color: #333;
-    margin-bottom: 20px;
-  }
-  
-  /* ข้อความรายละเอียดของการจอง */
-  .driver-booking p {
-    font-size: 16px;
-    margin-bottom: 12px;
-  }
-  
-  /* เน้นข้อความที่สำคัญ */
-  .driver-booking strong {
-    font-weight: bold;
-    color: #555;
-  }
-  
-  /* ปุ่มรับงาน */
-  .accept-btn-container {
-    text-align: center;
-    margin-top: 20px;
-  }
-  
-  .accept-btn-container button {
-    background-color: #28a745;
-    color: white;
-    padding: 12px 24px;
-    font-size: 18px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .accept-btn-container button:hover {
-    background-color: #218838;
-  }
-  
-  .accept-btn-container button:disabled {
-    background-color: #d6d6d6;
-    cursor: not-allowed;
-  }
-  
-  /* ข้อความเมื่อโหลดข้อมูล */
-  .driver-booking p {
-    text-align: center;
-    color: #777;
-    font-size: 18px;
-  }
-  
+.driverbooking {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  text-align: center;
+  max-width: 400px;
+  margin: auto;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 50px;
+  color: #000;
+}
+
+.driverbooking .connected {
+  color: green;
+}
+
+.driverbooking .disconnected {
+  color: red;
+}
+
+.driverbooking .bookingCard {
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.driverbooking .acceptButton {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #28a745;
+  color: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.driverbooking .chatButton {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+}

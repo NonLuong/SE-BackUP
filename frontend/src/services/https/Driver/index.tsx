@@ -12,33 +12,38 @@ function getAuthHeaders() {
 }
 
 // Create Driver
-async function createDriver(driver: IDriver) {
+async function createDriver(data: IDriver) {
   const requestOptions = {
     method: "POST",
     headers: getAuthHeaders(),
-    body: JSON.stringify({
-      firstname: driver.firstname,
-      lastname: driver.lastname,
-      phone_number: driver.phoneNumber, // Ensure this matches the Controller's key
-      date_of_birth: driver.dateOfBirth, // Ensure it's in "YYYY-MM-DD" format
-      driver_license_number: driver.driverLicenseNumber,
-      driver_license_expiration_date: driver.driverLicenseExpirationDate,
-      income: driver.income,
-      email: driver.email,
-      password: driver.password,
-      gender_id: driver.genderId, // Ensure it's sent as a number
-    }),
+    body: JSON.stringify(data),
   };
 
   try {
     const response = await fetch(`${apiUrl}/drivers`, requestOptions);
+
+    // Log response for debugging
+    console.log("Response from API:", response);
+
+    // Check if response status is not OK (2xx)
     if (!response.ok) {
-      throw new Error(`HTTP Error: ${response.status}`);
+      const errorMessage = `HTTP Error: ${response.status} - ${response.statusText}`;
+      console.error("Error in response:", errorMessage);
+
+      // Attempt to extract error message from response body
+      const errorBody = await response.json().catch(() => null);
+      throw new Error(
+        errorBody?.message || errorMessage || "Unknown error occurred"
+      );
     }
+
+    // Return JSON response if successful
     return await response.json();
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating driver:", error);
-    return { status: 500, message: "Server Error" };
+
+    // Re-throw the error to be handled by caller
+    throw error;
   }
 }
 
@@ -72,7 +77,7 @@ async function listGenders() {
   };
 
   try {
-    const response = await fetch(`${apiUrl}/genders`, requestOptions);
+    const response = await fetch(`${apiUrl}/gender`, requestOptions);
     if (!response.ok) {
       throw new Error(`HTTP Error: ${response.status}`);
     }

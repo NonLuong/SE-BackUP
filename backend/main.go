@@ -66,6 +66,9 @@ func registerRoutes(r *gin.Engine) {
 	r.POST("/signup", controller.SignUp)
 	r.POST("/signin", controller.SignIn)
 
+	//passenger
+	r.GET("/passenger/:id", controller.GetPassengerByID)
+
 	// Booking
 	r.POST("/startlocation", controller.CreateStartLocation)
 	r.POST("/destination", controller.CreateDestination)
@@ -150,9 +153,9 @@ func registerRoutes(r *gin.Engine) {
 	// Passenger Routes
 	r.POST("/passengers", controller.CreatePassenger)
 	r.GET("/passengers", controller.GetPassengers)
-	r.GET("/passengers/:id", controller.GetPassengerDetail)
-	r.PUT("/passengers/:id", controller.UpdatePassenger)
-	r.DELETE("/passengers/:id", controller.DeletePassenger)
+	r.GET("/passenger/:id", controller.GetPassengerDetail)
+	r.PUT("/passenger/:id", controller.UpdatePassenger)
+	r.DELETE("/passenger/:id", controller.DeletePassenger)
 
 	// Vehicle Routes
 	r.POST("/vehicles", controller.CreateVehicle)
@@ -170,19 +173,22 @@ func registerRoutes(r *gin.Engine) {
 // CORSMiddleware จัดการ Cross-Origin Resource Sharing (CORS)
 func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// อนุญาตเฉพาะ Origin ที่ต้องการ
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		// ระบุ Origin ที่อนุญาต (แทนที่ด้วย URL ของ Frontend ของคุณ)
+		allowedOrigin := "http://localhost:5173"
+
+		c.Writer.Header().Set("Access-Control-Allow-Origin", allowedOrigin)
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE, PATCH")
 
-		// จัดการ Preflight Request
+		// จัดการ Preflight Request (OPTIONS Method)
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(204)
 			return
 		}
 
-		// ไปยัง Middleware ถัดไป
+		// ส่งไปยัง Middleware ถัดไป
 		c.Next()
 	}
 }
+
