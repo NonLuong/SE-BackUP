@@ -97,6 +97,13 @@ func registerRoutes(r *gin.Engine) {
 	//roomchat
 	r.POST("/roomchat", controller.CreateRoomChat)
 
+	// bookingsttus
+
+	r.PATCH("/bookingstatus/:id", controller.UpdateBookingStatus)   
+	r.POST("/bookingstatus", controller.CreateBookingStatus)
+
+
+
 	// Promotion Routes
 	r.GET("/promotions", controller.GetAllPromotion)
 	r.GET("/promotion/:id", controller.GetPromotion)
@@ -153,7 +160,7 @@ func registerRoutes(r *gin.Engine) {
 	// Passenger Routes
 	r.POST("/passengers", controller.CreatePassenger)
 	r.GET("/passengers", controller.GetPassengers)
-	r.GET("/passenger/:id", controller.GetPassengerDetail)
+	//r.GET("/passenger/:id", controller.GetPassengerDetail)   ถ้าไม่ comment รันไม่ได้ 
 	r.PUT("/passenger/:id", controller.UpdatePassenger)
 	r.DELETE("/passenger/:id", controller.DeletePassenger)
 
