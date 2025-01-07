@@ -13,7 +13,7 @@ import (
 
 func UpdateBookingStatus(c *gin.Context) {
     db := config.DB()
-    bookingID := c.Param("id") // ดึง booking ID จาก URL
+    bookingID := c.Param("id")
 
     // ตรวจสอบ JSON ที่ส่งมา
     var input struct {
@@ -47,7 +47,7 @@ func UpdateBookingStatus(c *gin.Context) {
     if input.StatusBooking == "paid" {
         // ดึงข้อมูลการจองที่เกี่ยวข้อง
         var booking entity.Booking
-        if err := db.First(&booking, bookingID).Error; err != nil {
+        if err := db.First(&booking, "id = ?", bookingID).Error; err != nil {
             c.JSON(http.StatusNotFound, gin.H{"error": "Booking not found"})
             return
         }
@@ -60,14 +60,17 @@ func UpdateBookingStatus(c *gin.Context) {
 
         // ดึงตำแหน่งเริ่มต้นของผู้โดยสาร
         var startLocation entity.StartLocation
-        if err := db.First(&startLocation, booking.StartLocationID).Error; err != nil {
+        if err := db.First(&startLocation, "id = ?", booking.StartLocationID).Error; err != nil {
             c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch start location"})
             return
         }
 
         // คำนวณหาคนขับที่ใกล้ที่สุด
         var drivers []entity.Driver
-        db.Find(&drivers)
+        if err := db.Find(&drivers).Error; err != nil {
+            c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch drivers"})
+            return
+        }
 
         var closestDriver entity.Driver
         minDistance := math.MaxFloat64
@@ -106,37 +109,16 @@ func UpdateBookingStatus(c *gin.Context) {
 
     // ส่งข้อมูลการอัปเดตกลับไปยัง client
     c.JSON(http.StatusOK, gin.H{
+        "status": "success",
         "message": "Booking status updated successfully",
-        "data":    bookingStatus,
+        "data": gin.H{
+            "booking_id": bookingStatus.BookingID,
+            "status_booking": bookingStatus.StatusBooking,
+        },
     })
+    
 }
 
-
-func UpdateBookingStatusaaa(c *gin.Context) {
-    var bookingStatus entity.BookingStatus
-
-    // รับ BookingID จาก URL
-    bookingID := c.Param("id")
-
-    // ตรวจสอบ JSON ที่ส่งมา
-    if err := c.ShouldBindJSON(&bookingStatus); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
-        return
-    }
-
-    // เชื่อมต่อฐานข้อมูล
-    db := config.DB()
-
-    // ค้นหาและอัปเดตสถานะ
-    if err := db.Model(&entity.BookingStatus{}).Where("booking_id = ?", bookingID).Update("status_booking", bookingStatus.StatusBooking).Error; err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update booking status"})
-        return
-    }
-
-    c.JSON(http.StatusOK, gin.H{
-        "message": "Booking status updated successfully",
-    })
-}
 
 func CreateBookingStatus(c *gin.Context) {
 	var bookingStatus entity.BookingStatus

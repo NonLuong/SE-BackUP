@@ -32,7 +32,7 @@ const MapComponent: React.FC = () => {
       const existingScript = document.getElementById('google-maps-api');
       if (!existingScript) {
         const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places`;
+        script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBCporibkdPqd7yC4nJEWMZI2toIlY23jM&libraries=places`;
         script.id = 'google-maps-api';
         script.async = true;
         script.onload = () => {

@@ -56,26 +56,45 @@ export const sendBookingStatusToBackend = async (bookingStatusData: any): Promis
   export async function patchBookingStatus(
     statusBooking: string,
     bookingID: number
-  ): Promise<any> {
+  ): Promise<{ success: boolean; message: string; data?: any }> {
     try {
       const response = await fetch(`${apiUrl}/bookingstatus/${bookingID}`, {
-        method: "PATCH", // ใช้ PATCH สำหรับอัปเดตบางส่วน
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          status_booking: statusBooking, // ระบุสถานะใหม่ที่ต้องการอัปเดต
+          status_booking: statusBooking,
         }),
       });
   
       if (!response.ok) {
-        throw new Error(`Failed to update booking status. HTTP status: ${response.status}`);
+        // จัดการข้อผิดพลาด HTTP
+        const errorResponse = await response.json().catch(() => ({}));
+        const errorMessage =
+          errorResponse.message || `Failed to update booking status. HTTP status: ${response.status}`;
+        console.error("HTTP Error:", errorMessage);
+        return { success: false, message: errorMessage };
       }
   
       const data = await response.json();
-      return data;
+  
+      // ตรวจสอบว่าโครงสร้างข้อมูลที่ส่งกลับมาถูกต้อง
+      if (!data || typeof data.success === "undefined") {
+        console.error("Invalid API response format:", data);
+        return { success: false, message: "Invalid response format from API." };
+      }
+  
+      return {
+        success: data.success,
+        message: data.message || "Booking status updated successfully.",
+        data: data.data || null,
+      };
     } catch (error) {
-      console.error("Error in patchBookingStatus:", error);
-      throw error;
+      // จัดการข้อผิดพลาดเครือข่าย
+      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred.";
+      console.error("Network or unexpected error in patchBookingStatus:", errorMessage);
+      return { success: false, message: errorMessage };
     }
   }
+  

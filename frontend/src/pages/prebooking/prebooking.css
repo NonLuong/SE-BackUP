@@ -1,11 +1,29 @@
+
+
+/* กำหนดพื้นหลัง */
+.pagesprebooking {
+  background-color: #8792E7; /* สีพื้นหลังม่วง */
+  width: 100vw; /* เต็มความกว้างหน้าจอ */
+  
+  display: flex; /* ใช้ flexbox เพื่อจัดให้อยู่กึ่งกลาง */
+  justify-content: center; /* จัดให้อยู่กึ่งกลางแนวนอน */
+  align-items: flex-start; /* จัดให้อยู่แนวตั้งแบบเริ่มจากด้านบน */
+  padding: 50px 0; /* เพิ่ม Padding เพื่อเลื่อนฟอร์มลงมา */
+  box-sizing: border-box;
+}
+
+/* กล่องฟอร์ม */
 .pre-booking {
-    max-width: 900px; /* ขยายขนาดจาก 600px เป็น 900px */
-    margin: 50px auto;
-    padding: 40px; /* เพิ่ม Padding เพื่อให้ดูสมดุล */
-    background-color: #ffffff; /* สีพื้นหลังของกล่อง */
-    border-radius: 16px; /* เพิ่มความโค้งมน */
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25); /* เพิ่มเงาให้ชัดขึ้น */
-  }
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 40px;
+  background-color: #ffffff; /* สีพื้นหลังของฟอร์ม */
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25); /* เพิ่มเงา */
+}
+
+
   
   
   h1 {

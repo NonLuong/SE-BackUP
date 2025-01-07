@@ -7,7 +7,7 @@ const Navbar: React.FC = () => {
   return (
     <nav className="navbar">
       <div className="logo">
-        <Link to="/">
+        <Link to="/home">
           <img
             src="logo2.jpeg"
             alt="Cabana Logo"
@@ -25,7 +25,7 @@ const Navbar: React.FC = () => {
       </div>
       <ul className="nav-links">
         <li>
-          <Link to="/">Home</Link>
+          <Link to="/home">Home</Link>
         </li>
         <li>
           <Link to="/RideHistory">Rides</Link>
@@ -34,14 +34,14 @@ const Navbar: React.FC = () => {
           <Link to="/Promotion/view">Promotion</Link>
         </li>
         <li>
-          <Link to="/PassengerChat">ChatPassenger</Link>
+          <Link to="/Finishjob">Finishjob</Link>
         </li>
-        <li>
+        {/* <li>
           <Link to="/DriveChat">ChatDriver</Link>
         </li>
         <li>
           <Link to="/DriverBooking">Dirverbooking</Link>
-        </li>
+        </li> */}
         <li>
           <Link to="/Prebooking">Prebooking</Link>
         </li>
