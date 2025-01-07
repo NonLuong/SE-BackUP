@@ -75,14 +75,12 @@ func GetBookingByID(c *gin.Context) {
 
 func CreateBooking(c *gin.Context) {
 	var booking entity.Booking
+
 	// ตรวจสอบข้อมูลการจองจาก JSON
 	if err := c.ShouldBindJSON(&booking); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
-
-	// เชื่อมต่อกับฐานข้อมูล
-	db := config.DB()
 
 	// กำหนดค่าเริ่มต้น
 	if booking.BookingStatus == "" {
@@ -92,64 +90,20 @@ func CreateBooking(c *gin.Context) {
 		booking.BookingTime = fmt.Sprintf("%v", time.Now())
 	}
 
-	// ดึงข้อมูลตำแหน่งเริ่มต้นของผู้โดยสาร
-	var startLocation entity.StartLocation
-	if err := db.First(&startLocation, booking.StartLocationID).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch start location"})
-		return
-	}
-
 	// บันทึกข้อมูลการจอง
+	db := config.DB()
 	if err := db.Create(&booking).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create booking"})
 		return
 	}
 
-	// คำนวณหาคนขับที่ใกล้ที่สุด
-	var drivers []entity.Driver
-	db.Find(&drivers)
-
-	var closestDriver entity.Driver
-	minDistance := math.MaxFloat64
-
-	for _, driver := range drivers {
-		var driverLocation entity.Location
-		if err := db.First(&driverLocation, "driver_id = ?", driver.ID).Error; err != nil {
-			fmt.Println("Error fetching driver location:", err)
-			continue
-		}
-
-		// คำนวณระยะทาง
-		distance := calculateDistance(startLocation.Latitude, startLocation.Longitude, driverLocation.Latitude, driverLocation.Longitude)
-
-		if distance < minDistance {
-			closestDriver = driver
-			minDistance = distance
-		}
-	}
-
-	// เช็คกรณีไม่มีคนขับที่ใกล้ที่สุด
-	if closestDriver.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "No driver available"})
-		return
-	}
-
-	// อัปเดตการจับคู่กับคนขับและสถานะการจอง
-	booking.DriverID = closestDriver.ID
-	booking.BookingStatus = "Waiting for driver acceptance"
-	db.Save(&booking)
-
-	// ส่ง bookingId ไปให้คนขับผ่าน WebSocket
-	room := fmt.Sprintf("%d", closestDriver.ID) // ใช้ driverID เป็น room
-	fmt.Println("test1")
-	sendMessageToDriver(room, booking.ID)
-	fmt.Println("test2")
 	// ส่งข้อมูลการจองกลับไป
 	c.JSON(http.StatusCreated, gin.H{
-		"message": "Booking created, waiting for driver acceptance",
+		"message": "Booking created successfully",
 		"data":    booking,
 	})
 }
+
 
 // ฟังก์ชันคำนวณระยะทางระหว่างสองพิกัด (ใช้ Haversine Formula)
 func calculateDistance(lat1, lon1, lat2, lon2 float64) float64 {
@@ -207,7 +161,7 @@ func DriverWebSocketHandler(c *gin.Context) {
 	defer conn.Close()
 
 	// เพิ่มการเชื่อมต่อไปยัง clients
-	room := fmt.Sprintf("%s", driverID)
+	room := driverID
 	addClientConnection(room, conn)
 	fmt.Printf("✅ WebSocket connection established for driver %s\n", driverID)
 
@@ -267,32 +221,47 @@ func sendMessageToDriver(room string, bookingID uint) {
 
 
 func AcceptBooking(c *gin.Context) {
-	db := config.DB()
-	bookingID := c.Param("id")
+    db := config.DB()
+    bookingID := c.Param("id")
 
-	var booking entity.Booking
-	if err := db.First(&booking, bookingID).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Booking not found"})
-		return
-	}
+    // ตรวจสอบว่ามีการจองที่สอดคล้องกับ bookingID หรือไม่
+    var booking entity.Booking
+    if err := db.First(&booking, bookingID).Error; err != nil {
+        c.JSON(http.StatusNotFound, gin.H{"error": "Booking not found"})
+        return
+    }
 
-	// ตรวจสอบสถานะการจอง
-	if booking.BookingStatus != "Waiting for driver acceptance" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Booking already processed or in an incorrect state"})
-		return
-	}
+    // ตรวจสอบสถานะการจอง
+    if booking.BookingStatus != "Waiting for driver acceptance" {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Booking already processed or in an incorrect state"})
+        return
+    }
 
-	// เปลี่ยนสถานะเป็น "Accepted"
-	booking.BookingStatus = "Accepted"
-	if err := db.Save(&booking).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to accept booking"})
-		return
-	}
+    // สร้างรายการใหม่ใน entity.BookingStatus
+    newBookingStatus := entity.BookingStatus{
+        BookingID:     booking.ID,
+        StatusBooking: "Accepted",
+    }
+    if err := db.Create(&newBookingStatus).Error; err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update booking status"})
+        return
+    }
 
-	// ส่งข้อมูลที่อัปเดตกลับไป
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"message": "Booking accepted successfully",
-		"data":    booking,
-	})
+    // อัปเดตสถานะของ booking (ถ้าจำเป็น)
+    booking.BookingStatus = "Accepted"
+    if err := db.Save(&booking).Error; err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update booking entity"})
+        return
+    }
+
+    // ส่งข้อมูลกลับไป
+    c.JSON(http.StatusOK, gin.H{
+        "success": true,
+        "message": "Booking accepted successfully",
+        "data": gin.H{
+            "booking":        booking,
+            "booking_status": newBookingStatus,
+        },
+    })
 }
+
