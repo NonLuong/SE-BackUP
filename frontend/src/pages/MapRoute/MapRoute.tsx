@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { GoogleMap, LoadScript, DirectionsRenderer, Marker } from '@react-google-maps/api';
+import { GoogleMap, DirectionsRenderer, Marker } from '@react-google-maps/api';
 import { FaMotorcycle, FaCar, FaTruckPickup } from 'react-icons/fa';
 import './MapRoute.css';
 import { sendBookingToBackend } from '../../services/https/booking';
@@ -17,19 +17,33 @@ const MapRoute: React.FC = () => {
   const { pickupLocation, startLocationId, destinationLocation, destinationId } = location.state || {};
   const navigate = useNavigate();
 
+  const [isLoaded, setIsLoaded] = useState(false);
   const [directions, setDirections] = useState<any>(null);
   const [distance, setDistance] = useState<number | null>(null);
-  const [googleMapsReady, setGoogleMapsReady] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState<number | null>(null);
   const [fare, setFare] = useState<number | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null); // ข้อความสำเร็จ
-
-  const handleApiLoaded = () => {
-    setGoogleMapsReady(true);
-  };
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    if (pickupLocation && destinationLocation && googleMapsReady) {
+    const loadGoogleMapsAPI = () => {
+      const existingScript = document.getElementById('google-maps-api');
+      if (!existingScript) {
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBCporibkdPqd7yC4nJEWMZI2toIlY23jM&libraries=places`;
+        script.id = 'google-maps-api';
+        script.async = true;
+        script.onload = () => setIsLoaded(true);
+        document.head.appendChild(script);
+      } else {
+        setIsLoaded(true);
+      }
+    };
+
+    loadGoogleMapsAPI();
+  }, []);
+
+  useEffect(() => {
+    if (pickupLocation && destinationLocation && isLoaded) {
       const directionsService = new window.google.maps.DirectionsService();
 
       const request = {
@@ -49,7 +63,7 @@ const MapRoute: React.FC = () => {
         }
       });
     }
-  }, [pickupLocation, destinationLocation, googleMapsReady]);
+  }, [pickupLocation, destinationLocation, isLoaded]);
 
   const handleSelectVehicle = (id: number) => {
     setSelectedVehicle(id);
@@ -66,14 +80,14 @@ const MapRoute: React.FC = () => {
       setSuccessMessage('กรุณาเลือกยานพาหนะและตรวจสอบข้อมูลให้ครบถ้วน');
       return;
     }
-  
+
     if (!pickupLocation || !destinationLocation || !startLocationId || !destinationId) {
       setSuccessMessage('ข้อมูลสถานที่เริ่มต้นหรือจุดหมายปลายทางไม่ครบถ้วน');
       return;
     }
-  
+
     const selectedVehicleData = vehicles.find((v) => v.id === selectedVehicle);
-  
+
     const bookingData: any = {
       beginning: pickupLocation.name || '',
       terminus: destinationLocation.name || '',
@@ -88,30 +102,29 @@ const MapRoute: React.FC = () => {
       destination_id: destinationId,
       passenger_id: 1,
     };
-  
+
     try {
       const result = await sendBookingToBackend(bookingData);
-  
+
       if (result.success) {
         setSuccessMessage('🎉 การจองสำเร็จ!');
-  
-        const bookingId = result.data.data.ID; // ดึง bookingId จาก response
-  
-        // บันทึกสถานะในตาราง bookingstatus
+
+        const bookingId = result.data.data.ID;
+
         const bookingStatusData = {
           booking_id: bookingId,
-          status_booking: 'Pending', // กำหนดสถานะเริ่มต้น
+          status_booking: 'Pending',
         };
-  
+
         try {
           const bookingStatusResult = await sendBookingStatusToBackend(bookingStatusData);
-  
+
           if (bookingStatusResult.success) {
             console.log('Booking status saved successfully:', bookingStatusResult.data);
-  
+
             setTimeout(() => {
               navigate(`/paid/${bookingId}`);
-            }, 2000); // รอ 2 วินาทีก่อน Navigate
+            }, 2000);
           } else {
             console.error('Failed to save booking status:', bookingStatusResult.message);
           }
@@ -126,33 +139,26 @@ const MapRoute: React.FC = () => {
       setSuccessMessage('ไม่สามารถบันทึกข้อมูลการจองได้');
     }
   };
-  
+
+  if (!isLoaded) return <div>กำลังโหลดแผนที่...</div>;
+
   return (
     <div className="MapRoute">
-      <LoadScript googleMapsApiKey="AIzaSyBCporibkdPqd7yC4nJEWMZI2toIlY23jM" onLoad={handleApiLoaded}>
-        <GoogleMap
-          mapContainerStyle={{ width: '100%', height: '400px' }}
-          zoom={12}
-          center={pickupLocation || { lat: 13.736717, lng: 100.523186 }}
-        >
-          {directions && <DirectionsRenderer directions={directions} />}
-          {pickupLocation && <Marker position={pickupLocation} label="Pickup" />}
-          {destinationLocation && <Marker position={destinationLocation} label="Destination" />}
-        </GoogleMap>
-      </LoadScript>
+      <GoogleMap
+        mapContainerStyle={{ width: '100%', height: '400px' }}
+        zoom={12}
+        center={pickupLocation || { lat: 13.736717, lng: 100.523186 }}
+      >
+        {directions && <DirectionsRenderer directions={directions} />}
+        {pickupLocation && <Marker position={pickupLocation} label="Pickup" />}
+        {destinationLocation && <Marker position={destinationLocation} label="Destination" />}
+      </GoogleMap>
 
-      {/* แสดงข้อความสำเร็จ */}
-      {successMessage && (
-        <div className="success-message">
-          {successMessage}
-        </div>
-      )}
+      {successMessage && <div className="success-message">{successMessage}</div>}
 
       <div className="ticket-container">
         {vehicles.map((vehicle, index) => {
-          const fareForVehicle = distance !== null
-            ? vehicle.baseFare + vehicle.perKm * distance
-            : null;
+          const fareForVehicle = distance !== null ? vehicle.baseFare + vehicle.perKm * distance : null;
 
           return (
             <div key={vehicle.id} className={`ticket ${selectedVehicle === vehicle.id ? 'selected' : ''}`}>

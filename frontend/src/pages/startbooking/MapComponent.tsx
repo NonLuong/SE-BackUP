@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
+import { GoogleMap, Marker } from '@react-google-maps/api';
 import { useNavigate } from 'react-router-dom';
 import './MapComponent.css';
 import { sendDataStartlocationToBackend } from '../../services/https/booking';
@@ -18,6 +18,7 @@ const searchContainerStyle = {
 };
 
 const MapComponent: React.FC = () => {
+  const [isLoaded, setIsLoaded] = useState(false);
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [pickupLocation, setPickupLocation] = useState<{ lat: number; lng: number; name: string } | null>(null);
   const [searchText, setSearchText] = useState<string>('');
@@ -25,194 +26,161 @@ const MapComponent: React.FC = () => {
   const [map, setMap] = useState<any>(null);
   const navigate = useNavigate();
 
+  // Load Google Maps API Script
   useEffect(() => {
-    if (navigator.geolocation) {
+    const loadGoogleMapsAPI = () => {
+      const existingScript = document.getElementById('google-maps-api');
+      if (!existingScript) {
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBCporibkdPqd7yC4nJEWMZI2toIlY23jM&libraries=places`;
+        script.id = 'google-maps-api';
+        script.async = true;
+        script.onload = () => {
+          console.log('Google Maps API loaded');
+          setIsLoaded(true);
+        };
+        document.head.appendChild(script);
+      } else {
+        setIsLoaded(true);
+      }
+    };
+
+    loadGoogleMapsAPI();
+  }, []);
+
+  // Get user location
+  useEffect(() => {
+    if (isLoaded && navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const userLocation = {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
           };
-          console.log("User location:", userLocation);
+          console.log('User location:', userLocation);
           setLocation(userLocation);
-          fetchNearbyPlaces(userLocation);
         },
         (error) => {
           console.error('Error getting location:', error);
           const defaultLocation = {
-            lat: 13.736717,
+            lat: 13.736717, // Default to Bangkok
             lng: 100.523186,
           };
           setLocation(defaultLocation);
-          fetchNearbyPlaces(defaultLocation);
         },
-        {
-          timeout: 10000,
-        }
+        { timeout: 10000 }
       );
-    } else {
-      console.error('Geolocation is not supported by this browser.');
-      const defaultLocation = {
-        lat: 13.736717,
-        lng: 100.523186,
-      };
-      setLocation(defaultLocation);
-      fetchNearbyPlaces(defaultLocation);
     }
-  }, []);
+  }, [isLoaded]);
 
-  const fetchNearbyPlaces = (location: { lat: number; lng: number }) => {
-    console.log("Fetching nearby places for location:", location);
-    if (!location) {
-      console.error("Location is null or undefined");
-      return;
-    }
-
-    const placesService = new window.google.maps.places.PlacesService(
-      document.createElement('div')
-    );
-
-    const request = {
-      location: new window.google.maps.LatLng(location.lat, location.lng),
-      radius: 5000,
-      type: ['restaurant', 'park', 'shopping_mall'],
-    };
-
-    placesService.nearbySearch(request, (results, status) => {
-      console.log("Nearby search status:", status);
-      if (status === window.google.maps.places.PlacesServiceStatus.OK && results) {
-        console.log("Nearby places found:", results);
-        setNearbyPlaces(results.slice(0, 5));
-      } else {
-        console.error('Error fetching nearby places:', status);
-        if (status === window.google.maps.places.PlacesServiceStatus.ZERO_RESULTS) {
-          alert('ไม่พบสถานที่ใกล้เคียงในพื้นที่นี้');
-        }
-      }
-    });
-  };
-
-  useEffect(() => {
-    console.log("Nearby places updated:", nearbyPlaces);
-  }, [nearbyPlaces]);
-
-  useEffect(() => {
-    console.log("Location updated:", location);
-  }, [location]);
-
-  const handleNearbyPlaceClick = (place) => {
-    if (!place.geometry || !place.geometry.location) {
-      console.error("Place geometry is missing");
-      return;
-    }
+  const handleNearbyPlaceClick = (place: any) => {
+    if (!place.geometry || !place.geometry.location) return;
 
     const location = place.geometry.location;
+    setPickupLocation({ name: place.name, lat: location.lat(), lng: location.lng() });
 
+    // เลื่อนแผนที่ไปยังตำแหน่งที่เลือก
     if (map) {
       map.panTo(location);
       map.setZoom(15);
     }
-
-    setPickupLocation({
-      name: place.name,
-      lat: location.lat(),
-      lng: location.lng(),
-    });
   };
 
   const handleMapClick = (event: any) => {
     const lat = event.latLng.lat();
     const lng = event.latLng.lng();
-    console.log('Clicked position:', lat, lng);
 
-    const geocoder = new window.google.maps.Geocoder();
-    geocoder.geocode({ location: { lat, lng } }, (results, status) => {
-      if (status === window.google.maps.GeocoderStatus.OK && results.length > 0) {
-        const placeName = results[0].formatted_address;
-        setPickupLocation({ lat, lng, name: placeName });
-      }
-    });
+    // อัปเดตตำแหน่ง pickupLocation ตามจุดที่คลิก
+    setPickupLocation({ lat, lng, name: 'ตำแหน่งที่เลือก' });
+
+    // เลื่อนแผนที่ไปยังตำแหน่งที่คลิก
+    if (map) {
+      map.panTo({ lat, lng });
+      map.setZoom(15);
+    }
   };
 
-  const handlePlaceSearch = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePlaceSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchText(event.target.value);
-    if (event.target.value === '') {
+    if (!event.target.value) {
       setNearbyPlaces([]);
       return;
     }
 
     const placesService = new window.google.maps.places.PlacesService(document.createElement('div'));
-    const request = {
-      query: event.target.value,
-      fields: ['place_id', 'geometry', 'name'],
-    };
+    const request = { query: event.target.value, fields: ['place_id', 'geometry', 'name'] };
 
     placesService.findPlaceFromQuery(request, (results, status) => {
-      if (status === window.google.maps.places.PlacesServiceStatus.OK && results.length > 0) {
+      if (status === window.google.maps.places.PlacesServiceStatus.OK && results && results.length > 0) {
         const firstResult = results[0];
-        const location = firstResult.geometry.location;
 
-        if (map) {
-          map.panTo(location);
-          map.setZoom(15);
+        if (firstResult.geometry && firstResult.geometry.location && firstResult.name) {
+          const location = firstResult.geometry.location;
+
+          // เลื่อนแผนที่ไปยังตำแหน่งที่ค้นหา
+          if (map) {
+            map.panTo(location);
+            map.setZoom(15);
+          }
+
+          setPickupLocation({
+            name: firstResult.name,
+            lat: location.lat(),
+            lng: location.lng(),
+          });
+
+          console.log(
+            "Searched Place:",
+            firstResult.name,
+            "Latitude:",
+            location.lat(),
+            "Longitude:",
+            location.lng()
+          );
+        } else {
+          console.error("Geometry, location, or name is undefined for the selected place");
+          alert("ไม่สามารถดึงข้อมูลสถานที่ได้");
         }
-
-        setPickupLocation({ name: firstResult.name, lat: location.lat(), lng: location.lng() });
-        console.log("Searched Place:", firstResult.name, "Latitude:", location.lat(), "Longitude:", location.lng());
+      } else {
+        console.error("Error or no results from findPlaceFromQuery:", status);
       }
     });
   };
 
   const handlePickUpSubmit = async () => {
-    console.log("Pickup Location:", pickupLocation);
-
     if (pickupLocation) {
       try {
         const startLocationId = await sendDataStartlocationToBackend(pickupLocation);
-        console.log("Start Location ID:", startLocationId);
-
         navigate('/mapdestination', { state: { pickupLocation, startLocationId } });
       } catch (error) {
         console.error('Error sending pickup location:', error);
         alert('ไม่สามารถบันทึกข้อมูลจุดเริ่มต้นได้');
       }
     } else {
-      alert("กรุณาเลือกจุดเริ่มต้นก่อน");
+      alert('กรุณาเลือกจุดเริ่มต้นก่อน');
     }
   };
 
-  if (!location) return <div>กำลังโหลดแผนที่.....</div>;
+  if (!isLoaded || !location) return <div>กำลังโหลดแผนที่...</div>;
 
   return (
     <div className="mapcomponent" style={{ position: 'relative' }}>
-      <LoadScript googleMapsApiKey="AIzaSyBCporibkdPqd7yC4nJEWMZI2toIlY23jM" libraries={['places']}>
-        <GoogleMap
-          mapContainerStyle={containerStyle}
-          center={location}
-          zoom={15}
-          onLoad={(mapInstance) => {
-            setMap(mapInstance);
-          }}
-          onClick={handleMapClick}
-        >
-          <Marker position={location} />
+      <GoogleMap
+        mapContainerStyle={containerStyle}
+        center={location} // เริ่มต้นด้วยตำแหน่งผู้ใช้
+        zoom={15}
+        onLoad={(mapInstance) => setMap(mapInstance)}
+        onClick={handleMapClick} // รองรับการคลิกแผนที่
+      >
+        {/* แสดงหมุดเฉพาะเมื่อมีการเลือกสถานที่ */}
+        {pickupLocation && (
+          <Marker
+            position={{ lat: pickupLocation.lat, lng: pickupLocation.lng }}
+          />
+        )}
+      </GoogleMap>
 
-          {pickupLocation && <Marker position={{ lat: pickupLocation.lat, lng: pickupLocation.lng }} />}
-
-          {nearbyPlaces.map((place, index) => (
-            <Marker
-              key={index}
-              position={{
-                lat: place.geometry.location.lat(),
-                lng: place.geometry.location.lng(),
-              }}
-              onClick={() => handleNearbyPlaceClick(place)}
-            />
-          ))}
-        </GoogleMap>
-      </LoadScript>
-
-      <div style={{ ...searchContainerStyle }}>
+      <div style={searchContainerStyle}>
         <input
           type="text"
           value={searchText}
