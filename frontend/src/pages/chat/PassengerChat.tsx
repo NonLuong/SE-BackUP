@@ -163,6 +163,7 @@ const PassengerChat: React.FC = () => {
   
     // 💾 ส่งข้อความไปยัง Backend
     const backendMessage: Message = {
+      
       content: newMessage,
       message_type: 'text',
       read_status: false,

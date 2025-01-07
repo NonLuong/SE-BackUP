@@ -32,7 +32,7 @@ const MapComponent: React.FC = () => {
       const existingScript = document.getElementById('google-maps-api');
       if (!existingScript) {
         const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBCporibkdPqd7yC4nJEWMZI2toIlY23jM&libraries=places`;
+        script.src = `https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places`;
         script.id = 'google-maps-api';
         script.async = true;
         script.onload = () => {
@@ -48,7 +48,7 @@ const MapComponent: React.FC = () => {
     loadGoogleMapsAPI();
   }, []);
 
-  // Get user location
+  // Get user location and fetch nearby places
   useEffect(() => {
     if (isLoaded && navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -59,6 +59,7 @@ const MapComponent: React.FC = () => {
           };
           console.log('User location:', userLocation);
           setLocation(userLocation);
+          fetchNearbyPlaces(userLocation);
         },
         (error) => {
           console.error('Error getting location:', error);
@@ -67,11 +68,54 @@ const MapComponent: React.FC = () => {
             lng: 100.523186,
           };
           setLocation(defaultLocation);
+          fetchNearbyPlaces(defaultLocation);
         },
         { timeout: 10000 }
       );
     }
   }, [isLoaded]);
+
+  const fetchNearbyPlaces = (location: { lat: number; lng: number }) => {
+    console.log('Fetching nearby places for location:', location);
+    if (!location) return;
+  
+    const placesService = new window.google.maps.places.PlacesService(document.createElement('div'));
+  
+    const types = ['restaurant', 'park', 'shopping_mall']; // Array ของประเภทที่ต้องการค้นหา
+  
+    // ล้างข้อมูลก่อนเริ่มค้นหาใหม่
+    setNearbyPlaces([]);
+  
+    types.forEach((type) => {
+      const request: google.maps.places.PlaceSearchRequest = {
+        location: new window.google.maps.LatLng(location.lat, location.lng),
+        radius: 5000,
+        type, // ส่งทีละ string แทน Array
+      };
+  
+      placesService.nearbySearch(request, (results, status) => {
+        if (status === window.google.maps.places.PlacesServiceStatus.OK && results && results.length > 0) {
+          console.log(`Nearby places for type ${type} found:`, results);
+  
+          setNearbyPlaces((prev) => {
+            // รวมรายการใหม่และลบสถานที่ที่ซ้ำกัน
+            const uniquePlaces = [
+              ...prev,
+              ...results.filter(
+                (newPlace) => !prev.some((prevPlace) => prevPlace.place_id === newPlace.place_id)
+              ),
+            ];
+            return uniquePlaces.slice(0, 5); // จำกัดเพียง 5 สถานที่
+          });
+        } else if (status === window.google.maps.places.PlacesServiceStatus.ZERO_RESULTS) {
+          console.log(`No results for type ${type}`);
+        } else {
+          console.error('Error fetching nearby places:', status);
+        }
+      });
+    });
+  };
+  
 
   const handleNearbyPlaceClick = (place: any) => {
     if (!place.geometry || !place.geometry.location) return;
@@ -79,7 +123,7 @@ const MapComponent: React.FC = () => {
     const location = place.geometry.location;
     setPickupLocation({ name: place.name, lat: location.lat(), lng: location.lng() });
 
-    // เลื่อนแผนที่ไปยังตำแหน่งที่เลือก
+    // Move the map to the selected place
     if (map) {
       map.panTo(location);
       map.setZoom(15);
@@ -90,61 +134,26 @@ const MapComponent: React.FC = () => {
     const lat = event.latLng.lat();
     const lng = event.latLng.lng();
 
-    // อัปเดตตำแหน่ง pickupLocation ตามจุดที่คลิก
-    setPickupLocation({ lat, lng, name: 'ตำแหน่งที่เลือก' });
+    const geocoder = new window.google.maps.Geocoder();
+    geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+      if (status === window.google.maps.GeocoderStatus.OK && results && results.length > 0) {
+        const placeName = results[0].formatted_address;
+        setPickupLocation({ lat, lng, name: placeName });
+      } else {
+        console.error('Error fetching place name:', status);
+        setPickupLocation({
+          lat,
+          lng,
+          name: 'ตำแหน่งที่ไม่ทราบชื่อ',
+        });
+      }
+    });
 
-    // เลื่อนแผนที่ไปยังตำแหน่งที่คลิก
+    // Move the map to the clicked location
     if (map) {
       map.panTo({ lat, lng });
       map.setZoom(15);
     }
-  };
-
-  const handlePlaceSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchText(event.target.value);
-    if (!event.target.value) {
-      setNearbyPlaces([]);
-      return;
-    }
-
-    const placesService = new window.google.maps.places.PlacesService(document.createElement('div'));
-    const request = { query: event.target.value, fields: ['place_id', 'geometry', 'name'] };
-
-    placesService.findPlaceFromQuery(request, (results, status) => {
-      if (status === window.google.maps.places.PlacesServiceStatus.OK && results && results.length > 0) {
-        const firstResult = results[0];
-
-        if (firstResult.geometry && firstResult.geometry.location && firstResult.name) {
-          const location = firstResult.geometry.location;
-
-          // เลื่อนแผนที่ไปยังตำแหน่งที่ค้นหา
-          if (map) {
-            map.panTo(location);
-            map.setZoom(15);
-          }
-
-          setPickupLocation({
-            name: firstResult.name,
-            lat: location.lat(),
-            lng: location.lng(),
-          });
-
-          console.log(
-            "Searched Place:",
-            firstResult.name,
-            "Latitude:",
-            location.lat(),
-            "Longitude:",
-            location.lng()
-          );
-        } else {
-          console.error("Geometry, location, or name is undefined for the selected place");
-          alert("ไม่สามารถดึงข้อมูลสถานที่ได้");
-        }
-      } else {
-        console.error("Error or no results from findPlaceFromQuery:", status);
-      }
-    });
   };
 
   const handlePickUpSubmit = async () => {
@@ -163,16 +172,18 @@ const MapComponent: React.FC = () => {
 
   if (!isLoaded || !location) return <div>กำลังโหลดแผนที่...</div>;
 
+  
+
   return (
     <div className="mapcomponent" style={{ position: 'relative' }}>
       <GoogleMap
         mapContainerStyle={containerStyle}
-        center={location} // เริ่มต้นด้วยตำแหน่งผู้ใช้
+        center={location} // Center on user's location
         zoom={15}
         onLoad={(mapInstance) => setMap(mapInstance)}
-        onClick={handleMapClick} // รองรับการคลิกแผนที่
+        onClick={handleMapClick} // Handle map click
       >
-        {/* แสดงหมุดเฉพาะเมื่อมีการเลือกสถานที่ */}
+        {/* Show marker only when a place is selected */}
         {pickupLocation && (
           <Marker
             position={{ lat: pickupLocation.lat, lng: pickupLocation.lng }}
@@ -184,7 +195,7 @@ const MapComponent: React.FC = () => {
         <input
           type="text"
           value={searchText}
-          onChange={handlePlaceSearch}
+          onChange={(e) => setSearchText(e.target.value)}
           placeholder="ค้นหาสถานที่"
           style={{
             width: '100%',

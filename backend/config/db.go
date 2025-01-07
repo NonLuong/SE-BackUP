@@ -54,6 +54,7 @@ func SetupDatabase() {
 		&entity.Rooms{},
 		&entity.BankName{},
 		&entity.RoomChat{},
+		&entity.BookingStatus{},
 
 
 	)
