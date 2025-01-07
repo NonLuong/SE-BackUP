@@ -54,7 +54,7 @@ const Review: React.FC = () => {
 
   const handleReviewLater = () => {
     alert("You can review later!");
-    navigate("/");
+    navigate("/home");
   };
 
   const handleSubmit = async () => {
@@ -136,13 +136,6 @@ const Review: React.FC = () => {
   return (
     <div className="ss">
       <div className="review-container">
-        <video autoPlay muted loop className="jk">
-          <source
-            src="https://media.istockphoto.com/id/675824868/th/%E0%B8%A7%E0%B8%B4%E0%B8%94%E0%B8%B5%E0%B9%82%E0%B8%AD/%E0%B8%82%E0%B8%B1%E0%B8%9A%E0%B8%A3%E0%B8%96%E0%B9%83%E0%B8%99%E0%B8%AD%E0%B8%B8%E0%B9%82%E0%B8%A1%E0%B8%87%E0%B8%84%E0%B9%8C%E0%B8%A1%E0%B8%B7%E0%B8%94.mp4?s=mp4-640x640-is&k=20&c=TX1SqvOdk-xW7NGCd7TJ7C8iigLdaE4-i8Tp1L4u5O0="
-            type="video/mp4"
-          />
-          Your browser does not support the video tag.
-        </video>
         {/* Sidebar */}
         {/* <div className="sidebar">
           {menuItems.map((item) => (
