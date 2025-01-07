@@ -58,7 +58,7 @@ const Review: React.FC = () => {
   };
 
   const handleSubmit = async () => {
-    if (!bookingId || !passengerId || !driverId) {
+    if (!bookingId || !passengerId ) {
       alert("Please check the information on the home page first.");
       return;
     }
@@ -171,7 +171,7 @@ const Review: React.FC = () => {
                   />
                 </div>
 
-                <p className="driver-id">Driver_ID: {driverId || "N/A"}</p>
+                <p className="driver-id">Driver_ID: {driverId}</p>
               </div>
 
               <div className="rating-buttons">
@@ -326,7 +326,7 @@ const Review: React.FC = () => {
             <div className="passenger-details">
               <p className="passenger-title">Review BY</p>
               <p className="passenger-id">
-                Passenger_ID: {passengerId || "N/A"}
+                Passenger_ID: {passengerId}
               </p>
             </div>
           </div>
