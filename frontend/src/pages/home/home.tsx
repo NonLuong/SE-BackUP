@@ -20,9 +20,9 @@ interface PromotionInterface {
   photo: string;
   discount_type_id: number | string;
   discount: number;
-  status_id: number;
+  status_promotion_id: number;
   use_limit: number;
-  distance: number;
+  distance_promotion: number;
   end_date: string;
 }
 
@@ -219,7 +219,7 @@ const Home: React.FC = () => {
 
                           <Col>
                             <div style={{ textAlign: "right" }}>
-                              {renderStatus(promotion.status_id)}
+                              {renderStatus(promotion.status_promotion_id)}
                             </div>
                           </Col>
                         </Row>
@@ -262,7 +262,7 @@ const Home: React.FC = () => {
                         >
                           <div>หมดเขตโปรโมชั่น {formatDate(promotion.end_date)}</div>
                           <div style={{ textAlign: "right" }}>
-                            ระยะทางขั้นต่ำ: {promotion.distance} กม. / จำกัดสิทธิ์ {promotion.use_limit} คน
+                            ระยะทางขั้นต่ำ: {promotion.distance_promotion} กม. / จำกัดสิทธิ์ {promotion.use_limit} คน
                           </div>
                         </div>
                       </Col>
