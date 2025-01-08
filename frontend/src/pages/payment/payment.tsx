@@ -253,7 +253,7 @@ const Payment: React.FC = () => {
         setIsPaid(true); // ตั้งสถานะใน Frontend เป็น "paid"
       } else {
         console.error("Failed to update booking status:", data.message);
-        alert(`Failed to update booking status: ${data.message}`);
+        //alert(`Failed to update booking status: ${data.message}`);
       }
 
       if (response) {
