@@ -86,12 +86,13 @@ const Login: React.FC = () => {
           transform: "translateX(-50%)",
         }}
       >
+        <div className="login">
         <img src={logo} alt="Logo" className="logo" />
         <h2>เข้าสู่ระบบ</h2>
         {errorMessage && <div className="error-message">{errorMessage}</div>}
         <form onSubmit={handleSubmit}>
           <div className="input-group">
-            <label htmlFor="email">อีเมล</label>
+            <label htmlFor="email">EMAIL</label>
             <input
               type="email"
               id="email"
@@ -102,7 +103,7 @@ const Login: React.FC = () => {
             />
           </div>
           <div className="input-group">
-            <label htmlFor="password">รหัสผ่าน</label>
+            <label htmlFor="password">PASSWORD</label>
             <input
               type="password"
               id="password"
@@ -113,10 +114,11 @@ const Login: React.FC = () => {
             />
           </div>
           <button type="submit" className="login-btn">
-            เข้าสู่ระบบ
+            LOGIN
           </button>
         </form>
       </div>
+    </div>
     </div>
   );
 };

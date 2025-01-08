@@ -1,6 +1,5 @@
 import React from "react";
 import AdminSidebar from "../../components/sider/DriverSidebar"; // ปรับ path ให้ถูกต้อง
-import d2 from "../../assets/d2.jpg"; // ปรับ path ให้ตรงกับที่เก็บรูป
 
 const Dashboard: React.FC = () => {
   return (
@@ -25,17 +24,8 @@ const Dashboard: React.FC = () => {
             marginBottom: "20px",
           }}
         >
-          แปะๆ เดะมาทำให้จู้
+          -- Driver Dashboard --
         </h1>
-        <img
-          src={d2}
-          alt="Dashboard Image"
-          style={{
-            maxWidth: "700px",
-            borderRadius: "10px",
-            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
-          }}
-        />
       </div>
     </div>
   );

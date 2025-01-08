@@ -1,5 +1,5 @@
-import { Passenger} from "../../../interfaces/IPassenger";
-import axios from "axios";
+//import { Passenger} from "../../../interfaces/IPassenger";
+//import axios from "axios";
 
 const apiUrl = "http://localhost:8080";
 

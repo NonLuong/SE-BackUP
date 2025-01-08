@@ -107,7 +107,7 @@ async function deleteDriver(id: number) {
 // Update Driver
 export const updateDriver = async (driver: IDriver) => {
   try {
-    const response = await axios.put(`${apiUrl}/driver/${driver.id}`, driver, {
+    const response = await axios.put(`${apiUrl}/driver/${driver.ID}`, driver, {
       headers: getAuthHeaders(),
     });
     return response;

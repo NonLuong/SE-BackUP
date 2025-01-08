@@ -110,7 +110,7 @@ const Driver: React.FC = () => {
     {
       title: "แก้ไข/ลบ",
       key: "actions",
-      render: (text: any, record: any) => (
+      render: (_: any, record: any) => (
         <Space size="middle">
           <Button type="link" icon={<EditOutlined />} />
           <Button
