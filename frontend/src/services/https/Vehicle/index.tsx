@@ -12,35 +12,35 @@ function getAuthHeaders() {
 }
 
 // Create Vehicle
-export async function createVehicle(vehicle: IVehicle) {
-  const requestOptions = {
-    method: "POST",
-    headers: getAuthHeaders(),
-    body: JSON.stringify({
-      license_plate: vehicle.licensePlate,
-      brand: vehicle.brand,
-      vehicle_model: vehicle.vehicleModel,
-      color: vehicle.color,
-      date_of_purchase: vehicle.dateOfPurchase, // YYYY-MM-DD
-      expiration_date_of_vehicle_act: vehicle.expirationDateOfVehicleAct, // YYYY-MM-DD
-      capacity: vehicle.capacity,
-      vehicle_type_id: vehicle.vehicleTypeId,
-      employee_id: vehicle.employeeId,
-      status_id: vehicle.statusId,
-    }),
-  };
+// export async function createVehicle(vehicle: IVehicle) {
+//   const requestOptions = {
+//     method: "POST",
+//     headers: getAuthHeaders(),
+//     body: JSON.stringify({
+//       license_plate: vehicle.licensePlate,
+//       brand: vehicle.brand,
+//       vehicle_model: vehicle.vehicleModel,
+//       color: vehicle.color,
+//       date_of_purchase: vehicle.dateOfPurchase, // YYYY-MM-DD
+//       expiration_date_of_vehicle_act: vehicle.expirationDateOfVehicleAct, // YYYY-MM-DD
+//       capacity: vehicle.capacity,
+//       vehicle_type_id: vehicle.vehicleTypeId,
+//       employee_id: vehicle.employeeId,
+//       status_id: vehicle.statusId,
+//     }),
+//   };
 
-  try {
-    const response = await fetch(`${apiUrl}/vehicles`, requestOptions);
-    if (!response.ok) {
-      throw new Error(`HTTP Error: ${response.status}`);
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("Error creating vehicle:", error);
-    return { status: 500, message: "Server Error" };
-  }
-}
+//   try {
+//     const response = await fetch(`${apiUrl}/vehicles`, requestOptions);
+//     if (!response.ok) {
+//       throw new Error(`HTTP Error: ${response.status}`);
+//     }
+//     return await response.json();
+//   } catch (error) {
+//     console.error("Error creating vehicle:", error);
+//     return { status: 500, message: "Server Error" };
+//   }
+// }
 
 // List Vehicles
 export async function listVehicles() {
@@ -87,7 +87,7 @@ export async function getVehicle(id: number) {
 export async function updateVehicle(vehicle: IVehicle) {
   try {
     const response = await axios.put(
-      `${apiUrl}/vehicles/${vehicle.id}`,
+      `${apiUrl}/vehicles/${vehicle.VehicleID}`,
       vehicle,
       { headers: getAuthHeaders() }
     );

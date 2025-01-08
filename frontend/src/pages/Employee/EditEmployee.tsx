@@ -12,14 +12,14 @@ import {
 import AdminSidebar from "../../components/sider/AdminSidebar";
 import ImgCrop from "antd-img-crop";
 import { PlusOutlined } from "@ant-design/icons";
-import { useParams, useNavigate } from "react-router-dom";
+//import { useParams, useNavigate } from "react-router-dom";
 import {
   getEmployee,
   listGenders,
   listPositions,
   updateEmployee,
 } from "../../services/https/Employee/index";
-import { IEmployee } from "../../interfaces/IEmployee";
+import { EmployeeInterface } from "../../interfaces/IEmployee";
 import type { UploadFile } from "antd";
 
 const { Option } = Select;
@@ -28,11 +28,11 @@ const EditEmployee: React.FC = () => {
   // กำหนด id เองเพื่อทดสอบ (แทนที่ useParams)
   const id = "1"; // เปลี่ยน id ที่ต้องการทดสอบ
 
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
   const [form] = Form.useForm();
   const [genders, setGenders] = useState([]);
   const [positions, setPositions] = useState([]);
-  const [employeeData, setEmployeeData] = useState<IEmployee | null>(null);
+  const [employeeData, setEmployeeData] = useState<EmployeeInterface | null>(null);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [previewVisible, setPreviewVisible] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
@@ -116,18 +116,18 @@ const EditEmployee: React.FC = () => {
         roleId = 4; // Owner or Admin
       }
 
-      const employeeData: IEmployee = {
-        id: Number(id), // Employee ID should be passed for update
+      const employeeData: EmployeeInterface = {
+        ID: Number(id), // Employee ID should be passed for update
         firstname: values.firstname,
         lastname: values.lastname,
-        phoneNumber: values.phone,
-        genderId: genderId,
-        positionId: positionId,
+        phone_number: values.phone,
+        gender_id: genderId,
+        position_id: positionId,
         salary: values.salary,
         email: values.email,
         password: values.password,
-        startDate: values.startdate.format("YYYY-MM-DD"),
-        dateOfBirth: values.birthdate.format("YYYY-MM-DD"),
+        start_date: values.startdate.format("YYYY-MM-DD"),
+        date_of_birth: values.birthdate.format("YYYY-MM-DD"),
         profile: fileList[0]?.thumbUrl || "",
       };
 

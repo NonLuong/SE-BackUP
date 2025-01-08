@@ -7,7 +7,7 @@ import {
   Upload,
   Form,
   message,
-  Modal,
+  //Modal,
 } from "antd";
 import AdminSidebar from "../../components/sider/AdminSidebar";
 import ImgCrop from "antd-img-crop";
@@ -88,7 +88,8 @@ const AddEmployee: React.FC = () => {
       };
 
       const response = await createEmployee(employeeData);
-
+      void response
+      
       messageApi.open({
         type: "success",
         content: "บันทึกข้อมูลพนักงานสำเร็จ!",

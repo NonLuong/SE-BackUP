@@ -5,7 +5,6 @@ import { Table, Button, Space, Card, Row, Col, Statistic, Modal } from "antd";
 import {
   EditOutlined,
   DeleteOutlined,
-  PlusOutlined,
   TeamOutlined,
 } from "@ant-design/icons";
 import Male from "../../assets/male.png";
@@ -116,7 +115,7 @@ const Passenger: React.FC = () => {
     {
       title: "แก้ไข/ลบ",
       key: "actions",
-      render: (text: any, record: any) => (
+      render: (_: any, record: any) => (
         <Space size="middle">
           <Button
             type="link"
