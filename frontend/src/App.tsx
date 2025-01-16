@@ -43,7 +43,8 @@ import Passenger from "./pages/Passenger/Passenger";
 import Dashboard from "./pages/Dashboard/Admindashboard";
 import Dashboards from "./pages/Dashboard/Driverdashboard";
 import FinishJob from "./pages/finishjob/finishjob";
-
+import Driverontheway from "./pages/DriverBooking/driverontheway"
+import DriverFinish from "./pages/DriverBooking/Driverfinish"
 
 const App: React.FC = () => {
   return (
@@ -99,7 +100,8 @@ const App: React.FC = () => {
         {/*น้ำฝน Admin*/}
         <Route path="/Dashboard" element={<Dashboard />} />
         <Route path="/Dashboards" element={<Dashboards />} />
-
+        <Route path="/Driverontheway" element={<Driverontheway />} />
+        <Route path="/DriverFinish" element={<DriverFinish />} />
         <Route path="/Drivers" element={<Driver />} />
         <Route path="/Driver/create" element={<AddDriver />} />
         <Route path="/Members" element={<Passenger />} />
