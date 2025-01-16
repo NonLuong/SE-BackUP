@@ -86,7 +86,7 @@ func CreateVehicle(c *gin.Context) {
 		Capacity:                  capacity,
 		VehicleTypeID:             uint(vehicleTypeID),
 		EmployeeID:                uint(employeeID),
-		StatusID:                  uint(statusID),
+		VehicleStatusID:                  uint(statusID),
 	}
 
 	// ใช้ Transaction สำหรับการบันทึกข้อมูล

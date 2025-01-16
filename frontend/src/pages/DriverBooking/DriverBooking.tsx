@@ -148,6 +148,12 @@ const DriverBooking: React.FC = () => {
           console.error('❌ Failed to create RoomChat');
           alert('❌ Failed to create RoomChat');
         }
+
+        navigate('/Driverontheway', {
+          state: {
+            bookingId: booking.bookingId,
+          },
+        }); 
         
       } else {
         alert(`❌ Failed to accept booking: ${response.message}`);
