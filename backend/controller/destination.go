@@ -80,3 +80,31 @@ func CreateDestination(c *gin.Context) {
         },
     })
 }
+
+// GetLatestDestinations : ดึงชื่อสถานที่ล่าสุด 3 แห่ง
+func GetLatestDestinations(c *gin.Context) {
+    db := config.DB()
+    var destinations []entity.Destination
+
+    // ดึง 3 สถานที่ล่าสุดตาม created_at (เรียงจากใหม่ไปเก่า)
+    if err := db.Order("created_at desc").Limit(3).Find(&destinations).Error; err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{
+            "status":  "error",
+            "message": fmt.Sprintf("Failed to retrieve latest destinations: %v", err),
+        })
+        return
+    }
+
+    // สร้าง slice ที่เก็บเฉพาะชื่อสถานที่ (Place)
+    var places []string
+    for _, destination := range destinations {
+        places = append(places, destination.Place)
+    }
+
+    // ส่งเฉพาะชื่อสถานที่กลับไป
+    c.JSON(http.StatusOK, gin.H{
+        "status":   "success",
+        "data":     places,
+    })
+}
+

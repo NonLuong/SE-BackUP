@@ -36,12 +36,12 @@ const Navbar: React.FC = () => {
         <li>
           <Link to="/Finishjob">Finishjob</Link>
         </li>
-        {/* <li>
-          <Link to="/DriveChat">ChatDriver</Link>
+        <li>
+          <Link to="/DriverTrackingPage">DriverTrackingPage</Link>
         </li>
         <li>
           <Link to="/DriverBooking">Dirverbooking</Link>
-        </li> */}
+        </li> 
         <li>
           <Link to="/Prebooking">Prebooking</Link>
         </li>

@@ -211,7 +211,7 @@
 }
 
 /* Row Styling */
-.row {
+.aa .row {
   display: flex;
   justify-content: space-between; /* Aligns text on both ends */
   font-size: 1.1rem;
@@ -222,16 +222,16 @@
   line-height: 1.5;
 }
 
-.row:last-child {
+.aa .row:last-child {
   border-bottom: none; /* Removes border for the last row */
 }
 
-.row span:first-child {
+.aa .row span:first-child {
   font-weight: 400; /* Lighter weight for labels */
   color: #6a67b0; /* Keeps labels subtle */
 }
 
-.row span:last-child {
+.aa .row span:last-child {
   font-weight: 600; /* Bolder weight for values */
   color: #5c54a4; /* Highlights values */
 }
@@ -599,7 +599,7 @@
 }
 
 /* Input Field */
-.row input {
+.aa .row input {
   font-size: 1.1rem; /* Slightly larger font for prominence */
   padding: 10px 15px; /* Spacious padding for a modern look */
   border: 2px solid #d4d4d4; /* Default subtle border */
@@ -617,14 +617,14 @@
 }
 
 /* Input Field Hover and Focus States */
-.row input:hover {
+.aa .row input:hover {
   background: linear-gradient(135deg, #ffffff, #f0f0ff); /* Subtle highlight */
   border-color: #8e82ff; /* Vibrant border color */
   transform: translateY(-2px); /* Slight upward movement */
   box-shadow: 0px 6px 12px rgba(142, 130, 255, 0.4); /* Enhanced shadow */
 }
 
-.row input:focus {
+.aa .row input:focus {
   background: linear-gradient(135deg, #ffffff, #eef3ff); /* Brighter gradient */
   border-color: #6a63ff; /* Deep purple border for focus */
   box-shadow: 0px 8px 16px rgba(106, 99, 255, 0.5); /* Glowing shadow */
@@ -632,7 +632,7 @@
 }
 
 /* Animated Glow on Focus */
-.row input:focus-visible {
+.aa .row input:focus-visible {
   animation: glow 1.5s infinite ease-in-out; /* Glow animation */
 }
 
@@ -647,7 +647,7 @@
 }
 
 /* Placeholder Text for Input */
-.row input::placeholder {
+.aa .row input::placeholder {
   color: rgba(180, 180, 180, 0.8); /* Softer placeholder color */
   font-style: italic; /* Italic for differentiation */
   font-size: 1rem; /* Slightly smaller than text size */
@@ -655,7 +655,7 @@
 }
 
 /* Promotion Code Text Styling */
-.row span {
+.aa .row span {
   font-size: 1.2rem; /* Slightly larger font size for importance */
   font-weight: bold;
   color: #4a4a8a; /* Primary text color */
@@ -726,7 +726,7 @@
 }
 
 /* Row Styles */
-.row {
+.aa .row {
   display: flex;
   align-items: center;
   justify-content: space-between; /* Space between label and value */

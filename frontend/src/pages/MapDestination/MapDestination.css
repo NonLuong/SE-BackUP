@@ -1,69 +1,91 @@
 /* สำหรับ container ของรายการสถานที่ */
 .destination {
-  background-color: #D9D7EF; /* ตัวอย่างสีฟ้าอ่อน */
-  height: 100vh; /* กำหนดให้เต็มความสูงของหน้าจอ */
-  width: 100%; /* กำหนดให้เต็มความกว้างของหน้าจอ */
+  background-color: #D9D7EF; /* สีฟ้าอ่อน (เหมือน mapcomponent) */
+  height: 100vh; /* ความสูงเต็มจอ */
+  width: 100%; /* ความกว้างเต็มจอ */
 }
 
 .destination .list-place {
-    position: absolute;
-    bottom: 70px;
-    left: 0;
-    right: 0;
-    background-color: #fff;
-    z-index: 1001;
-    top: 120%;
-  }
-  
-  /* สำหรับรายการของสถานที่ */
-  .destination .place-list {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    overflow-y: auto;
-    max-height: 200px;
-  }
-  
-  /* สำหรับแต่ละรายการสถานที่ */
-  .destination .place-item {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-    cursor: pointer;
-  }
-  
-  /* เพิ่มสไตล์เมื่อไม่มีสถานที่ใกล้เคียง */
-  .destination .place-item.no-places {
-    text-align: center;
-    color: #888;
-  }
-  
+  background-color: #D9D7EF; /* สีฟ้าอ่อน (เหมือน mapcomponent) */
+  z-index: 1001; /* แสดงเหนือองค์ประกอบอื่น */
+  padding: 10px; /* เพิ่มระยะภายใน */
+}
 
-  /* MapComponent.css */
+.destination .place-list {
+  list-style-type: none; /* ลบ bullet list */
+  padding: 0; /* ลบ padding ของ ul */
+  margin: 0; /* ลบ margin ของ ul */
+  overflow-y: auto; /* ทำให้ scroll ได้หากรายการเกิน */
+  max-height: 300px; /* กำหนดความสูงสูงสุด */
+}
 
-/* สไตล์ของกล่องปุ่ม */
+.destination .place-item {
+  padding: 10px; /* เพิ่มระยะภายใน */
+  border-bottom: 1px solid #ddd; /* เส้นแบ่งด้านล่าง */
+  cursor: pointer; /* เปลี่ยนเป็น pointer เมื่อ hover */
+  display: flex; /* จัดเรียงไอคอนและชื่อสถานที่ในแถวเดียวกัน */
+  align-items: center; /* จัดไอคอนและข้อความให้อยู่กึ่งกลาง */
+  gap: 10px; /* ระยะห่างระหว่างไอคอนและข้อความ */
+  transition: background-color 0.3s; /* เพิ่มเอฟเฟกต์เปลี่ยนสีเมื่อ hover */
+}
+
+.destination .place-item:hover {
+  background-color: #e0dff8; /* สีม่วงอ่อนเมื่อ hover */
+}
+
+/* กรณีไม่มีสถานที่ */
+.destination .place-item.no-places {
+  text-align: center;
+  color: #888; /* สีเทาสำหรับข้อความ */
+}
+
+/* สำหรับปุ่ม */
 .destination .pickup-button-container {
-    width: 100%;
-    background-color: #D9D7EF;
-    padding: 10px;
-    position: fixed; /* ใช้ fixed เพื่อให้ปุ่มอยู่คงที่ที่ด้านล่าง */
-    bottom: 10px; /* ตั้งค่าให้ปุ่มอยู่ห่างจากด้านล่าง */
-    left: 0;
-    z-index: 9999; /* ปรับ z-index ให้สูงขึ้น */
-    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2); /* เพิ่มเงาให้ปุ่ม */
+  width: 100%; /* ปุ่มเต็มความกว้าง */
+  background-color: #D9D7EF; /* สีฟ้าอ่อน */
+  padding: 10px 20px;
+  position: fixed; /* ให้ปุ่มอยู่คงที่ที่ด้านล่าง */
+  bottom: 10px; /* ระยะห่างจากขอบล่าง */
+  left: 0;
+  z-index: 999; /* แสดงอยู่บนสุด */
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); /* เพิ่มเงา */
+  text-align: center; /* จัดปุ่มให้อยู่ตรงกลาง */
 }
 
-/* ปุ่มเลือกจุดรับ */
+/* สไตล์สำหรับปุ่ม */
+.destination .pickup-button,
 .destination .drop-button {
-    padding: 10px;
-    background-color: #7F6ACB;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    width: 100%;
-    cursor: pointer;
-    font-weight: bold; /* ทำให้ข้อความตัวหนา */
+  padding: 12px 20px;
+  background-color: #7F6ACB; /* สีม่วง */
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  width: 100%; /* ปุ่มเต็มความกว้าง */
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px; /* ขนาดตัวอักษร */
 }
 
-.destination .pickup-button:hover {
-    background-color: #a696e0; /* สีเมื่อ hover */
+.destination .pickup-button:hover,
+.destination .drop-button:hover {
+  background-color: #a696e0; /* สีม่วงอ่อนเมื่อ hover */
+}
+
+/* สไตล์สำหรับไอคอน */
+.destination .place-item img {
+  margin-right: 8px; /* ระยะห่างระหว่างไอคอนและข้อความ */
+  width: 20px; /* ขนาดของไอคอน */
+  height: 20px;
+  filter: hue-rotate(270deg) brightness(0.9); /* ปรับไอคอนให้เป็นโทนสีม่วง */
+}
+
+/* ช่องค้นหา */
+.search-input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #99D7EF; /* เส้นขอบสีฟ้าอ่อน */
+  box-sizing: border-box;
+  margin-bottom: 10px; /* เพิ่มช่องว่างด้านล่าง */
+  background-color: #ffffff; /* สีพื้นหลังขาว */
 }

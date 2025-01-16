@@ -103,6 +103,9 @@ func registerRoutes(r *gin.Engine) {
 	r.PATCH("/bookingstatus/:id", controller.UpdateBookingStatus)   
 	r.POST("/bookingstatus", controller.CreateBookingStatus)
 
+	// Route สำหรับดึง 3 สถานที่ล่าสุด
+    r.GET("/history-places", controller.GetLatestDestinations)
+
 
 
 	// Promotion Routes

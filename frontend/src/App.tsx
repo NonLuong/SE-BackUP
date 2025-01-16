@@ -43,8 +43,7 @@ import Passenger from "./pages/Passenger/Passenger";
 import Dashboard from "./pages/Dashboard/Admindashboard";
 import Dashboards from "./pages/Dashboard/Driverdashboard";
 import FinishJob from "./pages/finishjob/finishjob";
-import Driverontheway from "./pages/DriverBooking/driverontheway"
-import DriverFinish from "./pages/DriverBooking/Driverfinish"
+
 
 const App: React.FC = () => {
   return (
@@ -69,6 +68,7 @@ const App: React.FC = () => {
         
         <Route path="/Prebooking" element={<PreBooking />} />
         <Route path="/Finishjob" element={<FinishJob/>} />
+        <Route path="/DriverTrackingPage" element={<DriverTrackingPage/>} />
 
 
 
