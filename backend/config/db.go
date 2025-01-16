@@ -33,7 +33,8 @@ func SetupDatabase() {
 	db.AutoMigrate(
 		&entity.Gender{},
 		&entity.Roles{}, // เพิ่ม Role เข้าไปในระบบ
-		&entity.Status{},
+		&entity.DriverStatus{},
+		&entity.VehicleStatus{},
 		&entity.Position{},
 		&entity.Employee{},
 		&entity.Passenger{},
@@ -90,14 +91,18 @@ func SetupDatabase() {
 	}
 
 
-	statuses := []entity.Status{
+	statuses := []entity.DriverStatus{
 		{
-			StatusName: "Active",//ใช้บ่งบอกว่าสถานะของ Drivers
-			StatusType: "Operational",//พร้อมใช้งาน
+			Status: "Active",//ใช้บ่งบอกว่าสถานะของ Drivers
 		},
 		{
-			StatusName: "Inactive",
-			StatusType: "Non-Operational",
+			Status: "Inactive",
+		},
+		{
+			Status: "Accepting work",
+		},
+		{
+			Status: "Finish work",
 		},
 	}
 	
@@ -105,6 +110,21 @@ func SetupDatabase() {
 		db.Create(&status)
 	}
 	
+	vehiclestatuses := []entity.VehicleStatus{
+		{
+			Status: "Active",
+		},
+		{
+			Status: "Inactive",
+		},
+		{
+			Status: "Maintenance",
+		},
+	}
+	
+	for _, status := range vehiclestatuses {
+		db.Create(&status)
+	}
 	
 
 
@@ -361,7 +381,7 @@ func SetupDatabase() {
 			EmployeeID:                  2,
 			VehicleID:					 1,
 			LocationID: 6,
-			StatusID: 1,
+			DriverStatusID: 1,
 		},
 		{
 			Firstname:                   "Somsak",
@@ -379,7 +399,7 @@ func SetupDatabase() {
 			EmployeeID:                  2,
 			VehicleID:					 2,
 			LocationID: 1,
-			StatusID: 1,
+			DriverStatusID: 1,
 		},
 		{
 			Firstname:                   "Prasit",
@@ -397,7 +417,7 @@ func SetupDatabase() {
 			EmployeeID:                  3,
 			VehicleID:					 6,
 			LocationID: 2,
-			StatusID: 1,
+			DriverStatusID: 1,
 		},
 		{
 			Firstname:                   "Thannam",
@@ -415,7 +435,7 @@ func SetupDatabase() {
 			EmployeeID:                  3,
 			VehicleID:					 4,
 			LocationID: 3,
-			StatusID: 2,
+			DriverStatusID: 2,
 		},
 		{
 			Firstname:                   "Anan",
@@ -433,7 +453,7 @@ func SetupDatabase() {
 			EmployeeID:                  2,
 			VehicleID:					 5,
 			LocationID: 4,
-			StatusID: 2,
+			DriverStatusID: 2,
 		},
 		{
 			Firstname:                   "Supa",
@@ -451,7 +471,7 @@ func SetupDatabase() {
 			EmployeeID:                  2,
 			VehicleID:					 3,
 			LocationID: 5,
-			StatusID: 1,
+			DriverStatusID: 1,
 		},
 	}
 

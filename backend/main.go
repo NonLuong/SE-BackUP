@@ -76,6 +76,7 @@ func registerRoutes(r *gin.Engine) {
 	r.GET("/bookings", controller.GetAllBookings)
 	r.GET("/bookings/:id", controller.GetBookingByID)
 	r.POST("/bookings/:id/accept", controller.AcceptBooking)
+	r.POST("/bookings/:id/finish", controller.FinishBooking)
 
 	// WebSocket
 	//socketdriverbooking

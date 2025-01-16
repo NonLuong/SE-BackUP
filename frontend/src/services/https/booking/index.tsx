@@ -260,6 +260,33 @@ export const acceptBooking = async (bookingId: string) => {
   }
 };
 
+export const finishBooking = async (bookingId: string) => {
+  try {
+    const response = await fetch(`${apiUrl}/bookings/${bookingId}/finish`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      // ตรวจสอบ Response Status
+      const errorText = await response.text();
+      throw new Error(`Failed to finish booking. Status: ${response.status}, Message: ${errorText}`);
+    }
+
+    const data = await response.json();
+    if (data.success) {
+      return data; 
+    } else {
+      throw new Error(`Failed to finish booking: ${data.message}`);
+    }
+  } catch (error: any) {
+    console.error('❌ Error finishing booking:', error.message || error);
+    throw new Error(error.message || 'Unknown error occurred while finishing booking');
+  }
+};
+
 
 // services/https.ts
 export const notifyPassenger = async (
