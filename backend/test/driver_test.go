@@ -29,7 +29,7 @@ func TestFirstname(t *testing.T) {
 			LocationID: 1,
 			VehicleID: 1,
 			EmployeeID: 1,
-			StatusID: 1,
+			DriverStatusID: 1,
 			RoleID: 1,
 		}
 
@@ -61,7 +61,7 @@ func TestLastname(t *testing.T) {
 			LocationID: 1,
 			VehicleID: 1,
 			EmployeeID: 1,
-			StatusID: 1,
+			DriverStatusID: 1,
 			RoleID: 1,
 		}
 
@@ -162,7 +162,7 @@ func TestDateOfBirth(t *testing.T) {
 			LocationID: 1,
 			VehicleID: 1,
 			EmployeeID: 1,
-			StatusID: 1,
+			DriverStatusID: 1,
 			RoleID: 1,
 		}
 
@@ -195,7 +195,7 @@ func TestIncome(t *testing.T) {
 			LocationID: 1,
 			VehicleID: 1,
 			EmployeeID: 1,
-			StatusID: 1,
+			DriverStatusID: 1,
 			RoleID: 1,
 		}
 
@@ -224,7 +224,7 @@ func TestIncome(t *testing.T) {
 			LocationID: 1,
 			VehicleID: 1,
 			EmployeeID: 1,
-			StatusID: 1,
+			DriverStatusID: 1,
 			RoleID: 1,
 		}
 
@@ -256,7 +256,7 @@ func TestPassword(t *testing.T) {
 			LocationID: 1,
 			VehicleID: 1,
 			EmployeeID: 1,
-			StatusID: 1,
+			DriverStatusID: 1,
 			RoleID: 1,
 		}
 
@@ -285,7 +285,7 @@ func TestPassword(t *testing.T) {
 			LocationID: 1,
 			VehicleID: 1,
 			EmployeeID: 1,
-			StatusID: 1,
+			DriverStatusID: 1,
 			RoleID: 1,
 		}
 
@@ -317,7 +317,7 @@ func TestIdentificationNumber(t *testing.T) {
 			LocationID: 1,
 			VehicleID: 1,
 			EmployeeID: 1,
-			StatusID: 1,
+			DriverStatusID: 1,
 			RoleID: 1,
 		}
 
@@ -345,7 +345,7 @@ func TestIdentificationNumber(t *testing.T) {
 			LocationID: 1,
 			VehicleID: 1,
 			EmployeeID: 1,
-			StatusID: 1,
+			DriverStatusID: 1,
 			RoleID: 1,
 		}
 
@@ -377,7 +377,7 @@ func TestDriverLicensenumber(t *testing.T) {
 			LocationID: 1,
 			VehicleID: 1,
 			EmployeeID: 1,
-			StatusID: 1,
+			DriverStatusID: 1,
 			RoleID: 1,
 		}
 
@@ -405,7 +405,7 @@ func TestDriverLicensenumber(t *testing.T) {
 			LocationID: 1,
 			VehicleID: 1,
 			EmployeeID: 1,
-			StatusID: 1,
+			DriverStatusID: 1,
 			RoleID: 1,
 		}
 
@@ -437,7 +437,7 @@ func TestEmaildriver(t *testing.T) {
 			LocationID: 1,
 			VehicleID: 1,
 			EmployeeID: 1,
-			StatusID: 1,
+			DriverStatusID: 1,
 			RoleID: 1,
 		}
 
@@ -465,7 +465,7 @@ func TestEmaildriver(t *testing.T) {
 			LocationID: 1,
 			VehicleID: 1,
 			EmployeeID: 1,
-			StatusID: 1,
+			DriverStatusID: 1,
 			RoleID: 1,
 		}
 
@@ -497,7 +497,7 @@ func TestDriverLicenseExpirationDate(t *testing.T) {
 			LocationID: 1,
 			VehicleID: 1,
 			EmployeeID: 1,
-			StatusID: 1,
+			DriverStatusID: 1,
 			RoleID: 1,
 		}
 
@@ -530,7 +530,7 @@ func TestValidDriver(t *testing.T) {
 			LocationID: 1,
 			VehicleID: 1,
 			EmployeeID: 1,
-			StatusID: 1,
+			DriverStatusID: 1,
 			RoleID: 1,
 		}
 
