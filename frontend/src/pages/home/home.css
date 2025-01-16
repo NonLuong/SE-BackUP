@@ -8,6 +8,7 @@
   width: 100%; /* ความกว้างเต็มหน้าจอ */
   margin: 0;
   padding: 0;
+  background-color: #c1baf4;
 }
 
 /* Banner */
@@ -42,7 +43,7 @@
 }
 
 /* Content Section */
-.home-container .content {
+ .content {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -50,6 +51,7 @@
   padding: 0 30px;
   width: 100%;
   max-width: 1200px; /* จำกัดความกว้างสูงสุด */
+  background-color: #D9D7EF;
 }
 
 .home-container .car-image {

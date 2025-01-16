@@ -352,4 +352,18 @@ export const getMessagesByRoomChatId = async (roomChatId: string) => {
 };
 
 
+export const fetchHistoryPlacesFromBackend = async (): Promise<{ data: any[]; status: string }> => {
+  try {
+    const response = await fetch(`${apiUrl}/history-places`);
+    if (!response.ok) throw new Error('Failed to fetch history places');
+    return await response.json(); // คาดว่าจะมีโครงสร้าง { data: [], status: "success" }
+  } catch (error) {
+    console.error(error);
+    return { data: [], status: 'error' }; // คืนค่าโครงสร้างที่ตรงกัน
+  }
+};
+
+
+
+
 

@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { GoogleMap, Marker } from '@react-google-maps/api';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './MapDestination.css';
-import { sendDataDestinationToBackend } from '../../services/https/booking';
+import { sendDataDestinationToBackend, fetchHistoryPlacesFromBackend } from '../../services/https/booking';
+
+
 
 const containerStyle = {
   width: '100%',
@@ -25,6 +27,11 @@ const MapDestination: React.FC = () => {
   const [nearbyPlaces, setNearbyPlaces] = useState<any[]>([]);
   const [map, setMap] = useState<any>(null);
   const navigate = useNavigate();
+  const [historyPlaces, setHistoryPlaces] = useState<{ data: any[]; status: string }>({
+    data: [],
+    status: '',
+  });
+  
 
   const locationFromMapComponent = useLocation();
   const pickupLocation = locationFromMapComponent.state?.pickupLocation || null;
@@ -163,6 +170,17 @@ const MapDestination: React.FC = () => {
     
   };
 
+  useEffect(() => {
+    const getHistoryPlaces = async () => {
+      console.log('Fetching history places from backend...');
+      const historyPlacesData = await fetchHistoryPlacesFromBackend();
+      console.log('History places fetched:', historyPlacesData);
+      setHistoryPlaces(historyPlacesData);
+    };
+    getHistoryPlaces();
+  }, []);
+
+
   const handleDestinationSubmit = async () => {
     if (destinationLocation) {
       try {
@@ -216,29 +234,41 @@ const MapDestination: React.FC = () => {
       </div>
 
       <div className="list-place">
-        <ul className="place-list">
-          {nearbyPlaces.length > 0 ? (
-            nearbyPlaces.map((place, index) => (
-              <li
-                key={index}
-                className="place-item"
-                onClick={() => handleNearbyPlaceClick(place)}
-                style={{ cursor: 'pointer' }}
-              >
-                <span>{place.name}</span>
-              </li>
-            ))
-          ) : (
-            <li className="place-item">ไม่พบสถานที่ใกล้เคียง</li>
-          )}
-        </ul>
-      </div>
+  <ul className="place-list">
+    {historyPlaces.data && historyPlaces.data.length > 0 ? (
+      historyPlaces.data.map((place: any, index: number) => (
+        <li
+          key={index}
+          className="place-item"
+          onClick={() => handleNearbyPlaceClick(place)}
+          style={{
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+          }}
+        >
+          {/* Add history icon */}
+          <img
+            src="https://img.icons8.com/ios-filled/50/808080/time-machine.png"
+            alt="history icon"
+            style={{ width: '20px', height: '20px' }}
+          />
+          <span>{place}</span>
+        </li>
+      ))
+    ) : (
+      <li className="place-item">ยังไม่มีสถานที่ที่เคยไป</li>
+    )}
+  </ul>
 
-      <div className="pickup-button-container">
-        <button className="pickup-button" onClick={handleDestinationSubmit}>
-          Drop off point
-        </button>
-      </div>
+  {/* ปุ่ม Drop-off point */}
+  <div className="pickup-button-container">
+    <button className="pickup-button" onClick={handleDestinationSubmit}>
+      Drop-off point
+    </button>
+  </div>
+</div>
     </div>
   );
 };
