@@ -43,6 +43,9 @@ import Passenger from "./pages/Passenger/Passenger";
 import Dashboard from "./pages/Dashboard/Admindashboard";
 import Dashboards from "./pages/Dashboard/Driverdashboard";
 import FinishJob from "./pages/finishjob/finishjob";
+import DriverTrackingPage from "./pages/DriverBooking/DriverBooking";
+import Driverontheway from "./pages/DriverBooking/DriverBooking";
+import DriverFinish from "./pages/DriverBooking/DriverBooking";
 
 
 const App: React.FC = () => {
