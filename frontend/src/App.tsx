@@ -19,11 +19,12 @@ import Review from "./pages/review/review";
 import Payment from "./pages/payment/payment";
 import History from "./pages/review/review_history/history";
 import Edit from "./pages/review/edit/edit";
-import Room from "./pages/room";
+import AdminRoom from "./pages/room/AdminRoom.tsx";
+import DriverRoom from "./pages/room/DriverRoom";
 import CreateRoom from "./pages/room/create";
 import EditRoom from "./pages/room/edit";
-import Trainbook from "./pages/room/trainbook";
-import Trainer from "./pages/trainer";
+import Trainbook from "./pages/room/trainbook/TrainBook";
+import Trainer from "./pages/trainer/Trainer";
 import CreateTrainer from "./pages/trainer/create";
 import EditTrainer from './pages/trainer/edit';
 import Login from "./pages/login/login";
@@ -46,6 +47,7 @@ import FinishJob from "./pages/finishjob/finishjob";
 import DriverTrackingPage from "./pages/DriverBooking/DriverBooking";
 import Driverontheway from "./pages/DriverBooking/DriverBooking";
 import DriverFinish from "./pages/DriverBooking/DriverBooking";
+import Training from "./pages/training/Training.tsx";
 
 
 const App: React.FC = () => {
@@ -91,14 +93,16 @@ const App: React.FC = () => {
         <Route path="/review/history" element={<History/>} /> 
         <Route path="/edit" element={<Edit/>} /> 
 
-        {/*นนท์ Room and Trainer */}
-        <Route path="/rooms" element={<Room />} />
+        {/*นนท์ Room and Trainer แก้*/}
+        <Route path="/rooms" element={<AdminRoom />} />
+        <Route path="/room" element={<DriverRoom />} />
         <Route path="/rooms/create" element={<CreateRoom />} />
         <Route path="/rooms/edit/:id" element={<EditRoom />} />
-        <Route path="/rooms/trainbook/:id" element={<Trainbook />} />
+        <Route path="/trainbook/:id" element={<Trainbook />} />
         <Route path="/trainer" element={<Trainer />} />
         <Route path="/trainer/create" element={<CreateTrainer />} />
         <Route path="/trainer/edit/:id" element={<EditTrainer />} />
+        <Route path="/training" element={<Training />} />
 
         {/*น้ำฝน Admin*/}
         <Route path="/Dashboard" element={<Dashboard />} />
