@@ -21,9 +21,11 @@ type Message struct {
 	PassengerID  uint      `json:"passenger_id" valid:"-"`
 	Passenger    Passenger `gorm:"foreignKey:PassengerID" json:"passenger" valid:"-"`
 
+
 	BookingID    uint      `json:"booking_id" valid:"-"`
 	Booking      Booking   `gorm:"foreignKey:BookingID" json:"booking" valid:"-"`
 
+	
 	DriverID     uint      `json:"driver_id" valid:"-"`
 	Driver       Driver    `gorm:"foreignKey:DriverID" json:"driver" valid:"-"`
 }
