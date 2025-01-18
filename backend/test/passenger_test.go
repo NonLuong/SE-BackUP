@@ -109,6 +109,7 @@ func TestEmail(t *testing.T) {
 
 		ok, err := govalidator.ValidateStruct(passenger)
 
+
 		g.Expect(ok).NotTo(BeTrue())
 		g.Expect(err).NotTo(BeNil())
 		g.Expect(err.Error()).To(Equal("Email is required"))
@@ -128,6 +129,7 @@ func TestEmail(t *testing.T) {
 
 		ok, err := govalidator.ValidateStruct(passenger)
 
+
 		g.Expect(ok).NotTo(BeTrue())
 		g.Expect(err).NotTo(BeNil())
 		g.Expect(err.Error()).To(Equal("Email is invalid"))
@@ -145,6 +147,7 @@ func TestEmail(t *testing.T) {
 			RoleID:     1,
 		}
 
+		
 		ok, err := govalidator.ValidateStruct(passenger)
 
 		g.Expect(ok).To(BeTrue())
