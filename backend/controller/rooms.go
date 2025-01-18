@@ -68,44 +68,37 @@ func CreateRoom(c *gin.Context) {
 
 // อัปเดต Room
 func UpdateRoom(c *gin.Context) {
-	id := c.Param("id")
-	var room entity.Rooms
+    id := c.Param("id")
+    var payload entity.Rooms
 
-	// ตรวจสอบว่า Room มีอยู่จริง
-	if err := config.DB().First(&room, "id = ?", id).Error; err != nil {
-		log.Printf("Room not found for update: %s\n", id)
-		c.JSON(http.StatusNotFound, gin.H{"error": "Room not found"})
-		return
-	}
+    // ตรวจสอบและแปลงข้อมูล JSON ที่รับมา
+    if err := c.ShouldBindJSON(&payload); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+        return
+    }
 
-	var payload entity.Rooms
-	if err := c.ShouldBindJSON(&payload); err != nil {
-		log.Printf("Invalid input data for update: %v\n", err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
-		return
-	}
+    // ตรวจสอบว่าห้องมีอยู่ในฐานข้อมูล
+    var room entity.Rooms
+    if err := config.DB().First(&room, "id = ?", id).Error; err != nil {
+        c.JSON(http.StatusNotFound, gin.H{"error": "Room not found"})
+        return
+    }
 
-	// ตรวจสอบว่า TrainerID มีอยู่จริง
-	var trainer entity.Trainers
-	if err := config.DB().First(&trainer, "id = ?", payload.TrainerID).Error; err != nil {
-		log.Printf("Invalid Trainer ID for update: %d\n", payload.TrainerID)
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Trainer ID"})
-		return
-	}
+    // อัปเดตค่าจาก payload
+    room.RoomName = payload.RoomName
+    room.Capacity = payload.Capacity
+    room.TrainerID = payload.TrainerID
+    room.Detail = payload.Detail
+    room.Title = payload.Title
 
-	// อัปเดตข้อมูลห้อง
-	room.RoomName = payload.RoomName
-	room.Capacity = payload.Capacity
-	room.TrainerID = payload.TrainerID
-	room.Detail = payload.Detail
+    // บันทึกข้อมูลลงฐานข้อมูล
+    if err := config.DB().Save(&room).Error; err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to update room"})
+        return
+    }
 
-	if err := config.DB().Save(&room).Error; err != nil {
-		log.Printf("Error updating room: %v\n", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to update room"})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"message": "Room updated successfully", "data": room})
+    // ส่งข้อมูลกลับ
+    c.JSON(http.StatusOK, gin.H{"message": "Room updated successfully", "data": room})
 }
 
 // ลบ Room
