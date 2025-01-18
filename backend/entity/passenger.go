@@ -6,7 +6,7 @@ import "gorm.io/gorm"
 type Passenger struct {
 	gorm.Model
 
-	//  ข้อมูลส่วนตัว
+	//ข้อมูลส่วนตัว
 	UserName   string `gorm:"uniqueIndex" valid:"required~Username is required."`
 	FirstName  string `valid:"required~FirstName is required"`
 	LastName   string `valid:"required~LastName is required"`
@@ -14,17 +14,17 @@ type Passenger struct {
 	Email       string `valid:"required~Email is required,email~Email is invalid"`
 	Password    string `json:"password"`
 
-	//  ความสัมพันธ์กับตาราง Gender
+	//ความสัมพันธ์กับตาราง Gender
 	GenderID uint   `json:"gender_id"`
 	Gender   Gender `gorm:"foreignKey:GenderID" json:"gender" valid:"-"` // ปิดการ Validate Nested Struct
 
-	//  ความสัมพันธ์กับตาราง Booking
+	// ความสัมพันธ์กับตาราง Booking
 	Bookings []Booking `gorm:"foreignKey:PassengerID" json:"bookings" valid:"-"` // ปิดการ Validate Nested Struct
 
-	//  ความสัมพันธ์กับตาราง Message
+	// ความสัมพันธ์กับตาราง Message
 	Messages []Message `gorm:"foreignKey:PassengerID" json:"messages" valid:"-"` // ปิดการ Validate Nested Struct
 
-	//  ความสัมพันธ์กับตาราง Role
+	// ความสัมพันธ์กับตาราง Role
 	RoleID uint `gorm:"not null"`
 	Role   Roles `gorm:"foreignKey:RoleID" valid:"-"` // ปิดการ Validate Nested Struct
 
