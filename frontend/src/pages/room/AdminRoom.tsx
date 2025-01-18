@@ -5,39 +5,46 @@ import {
   Button,
   Col,
   Row,
-  Divider,
+  Card,
+  Statistic,
   message,
-  Empty,
   Popconfirm,
+  Layout,
 } from "antd";
 import {
   PlusOutlined,
   EditOutlined,
   DeleteOutlined,
   HomeOutlined,
+  TeamOutlined,
 } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import { GetRooms, DeleteRoomById } from "../../services/https/RoomAPI";
 import { RoomInterface } from "../../interfaces/IRoom";
 import { Link, useNavigate } from "react-router-dom";
+import AdminSidebar from "../../components/sider/AdminSidebar"; // ✅ ใช้ Sidebar ของ Admin
 
 function Rooms() {
   const [rooms, setRooms] = useState<RoomInterface[]>([]);
+  const [totalRooms, setTotalRooms] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
   const userRole = "admin";
 
-  // ฟังก์ชันดึงข้อมูลห้อง
+  // ✅ ฟังก์ชันดึงข้อมูลห้อง
   const fetchRooms = async () => {
     setLoading(true);
     try {
       const res = await GetRooms();
-      console.log("API Response:", res); // ตรวจสอบข้อมูลที่ได้รับจาก API
+      console.log("📡 API Response:", res.data); // Debug API Response
+
       if (res && res.status === 200 && Array.isArray(res.data)) {
+        // Mapping ข้อมูลห้อง
         const mappedRooms = res.data.map((room: any) => ({
           ID: room.ID,
           RoomName: room.room_name,
+          Title: room.title,
           Capacity: room.capacity,
           CurrentBookings: room.current_bookings || 0,
           Trainer: room.trainer
@@ -47,13 +54,14 @@ function Rooms() {
               }
             : null,
           Status:
-            (room.current_bookings || 0) >= (room.capacity || 0)
+            room.current_bookings >= room.capacity
               ? "เต็ม"
-              : room.current_bookings
+              : room.current_bookings > 0
               ? "ว่างบางส่วน"
               : "ว่าง",
         }));
         setRooms(mappedRooms);
+        setTotalRooms(mappedRooms.length);
       } else {
         console.error("Unexpected API response:", res);
         messageApi.error(res?.error || "ไม่สามารถดึงข้อมูลได้");
@@ -67,7 +75,12 @@ function Rooms() {
     }
   };
 
-  // ฟังก์ชันลบห้อง
+  // ✅ ฟังก์ชันเรียกหลังการจองสำเร็จ เพื่ออัปเดตจำนวนการจองในตาราง
+  // const handleBookingSuccess = () => {
+  //   fetchRooms(); // โหลดข้อมูลห้องใหม่หลังจองสำเร็จ
+  // };
+
+  // ✅ ฟังก์ชันลบห้อง
   const handleDelete = async (id: number) => {
     try {
       const res = await DeleteRoomById(id);
@@ -83,16 +96,11 @@ function Rooms() {
     }
   };
 
-  // ฟังก์ชันไปหน้าการจอง
-  const handleBooking = (id: number) => {
-    if (id) navigate(`/rooms/trainbook/${id}`);
-  };
-
   useEffect(() => {
     fetchRooms();
   }, []);
 
-  // กำหนด Columns ของ Table
+  // ✅ กำหนด Columns ของ Table
   const columns: ColumnsType<RoomInterface> = [
     {
       title: "ลำดับ",
@@ -103,6 +111,11 @@ function Rooms() {
       title: "ชื่อห้อง",
       dataIndex: "RoomName",
       key: "RoomName",
+    },
+    {
+      title: "หัวข้อ",
+      dataIndex: "Title",
+      key: "Title",
     },
     {
       title: "ความจุ",
@@ -128,9 +141,15 @@ function Rooms() {
       key: "actions",
       render: (record: RoomInterface) => (
         <Space>
-          <Button type="primary" onClick={() => handleBooking(record.ID!)}>
+          {/* <Button
+            type="primary"
+            onClick={() => {
+              navigate(`/trainbook/${record.ID}`);
+              handleBookingSuccess(); // ✅ โหลดข้อมูลห้องใหม่หลังจองสำเร็จ
+            }}
+          >
             จอง
-          </Button>
+          </Button> */}
           {userRole === "admin" && (
             <>
               <Button
@@ -160,42 +179,65 @@ function Rooms() {
   ];
 
   return (
-    <>
-      {contextHolder}
-      <Row>
-        <Col span={12}>
-          <h2>จัดการข้อมูลห้อง</h2>
-        </Col>
-        <Col span={12} style={{ textAlign: "right" }}>
-          {userRole === "admin" && (
-            <Space>
-              <Link to="/employees">
-                <Button type="default" icon={<HomeOutlined />}>
-                  หน้าแรก
-                </Button>
-              </Link>
-              <Link to="/rooms/create">
-                <Button type="primary" icon={<PlusOutlined />}>
-                  สร้างห้อง
-                </Button>
-              </Link>
-            </Space>
-          )}
-        </Col>
-      </Row>
-      <Divider />
-      {rooms.length === 0 && !loading ? (
-        <Empty description="ไม่มีข้อมูลห้องในขณะนี้" />
-      ) : (
+    <Layout style={{ minHeight: "100vh" }}>
+      <AdminSidebar /> {/* ✅ ใช้ Sidebar */}
+      <Layout style={{ padding: "20px", backgroundColor: "#EDE8FE" }}>
+        {contextHolder}
+        <h1 style={{ textAlign: "center", marginBottom: "20px" }}>
+          ระบบจัดการห้องอบรม
+        </h1>
+
+        {/* Summary Section */}
+        <Row gutter={[32, 32]} style={{ marginBottom: "30px" }}>
+          <Col xs={24} sm={12} md={8} lg={6}>
+            <Card
+              bordered={false}
+              style={{
+                boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+                padding: "16px",
+              }}
+            >
+              <Statistic
+                title="จำนวนห้องอบรม (ทั้งหมด)"
+                value={totalRooms}
+                prefix={<TeamOutlined />}
+                valueStyle={{
+                  fontSize: "28px",
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  marginTop: "10px",
+                }}
+              />
+            </Card>
+          </Col>
+        </Row>
+
+        {/* Room Table */}
         <Table
           rowKey="ID"
           columns={columns}
           dataSource={rooms}
           loading={loading}
-          style={{ width: "100%", marginTop: "20px" }}
+          style={{ backgroundColor: "#fff", borderRadius: "8px" }}
         />
-      )}
-    </>
+
+        {/* Add Room Button */}
+        <div style={{ textAlign: "right", marginTop: "20px" }}>
+          <Space>
+            <Link to="/employees">
+              <Button type="default" icon={<HomeOutlined />}>
+                หน้าแรก
+              </Button>
+            </Link>
+            <Link to="/rooms/create">
+              <Button type="primary" icon={<PlusOutlined />}>
+                สร้างห้อง
+              </Button>
+            </Link>
+          </Space>
+        </div>
+      </Layout>
+    </Layout>
   );
 }
 
