@@ -16,10 +16,10 @@ type Passenger struct {
 
 	//ความสัมพันธ์กับตาราง Gender
 	GenderID uint   `json:"gender_id"`
-	Gender   Gender `gorm:"foreignKey:GenderID" json:"gender" valid:"-"` // ปิดการ Validate Nested Struct
+	Gender   Gender `gorm:"foreignKey:GenderID" json:"gender" valid:"-"` 
 
 	// ความสัมพันธ์กับตาราง Booking
-	Bookings []Booking `gorm:"foreignKey:PassengerID" json:"bookings" valid:"-"` // ปิดการ Validate Nested Struct
+	Bookings []Booking `gorm:"foreignKey:PassengerID" json:"bookings" valid:"-"` 
 
 	// ความสัมพันธ์กับตาราง Message
 	Messages []Message `gorm:"foreignKey:PassengerID" json:"messages" valid:"-"` // ปิดการ Validate Nested Struct
