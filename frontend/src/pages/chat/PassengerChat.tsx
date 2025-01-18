@@ -16,10 +16,12 @@ const PassengerChat: React.FC = () => {
   const location = useLocation();
   const { bookingId, driverId, passengerId, roomChatId, } = location.state || {};
 
+  
   console.log('🛠️ Booking ID:', bookingId);
   console.log('🛠️ Driver ID:', driverId);
   console.log('🛠️ Passenger ID:', passengerId);
   console.log('🛠️ RoomChat ID:', roomChatId);
+
 
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
