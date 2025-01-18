@@ -61,6 +61,7 @@ func GetChatMessages(c *gin.Context) {
 		return
 	}
 
+
 	var messages []entity.Message
 	if err := config.DB().Where("room_id = ?", roomChatId).Order("send_time ASC").Find(&messages).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -75,4 +76,6 @@ func GetChatMessages(c *gin.Context) {
 		"success": true,
 		"messages": messages,
 	})
+
+	
 }
