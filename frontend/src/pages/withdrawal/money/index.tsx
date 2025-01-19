@@ -151,7 +151,7 @@ function WithdrawalCreate() {
                                     ยอดเงินของคุณ
                                 </div>
                                 <CreditCardOutlined style={{ color: "#7F6BCC", marginRight: "8px" }} />
-                                {drivers.length > 0 ? drivers[0].Income.toFixed(2) : "0.00"} บาท
+                                {drivers.length > 0 ? drivers[0].Income.toLocaleString() : 0} บาท
                             </h3>
                         </Card>
                     </Col>

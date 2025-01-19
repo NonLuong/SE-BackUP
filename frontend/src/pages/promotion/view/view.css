@@ -1,0 +1,80 @@
+.page-background {
+  background-color: #f5f7fa; /* สีพื้นหลังที่ต้องการ */
+  min-height: 100vh; /* ให้พื้นที่หน้าครอบคลุมทั้งหมด */
+  padding: 20px; /* เพิ่มช่องว่างรอบๆ เนื้อหา */
+}
+
+.coupon-card:hover {
+  transform: scale(1.03); /* ขยายเมื่อ hover */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* เพิ่มเงา */
+}
+
+.coupon-image img {
+  transition: transform 0.3s; /* เพิ่มการเคลื่อนไหวรูป */
+}
+
+.coupon-image img:hover {
+  transform: scale(1.05); /* ซูมรูปเมื่อ hover */
+}
+
+.coupon-details h2 {
+  font-size: 36px;
+  font-weight: bold;
+  color: #47456C;
+  margin-bottom: 10px;
+}
+
+.coupon-details p {
+  font-size: 18px;
+  color: #575A83;
+}
+
+.button-copy {
+  background-color: #7F6BCC;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  transition: background-color 0.3s;
+}
+
+.button-copy:hover {
+  background-color: #9333EA;
+}
+
+.tag-status {
+  font-size: 18px;
+  padding: 8px 16px;
+  border-radius: 12px;
+}
+
+.tag-status.active {
+  background-color: #7F6BCC;
+  color: white;
+}
+
+.tag-status.inactive {
+  background-color: #9333EA;
+  color: white;
+}
+
+.ant-carousel .slick-prev, .ant-carousel .slick-next {
+  background: linear-gradient(135deg, #7F6BCC, #9333EA);
+  color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+h1.custom-heading {
+  text-align: center;
+  color: #7b00ee;
+  margin-bottom: 20px;
+  font-size: 48px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.1);
+  padding: 20px;  /* เพิ่ม padding เพื่อเพิ่มพื้นที่รอบๆ */
+  background-color: rgba(238, 221, 252, 0.795);  /* ปรับให้ background มองเห็นได้ชัดเจนยิ่งขึ้น */
+  border-radius: 15px;  /* เพิ่มความโค้งของมุม */
+  box-shadow: 0 4px 8px rgba(255, 0, 234, 0.2);  /* เพิ่มเงาเบาๆ เพื่อทำให้ดูมีมิติมากขึ้น */
+}
+

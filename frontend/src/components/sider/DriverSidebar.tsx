@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
-  GiftOutlined,
+  CreditCardOutlined,
   LogoutOutlined,
   DashboardOutlined,
   FundProjectionScreenOutlined,
@@ -34,7 +34,7 @@ const items: CustomMenuItem[] = [
     label: "Traning",
     icon: <FundProjectionScreenOutlined />,
   },
-  { key: "/withdrawal", label: "WITHDRAWAL", icon: <GiftOutlined /> },
+  { key: "/withdrawal", label: "WITHDRAWAL", icon: <CreditCardOutlined />},
   { key: "/dashboard-driver-review", label: "Review", icon: <StarOutlined /> },
   {
     key: "/",

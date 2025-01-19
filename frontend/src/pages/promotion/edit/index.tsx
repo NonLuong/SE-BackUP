@@ -231,7 +231,7 @@ function PromotionEdit() {
 
                     <Col xs={24} sm={12}>
                       <Form.Item label="จำนวนสิทธิ์" name="use_limit" rules={[{ required: true, message: "กรุณากรอกจำนวนครั้งที่ใช้ได้ !" }]}>
-                        <InputNumber min={0} max={100} style={{ width: "100%" }} />
+                        <InputNumber min={1} max={100} style={{ width: "100%" }} />
                       </Form.Item>
                     </Col>
                   </Row>
@@ -242,7 +242,7 @@ function PromotionEdit() {
                   <Row gutter={[16, 16]}>
                     <Col xs={24} sm={12}>
                       <Form.Item label="ระยะทางขั้นต่ำ (กิโลเมตร)" name="distance_promotion">
-                        <InputNumber min={0} max={1000} style={{ width: "100%" }} />
+                        <InputNumber min={0} max={100} style={{ width: "100%" }} />
                       </Form.Item>
                     </Col>
                     <Col xs={24} sm={12}>
