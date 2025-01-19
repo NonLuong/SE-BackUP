@@ -228,7 +228,7 @@ function Promotion() {
         className="promotion-button"
         style={{ height: 32, marginTop: "10px" }} // เพิ่ม marginTop เพื่อสร้างระยะห่างระหว่างปุ่มและช่องค้นหา
       >
-        สร้างข้อมูล
+        สร้างโปรโมชั่นใหม่
       </Button>
     </Link>
   </Col>

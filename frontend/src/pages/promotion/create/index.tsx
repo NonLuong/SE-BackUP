@@ -40,7 +40,9 @@ const PromotionCreate = () => {
     if (res.status === 200) {
       messageApi.open({
         type: 'success',
-        content: res.data.message,
+        // content: res.data.message,
+        className: 'message-success',  // เพิ่ม className ที่นี่
+        content: 'Promotion created successfully',
       });
       setTimeout(() => {
         navigate('/promotion');
