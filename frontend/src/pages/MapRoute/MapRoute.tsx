@@ -5,7 +5,7 @@ import { FaMotorcycle, FaCar, FaTruckPickup } from "react-icons/fa";
 import "./MapRoute.css";
 import { sendBookingToBackend } from "../../services/https/booking";
 import { sendBookingStatusToBackend } from "../../services/https/statusbooking/statusbooking";
-import { message } from "antd";
+//import { message } from "antd";
 
 const vehicles = [
   { id: 1, name: "cabanabike", baseFare: 20, perKm: 5, capacity: 2, type: "motorcycle", icon: <FaMotorcycle size={50} /> },
@@ -24,7 +24,8 @@ const MapRoute: React.FC = () => {
   const [selectedVehicle, setSelectedVehicle] = useState<number | null>(null);
   const [fare, setFare] = useState<number | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-
+  const { state } = useLocation();
+  const { date, time } = state || {};
   
     // ดึงข้อมูล Passenger จาก localStorage
     const passengerId = localStorage.getItem("id");
@@ -43,7 +44,7 @@ const MapRoute: React.FC = () => {
       const existingScript = document.getElementById("google-maps-api");
       if (!existingScript) {
         const script = document.createElement("script");
-        script.src = `https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&libraries=places`;
+        script.src = `https://maps.googleapis.com/maps/api/js?key=api key&libraries=places`;
         script.id = "google-maps-api";
         script.async = true;
         script.onload = () => setIsLoaded(true);
@@ -91,75 +92,102 @@ const MapRoute: React.FC = () => {
 
   const handleBooking = async () => {
     const passengerId = localStorage.getItem("id");
-
-    if (!passengerId) {
-      //message.error("Passenger ID not found in localStorage. Please log in again.");
   
+    if (!passengerId) {
+      alert("Passenger ID not found in localStorage. Please log in again.");
       return;
     }
-
+  
     if (!selectedVehicle || distance === null) {
       setSuccessMessage("กรุณาเลือกยานพาหนะและตรวจสอบข้อมูลให้ครบถ้วน");
       return;
     }
-
+  
     if (!pickupLocation || !destinationLocation || !startLocationId || !destinationId) {
       setSuccessMessage("ข้อมูลสถานที่เริ่มต้นหรือจุดหมายปลายทางไม่ครบถ้วน");
       return;
     }
-
+  
+    // ตรวจสอบ date และ time
+    let selectedDateTime: Date;
+    const currentDateTime = new Date();
+  
+    if (!date || !time) {
+      // ถ้าไม่มีการเลือกวันที่และเวลา ให้ใช้วันที่และเวลาปัจจุบัน
+      selectedDateTime = currentDateTime; // ใช้วันที่และเวลาปัจจุบัน
+    } else {
+      try {
+        // แปลงรูปแบบวันที่ให้เหมาะสม
+        const formattedDate = date.split("/").reverse().join("-"); // เปลี่ยนจาก dd/MM/yyyy เป็น yyyy-MM-dd
+        selectedDateTime = new Date(`${formattedDate}T${time}`);
+        
+        // ตรวจสอบความถูกต้องของ selectedDateTime
+        if (isNaN(selectedDateTime.getTime())) {
+          throw new Error("รูปแบบวันที่หรือเวลาไม่ถูกต้อง");
+        }
+      } catch (error) {
+        //alert(error.message || "เกิดข้อผิดพลาดในการเลือกวันที่หรือเวลา");
+        return;
+      }
+    }
+  
+    const isFutureBooking = selectedDateTime > currentDateTime;
+  
     const selectedVehicleData = vehicles.find((v) => v.id === selectedVehicle);
-
+  
     const bookingData: any = {
       beginning: pickupLocation.name || "",
       terminus: destinationLocation.name || "",
-      start_time: new Date().toISOString(),
+      start_time: selectedDateTime.toISOString(),
       end_time: "",
       distance: parseFloat(distance.toFixed(2)),
       total_price: parseFloat(fare?.toFixed(2) || "0"),
-      booking_time: new Date().toISOString(),
-      booking_status: "Pending",
+      booking_time: currentDateTime.toISOString(),
+      booking_status: isFutureBooking ? "Pending" : "Active",
       vehicle: selectedVehicleData?.name || "",
       start_location_id: startLocationId,
       destination_id: destinationId,
       passenger_id: parseInt(passengerId, 10),
+      ispre_booking: isFutureBooking,
+      reminder_time: isFutureBooking
+        ? new Date(selectedDateTime.getTime() - 15 * 60 * 1000).toISOString() // 15 นาที ก่อนเวลาจอง
+        : null,
+      notes: isFutureBooking ? "Pre-booking made by passenger" : "Current booking",
     };
-
-    try {
-      const result = await sendBookingToBackend(bookingData);
-
-      if (result.success) {
-        setSuccessMessage("🎉 การจองสำเร็จ!");
-        const bookingId = result.data.data.ID;
-
-        const bookingStatusData = {
-          booking_id: bookingId,
-          status_booking: "Pending",
-        };
-
-        try {
-          const bookingStatusResult = await sendBookingStatusToBackend(bookingStatusData);
-
-          if (bookingStatusResult.success) {
-            console.log("Booking status saved successfully:", bookingStatusResult.data);
-            setTimeout(() => {
-              navigate(`/paid/${bookingId}`);
-            }, 2000);
-          } else {
-            console.error("Failed to save booking status:", bookingStatusResult.message);
-          }
-        } catch (error) {
-          console.error("Error saving booking status:", error);
+  
+    console.log("Reminder Time:", bookingData.reminder_time);
+  
+    const result = await sendBookingToBackend(bookingData);
+  
+    if (result.success) {
+      setSuccessMessage("🎉 การจองสำเร็จ!");
+      const bookingId = result.data.data.ID;
+  
+      const bookingStatusData = {
+        booking_id: bookingId,
+        status_booking: isFutureBooking ? "Pending" : "Active",
+      };
+  
+      try {
+        const bookingStatusResult = await sendBookingStatusToBackend(bookingStatusData);
+  
+        if (bookingStatusResult.success) {
+          console.log("Booking status saved successfully:", bookingStatusResult.data);
+          setTimeout(() => {
+            navigate(`/paid/${bookingId}`);
+          }, 2000);
+        } else {
+          console.error("Failed to save booking status:", bookingStatusResult.message);
         }
-      } else {
-        setSuccessMessage(`เกิดข้อผิดพลาด: ${result.message}`);
+      } catch (error) {
+        console.error("Error saving booking status:", error);
       }
-    } catch (error) {
-      console.error("Error creating booking:", error);
-      setSuccessMessage("ไม่สามารถบันทึกข้อมูลการจองได้");
+    } else {
+      setSuccessMessage(`เกิดข้อผิดพลาด: ${result.message}`);
     }
   };
-
+  
+  
   if (!isLoaded) return <div>กำลังโหลดแผนที่...</div>;
 
   return (

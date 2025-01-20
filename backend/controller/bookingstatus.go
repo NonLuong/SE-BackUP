@@ -96,11 +96,13 @@ func UpdateBookingStatus(c *gin.Context) {
 
         // อัปเดตการจับคู่กับคนขับ
         booking.DriverID = closestDriver.ID
-        booking.BookingStatus = "Waiting for driver acceptance"
-        if err := db.Save(&booking).Error; err != nil {
-            c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update booking"})
-            return
-        }
+        bookingStatus.StatusBooking = "Waiting for driver acceptance"
+        
+        if err := db.Save(&bookingStatus).Error; err != nil {
+    c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update booking status"})
+    return
+}
+
 
         // ส่ง bookingId ไปให้คนขับผ่าน WebSocket
         room := fmt.Sprintf("%d", closestDriver.ID)
@@ -159,4 +161,119 @@ func CreateBookingStatus(c *gin.Context) {
 }
 
 
+func RejectBooking(c *gin.Context) {
+    db := config.DB()
+    bookingID := c.Param("id")
 
+    // ค้นหาการจองที่เกี่ยวข้อง
+    var booking entity.Booking
+    if err := db.First(&booking, bookingID).Error; err != nil {
+        c.JSON(http.StatusNotFound, gin.H{"error": "Booking not found"})
+        return
+    }
+
+    // เปลี่ยนสถานะการจองเป็น "Rejected"
+    var bookingStatus entity.BookingStatus
+    if err := db.Where("booking_id = ?", booking.ID).Order("created_at desc").First(&bookingStatus).Error; err != nil {
+        c.JSON(http.StatusNotFound, gin.H{"error": "Booking status not found"})
+        return
+    }
+
+    // อัปเดตสถานะการจองเป็น Rejected
+    bookingStatus.StatusBooking = "Rejected"
+    if err := db.Save(&bookingStatus).Error; err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update booking status"})
+        return
+    }
+
+    // ค้นหาคนขับที่ใกล้ที่สุด
+    var startLocation entity.StartLocation
+    if err := db.First(&startLocation, "id = ?", booking.StartLocationID).Error; err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch start location"})
+        return
+    }
+
+    var drivers []entity.Driver
+    if err := db.Find(&drivers).Error; err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch drivers"})
+        return
+    }
+
+    var closestDriver entity.Driver
+    minDistance := math.MaxFloat64
+    foundDriver := false
+
+    fmt.Println("Searching for closest driver...")
+
+    for _, driver := range drivers {
+        fmt.Printf("Driver ID: %d\n", driver.ID)
+
+        var driverLocation entity.Location
+        if err := db.First(&driverLocation, "driver_id = ?", driver.ID).Error; err != nil {
+            continue
+        }
+
+        fmt.Printf("Driver %d Location: %f, %f\n", driver.ID, driverLocation.Latitude, driverLocation.Longitude)
+
+        distance := calculateDistance(startLocation.Latitude, startLocation.Longitude, driverLocation.Latitude, driverLocation.Longitude)
+        fmt.Printf("Distance to driver %d: %f meters\n", driver.ID, distance)
+
+        if distance < minDistance {
+            closestDriver = driver
+            minDistance = distance
+            foundDriver = true
+        }
+    }
+
+    if !foundDriver {
+        fmt.Println("No available driver found.")
+        c.JSON(http.StatusNotFound, gin.H{"error": "No driver available"})
+        return
+    }
+
+    fmt.Printf("Closest driver: %d\n", closestDriver.ID)
+
+    // อัปเดตการจับคู่กับคนขับใหม่
+    booking.DriverID = closestDriver.ID
+    bookingStatus.StatusBooking = "Waiting for driver acceptance"
+
+    if err := db.Save(&booking).Error; err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update booking with new driver"})
+        return
+    }
+
+    // ส่งข้อความให้คนขับผ่าน WebSocket
+    room := fmt.Sprintf("%d", closestDriver.ID)
+    sendMessageToDriver(room, booking.ID)
+
+    // ส่งข้อมูลตอบกลับ
+    c.JSON(http.StatusOK, gin.H{
+        "status":  "success",
+        "message": "Booking rejected, new driver assigned successfully",
+        "data": gin.H{
+            "booking_id": booking.ID,
+            "driver_id":  booking.DriverID,
+        },
+    })
+}
+
+
+
+
+func GetCompletedBookings(c *gin.Context) {
+	var bookings []entity.BookingStatus
+	db := config.DB()
+
+	// ค้นหาข้อมูลการจองที่มีสถานะ 'complete'
+	if err := db.Preload("Booking").Where("status_booking = ?", "complete").Find(&bookings).Error; err != nil {
+		// ถ้ามีข้อผิดพลาดในการดึงข้อมูล
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch completed bookings"})
+		return
+	}
+
+	// ส่งข้อมูลการจองที่มีสถานะ 'complete' กลับไป
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"data":    bookings,
+	})
+}

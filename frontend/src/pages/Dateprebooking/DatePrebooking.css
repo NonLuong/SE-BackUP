@@ -1,0 +1,93 @@
+/* Container */
+.containerdate {
+    width: 100%; /* ปรับความกว้างให้เต็มหน้าจอ */
+    margin: 0; /* ลบ margin ออก */
+    text-align: center;
+    background-color: #e6e6fa;
+    padding: 20px;
+    box-sizing: border-box; /* ให้ padding รวมอยู่ในขนาดคอนเทนเนอร์ */
+    display: flex; /* ใช้ flexbox เพื่อจัดตำแหน่ง */
+    flex-direction: column; /* จัดเรียงเนื้อหาในแนวตั้ง */
+    justify-content: center; /* จัดให้อยู่กึ่งกลางแนวตั้ง */
+    align-items: center; /* จัดให้อยู่กึ่งกลางแนวนอน */
+  }
+  
+  /* Header Section */
+  .containerdate .header {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  /* Banner Section */
+  .containerdate .banner {
+    margin-top: 0px;
+  }
+  
+  .containerdate .banner-image {
+    width: 50%;
+    height: 50%;
+    border-radius: 10px;
+   
+  }
+  
+  .containerdate .picker-row {
+    display: flex; /* ใช้ Flexbox เพื่อจัดให้อยู่ในบรรทัดเดียว */
+    justify-content: space-between; /* เว้นระยะห่างระหว่าง "วันที่" และ "เวลา" */
+    gap: 20px; /* เพิ่มระยะห่างระหว่างส่วน */
+    align-items: center; /* จัดแนวให้อยู่กึ่งกลางในแนวตั้ง */
+    width: 100%; /* ให้เต็มความกว้าง */
+  }
+  
+  .containerdate .picker-item {
+    flex: 1; /* ให้ช่อง "วันที่" และ "เวลา" มีขนาดเท่ากัน */
+    display: flex; /* ใช้ Flexbox ภายในแต่ละช่อง */
+    flex-direction: column; /* จัดให้ข้อความและช่องเลือกอยู่ในแนวตั้ง */
+    align-items: center; /* จัดให้อยู่กึ่งกลาง */
+    text-align: center;
+  }
+  
+  .containerdate .picker-label {
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    background-color: #28a745;
+    padding: 8px 0; /* ขยายพื้นที่บล็อกสีเขียว */
+    border-radius: 5px;
+    margin-bottom: 5px; /* เพิ่มช่องว่างระหว่างข้อความและช่องเลือก */
+    width: 100%; /* ให้เต็มความกว้างของ .picker-item */
+    text-align: center;
+    box-sizing: border-box;
+  }
+  
+  .containerdate .date-picker,
+  .containerdate .time-picker {
+    width: 100%; /* ให้ช่องเลือกเต็มความกว้างของคอนเทนเนอร์ */
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    text-align: center;
+    box-sizing: border-box;
+  }
+  
+  /* Button Section */
+  .containerdate .confirm-button {
+    padding: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    color: black;
+    background-color: #dcdcdc;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    max-width: 300px; /* จำกัดความกว้างปุ่ม */
+    margin-top: 20px;
+  }
+  
+  .containerdate .confirm-button:hover {
+    background-color: #c0c0c0;
+  }
+  

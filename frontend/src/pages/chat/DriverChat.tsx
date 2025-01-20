@@ -1,41 +1,44 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import { sendMessageToBackend,getMessagesByRoomChatId, Message } from '../../services/https/booking';
+import { sendMessageToBackend, getMessagesByRoomChatId, Message } from '../../services/https/booking';
+import './DriverChat.css'; // Import the CSS file
+import { updateMessageToBackend, deleteMessageFromBackend, UpdateMessage } from '../../services/https/message/message';
 
-// 🛠️ ประเภทของข้อความในแชท
 interface ChatMessage {
   sender: string;
   message: string;
   timestamp: string;
+  message_id: number; // Ensure message_id is always used
 }
 
-// 🚗 DriverChat Component
 const DriverChat: React.FC = () => {
   const location = useLocation();
   const { bookingId, passengerId, driverID, roomChatId } = location.state || {};
 
-  console.log('🛠️ Location State:', { bookingId, passengerId, driverID, roomChatId });
-
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState<string>('');
   const [isConnected, setIsConnected] = useState<boolean>(false);
+  const [editingMessage, setEditingMessage] = useState<number | null>(null);
+  const [editedMessage, setEditedMessage] = useState<string>('');
+  const [hoveredMessageIndex, setHoveredMessageIndex] = useState<number | null>(null); // State for showing buttons
   const socketRef = useRef<WebSocket | null>(null);
   const chatBoxRef = useRef<HTMLDivElement>(null);
 
-  // ✅ ตั้งค่า WebSocket
+  // Set up WebSocket connection
   useEffect(() => {
-    if (!bookingId || socketRef.current) return; // ป้องกันการเชื่อมต่อซ้ำซ้อน
+    if (!bookingId || socketRef.current) return;
 
     const ws = new WebSocket(`ws://localhost:8080/ws/chat/driver/${bookingId}`);
 
     ws.onopen = () => {
-      console.log('✅ Connected to Chat Room:', bookingId);
       setIsConnected(true);
+      console.log(`✅ Connected to Chat Room with Booking ID: ${bookingId}`);
     };
 
     ws.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
+        console.log('📥 Received message from WebSocket:', data);
 
         if (data.sender !== 'You') {
           setMessages((prev) => {
@@ -47,7 +50,7 @@ const DriverChat: React.FC = () => {
             );
 
             if (isDuplicate) {
-              console.warn('⚠️ Duplicate message detected');
+              console.log('⚠️ Duplicate message detected, not adding');
               return prev;
             }
 
@@ -57,6 +60,7 @@ const DriverChat: React.FC = () => {
                 sender: data.sender || 'Unknown',
                 message: data.message,
                 timestamp: data.timestamp || new Date().toLocaleTimeString(),
+                message_id: data.message_id, // Ensure message_id is included
               },
             ];
           });
@@ -67,18 +71,14 @@ const DriverChat: React.FC = () => {
     };
 
     ws.onclose = () => {
-      console.warn('🔌 WebSocket disconnected. Reconnecting in 5 seconds...');
       setIsConnected(false);
       socketRef.current = null;
+      console.warn('🔌 WebSocket disconnected. Reconnecting in 5 seconds...');
       setTimeout(() => {
         if (!socketRef.current) {
           socketRef.current = new WebSocket(`ws://localhost:8080/ws/chat/driver/${bookingId}`);
         }
       }, 5000);
-    };
-
-    ws.onerror = (error) => {
-      console.error('❌ WebSocket error:', error);
     };
 
     socketRef.current = ws;
@@ -91,22 +91,21 @@ const DriverChat: React.FC = () => {
     };
   }, [bookingId]);
 
-  // ✅ ดึงข้อความจาก Backend ตาม roomChatId
+  // Fetch messages from the backend when the component is mounted or roomChatId changes
   useEffect(() => {
     const fetchMessages = async () => {
-      if (!roomChatId) {
-        console.warn('❌ Missing RoomChatId for fetching messages');
-        return;
-      }
+      if (!roomChatId) return;
 
       try {
         const fetchedMessages = await getMessagesByRoomChatId(String(roomChatId));
-        console.log('✅ Fetched Messages:', fetchedMessages);
+        console.log('✅ Fetched messages from backend:', fetchedMessages);
+
         setMessages(
           fetchedMessages.map((msg: any) => ({
             sender: msg.sender_type,
             message: msg.content,
             timestamp: msg.send_time,
+            message_id: msg.message_id, // Store message_id for reference
           }))
         );
       } catch (error) {
@@ -117,24 +116,20 @@ const DriverChat: React.FC = () => {
     fetchMessages();
   }, [roomChatId]);
 
-
-  // ✅ Scroll ไปยังข้อความล่าสุด
+  // Scroll to the bottom of the chat when new messages arrive
   useEffect(() => {
     if (chatBoxRef.current) {
       chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
     }
   }, [messages.length]);
 
-  // ✅ ส่งข้อความ
+  // Handle sending a new message
   const handleSendMessage = async () => {
     if (!socketRef.current || !newMessage.trim()) {
-      console.warn('❌ Cannot send empty message');
       return;
     }
 
     const timestamp = new Date().toLocaleTimeString();
-
-    // ✉️ ส่งข้อความไปยัง WebSocket
     const messagePayload = {
       type: 'chat_message',
       bookingId,
@@ -143,8 +138,7 @@ const DriverChat: React.FC = () => {
       timestamp,
     };
 
-    console.log('📤 Sending message:', messagePayload);
-
+    console.log('📤 Sending message to WebSocket:', messagePayload);
     socketRef.current.send(JSON.stringify(messagePayload));
     setMessages((prev) => [
       ...prev,
@@ -152,10 +146,10 @@ const DriverChat: React.FC = () => {
         sender: 'You',
         message: newMessage,
         timestamp,
+        message_id: undefined, // Temporary message_id until backend responds
       },
     ]);
 
-    // 💾 ส่งข้อความไปยัง Backend
     const backendMessage: Message = {
       content: newMessage,
       message_type: 'text',
@@ -169,141 +163,167 @@ const DriverChat: React.FC = () => {
       room_id: Number(roomChatId),
     };
 
-
+    console.log('📤 Sending message to backend:', backendMessage);
     const res = await sendMessageToBackend(backendMessage);
-    if (!res) {
+    console.log('Backend response:', res);
+
+    if (res && res.data) {
+      const backendMessageId = res.data.ID;  // Get the message ID from backend response
+      console.log('Message ID from backend:', backendMessageId);
+      setMessages((prev) => [
+        ...prev,
+        {
+          sender: 'You',
+          message: newMessage,
+          timestamp,
+          message_id: backendMessageId,  // Use backend's message ID
+        },
+      ]);
+    } else {
       console.error('❌ Failed to save message to backend');
     }
 
     setNewMessage('');
   };
 
+  // Handle message edit
+  const handleEditMessage = (index: number) => {
+    setEditingMessage(index);
+    console.log("obuggggggggg",(messages[index].message));
+    setEditedMessage(messages[index].message);
+    console.log("abuggggggg",(messages[index].message));
+    console.log('✏️ Editing message:', messages[index]);
+  };
+
+  // Save edited message to backend
+  const handleSaveEditedMessage = async () => {
+    if (editingMessage === null || !editedMessage.trim()) return;
+
+    const updatedMessages = [...messages];
+    updatedMessages[editingMessage].message = editedMessage;
+    console.log("editing",editingMessage)
+    console.log("yyyyyyyy",editedMessage)
+    setMessages(updatedMessages);
+
+    const timestamp = new Date().toLocaleTimeString();
+    const messagePayload = {
+      type: 'edit_message',
+      bookingId,
+      sender: 'Driver',
+      message: editedMessage,
+      timestamp,
+    };
+
+    console.log('📤 Sending edited message to WebSocket:', messagePayload);
+    socketRef.current?.send(JSON.stringify(messagePayload));
+
+    const backendMessage: UpdateMessage = {
+      content: editedMessage,
+      message_id: messages[editingMessage]?.message_id, // Use message_id here
+    };
+
+    // Check if message_id exists before sending update request
+    if (!backendMessage.message_id) {
+      console.error('❌ message_id is missing');
+      return;
+    }
+
+    console.log('📤 Updating message in backend:', backendMessage);
+    const res = await updateMessageToBackend(backendMessage);
+    console.log('Backend response after update:', res);
+
+    if (!res) {
+      console.error('❌ Failed to save edited message to backend');
+    }
+
+    setEditingMessage(null);
+    setEditedMessage('');
+  };
+
+  // Handle message deletion
+  const handleDeleteMessage = (index: number) => {
+    const message_id = messages[index]?.message_id;
+    if (!message_id) {
+      console.error('❌ Message ID is missing for deletion');
+      return;
+    }
+
+    const updatedMessages = messages.filter((_, msgIndex) => msgIndex !== index);
+    setMessages(updatedMessages);
+
+    const messagePayload = {
+      type: 'delete_message',
+      bookingId,
+      message: messages[index].message,
+    };
+
+    console.log('📤 Deleting message from WebSocket:', messagePayload);
+    socketRef.current?.send(JSON.stringify(messagePayload));
+  };
+
   return (
-    <div style={styles.container}>
+    <div className="containerdriverchat">
       <h1>🗨️ Chat with Passenger</h1>
       <p><strong>Booking ID:</strong> {bookingId}</p>
       <p><strong>Passenger ID:</strong> {passengerId}</p>
       {isConnected ? (
-        <p style={styles.connected}>🟢 Connected to Chat Room</p>
+        <p className="connected">🟢 Connected to Chat Room</p>
       ) : (
-        <p style={styles.disconnected}>🔴 Disconnected from Chat Room</p>
+        <p className="disconnected">🔴 Disconnected from Chat Room</p>
       )}
 
-      <div style={styles.chatBox} ref={chatBoxRef}>
+      <div className="chatBox" ref={chatBoxRef}>
         {messages.map((msg, index) => (
           <div
             key={index}
+            className="message"
             style={{
-              ...styles.message,
               alignSelf: msg.sender === 'You' ? 'flex-end' : 'flex-start',
               backgroundColor: msg.sender === 'You' ? '#d1e7dd' : '#f8d7da',
             }}
+            onClick={() => setHoveredMessageIndex(index)} // Show buttons when clicked
           >
             <p><strong>{msg.sender}:</strong> {msg.message}</p>
-            <p style={styles.timestamp}>{msg.timestamp}</p>
+            <p className="timestamp">{msg.timestamp}</p>
+
+            {hoveredMessageIndex === index && msg.sender === 'You' && ( // Show buttons only if hovered message is yours
+              <div className="messageActions">
+                <button onClick={() => handleEditMessage(index)}>✏️ Edit</button>
+                <button onClick={() => handleDeleteMessage(index)}>🗑️ Delete</button>
+              </div>
+            )}
           </div>
         ))}
       </div>
 
-      <div style={styles.inputSection}>
-        <input
-          style={styles.input}
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          placeholder="พิมพ์ข้อความที่นี่..."
-        />
-        <button style={styles.sendButton} onClick={handleSendMessage}>
-          ➤
-        </button>
+      <div className="inputSection">
+        {editingMessage !== null ? (
+          <>
+            <input
+              className="input"
+              value={editedMessage}
+              onChange={(e) => setEditedMessage(e.target.value)}
+            />
+            <button className="sendButton" onClick={handleSaveEditedMessage}>
+              💾 Save
+            </button>
+          </>
+        ) : (
+          <>
+            <input
+              className="input"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              placeholder="พิมพ์ข้อความที่นี่..."
+            />
+            <button className="sendButton" onClick={handleSendMessage}>
+              ➤
+            </button>
+          </>
+        )}
       </div>
     </div>
   );
-};
-
-
-// 🎨 Styles
-const styles = {
-  container: {
-    fontFamily: 'Arial, sans-serif',
-    //padding: '20px',
-    textAlign: 'center' as const,
-    maxWidth: '100%',
-    margin: 'auto',
-    border: '1px solid #ccc',
-    borderRadius: '8px',
-    boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-    //marginTop: '50px',
-    backgroundColor: '#fff',
-    color: '#000', // สีตัวอักษรเป็นสีดำ
-  },
-  connected: {
-    color: 'green',
-    fontWeight: 'bold',
-  },
-  disconnected: {
-    color: 'red',
-    fontWeight: 'bold',
-  },
-  chatBox: {
-    marginTop: '20px',
-    height: '400px',
-    overflowY: 'scroll' as const,
-    border: '1px solid #ddd',
-    padding: '10px',
-    borderRadius: '5px',
-    backgroundColor: '#f9f9f9',
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '8px',
-    color: '#000', // สีตัวอักษรเป็นสีดำ
-  },
-  message: {
-    padding: '8px 12px',
-    borderRadius: '8px',
-    maxWidth: '70%',
-    wordWrap: 'break-word' as const,
-    color: '#000', // สีข้อความเป็นสีดำ
-  },
-  timestamp: {
-    fontSize: '10px',
-    color: '#666', // สีเวลาเป็นสีเทาเข้มเพื่อความแตกต่าง
-    marginTop: '4px',
-  },
-  inputSection: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: '10px',
-    width: '100%',
-    padding: '10px',
-    backgroundColor: '#D1C4E9',
-    borderRadius: '10px',
-    borderTop: '1px solid #ccc',
-  },
-  input: {
-    flex: 1,
-    padding: '12px 15px',
-    borderRadius: '25px',
-    border: '1px solid #ccc',
-    fontSize: '14px',
-    outline: 'none',
-    backgroundColor: '#fff',
-    color: '#000', // สีข้อความใน input เป็นสีดำ
-  },
-  sendButton: {
-    padding: '10px 15px',
-    backgroundColor: '#9575CD',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '50%',
-    fontSize: '20px',
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '50px',
-    height: '50px',
-  },
 };
 
 export default DriverChat;

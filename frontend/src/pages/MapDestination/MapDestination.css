@@ -89,3 +89,46 @@
   margin-bottom: 10px; /* เพิ่มช่องว่างด้านล่าง */
   background-color: #ffffff; /* สีพื้นหลังขาว */
 }
+
+
+
+.destination {
+  position: relative;
+}
+
+.search-container {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #D9D7EF;
+  box-sizing: border-box;
+}
+
+.place-item {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.place-item img {
+  width: 20px;
+  height: 20px;
+}
+
+.pickup-button-container {
+  margin-top: 10px;
+}
+
+.pickup-button {
+  padding: 10px 15px;
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.pickup-button:hover {
+  background-color: #0056b3;
+}

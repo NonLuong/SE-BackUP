@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getBookings } from "../../services/https/booking"; // นำเข้าฟังก์ชัน
+import { getBookings } from "../../services/https/statusbooking/statusbooking"; // นำเข้าฟังก์ชัน
 import "./RideHistory.css";
 
 type Booking = {

@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"project-se/config"
 	"project-se/entity"
-	"time"
-
+	
+	"strconv"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket" // เพิ่มการ import WebSocket
 )
@@ -83,12 +83,12 @@ func CreateBooking(c *gin.Context) {
 	}
 
 	// กำหนดค่าเริ่มต้น
-	if booking.BookingStatus == "" {
-		booking.BookingStatus = "Pending"
+	/*if booking.StatusBooking == "" {
+		booking.StatusBooking = "Pending"
 	}
 	if booking.BookingTime == "" {
 		booking.BookingTime = fmt.Sprintf("%v", time.Now())
-	}
+	}*/
 
 	// บันทึกข้อมูลการจอง
 	db := config.DB()
@@ -231,26 +231,26 @@ func AcceptBooking(c *gin.Context) {
         return
     }
 
-    // ตรวจสอบสถานะการจอง
-    if booking.BookingStatus != "Waiting for driver acceptance" {
+    // ตรวจสอบสถานะล่าสุดใน entity.BookingStatus
+    var currentBookingStatus entity.BookingStatus
+    if err := db.Where("booking_id = ?", booking.ID).Order("created_at desc").First(&currentBookingStatus).Error; err != nil {
+        c.JSON(http.StatusNotFound, gin.H{"error": "Booking status not found"})
+        return
+    }
+
+    // ตรวจสอบว่าสถานะล่าสุดเป็น "Waiting for driver acceptance" หรือไม่
+    if currentBookingStatus.StatusBooking != "Waiting for driver acceptance" {
         c.JSON(http.StatusBadRequest, gin.H{"error": "Booking already processed or in an incorrect state"})
         return
     }
 
-    // สร้างรายการใหม่ใน entity.BookingStatus
+    // สร้างสถานะใหม่เป็น "Accepted"
     newBookingStatus := entity.BookingStatus{
         BookingID:     booking.ID,
         StatusBooking: "Accepted",
     }
     if err := db.Create(&newBookingStatus).Error; err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update booking status"})
-        return
-    }
-
-    // อัปเดตสถานะของ booking (ถ้าจำเป็น)
-    booking.BookingStatus = "Accepted"
-    if err := db.Save(&booking).Error; err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update booking entity"})
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create new booking status"})
         return
     }
 
@@ -265,7 +265,55 @@ func AcceptBooking(c *gin.Context) {
     })
 }
 
-func FinishBooking(c *gin.Context) {
+// UpdateDriverIDInBooking updates the driver_id for a specific booking
+func UpdateDriverIDInBooking(c *gin.Context) {
+	db := config.DB()
+
+	// Get the booking ID from the URL parameters
+	bookingID := c.Param("id")
+
+	// Parse booking ID to uint
+	parsedBookingID, err := strconv.ParseUint(bookingID, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid booking ID"})
+		return
+	}
+
+	// Get the request payload (driver_id)
+	var input struct {
+		DriverID uint `json:"driver_id" binding:"required"`
+	}
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		return
+	}
+
+	// Fetch the booking record
+	var booking entity.Booking
+	if err := db.First(&booking, parsedBookingID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Booking not found"})
+		return
+	}
+
+	// Update the driver_id
+	booking.DriverID = input.DriverID
+	if err := db.Save(&booking).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update driver ID in booking"})
+		return
+	}
+
+	// Return success response
+	c.JSON(http.StatusOK, gin.H{
+		"status":  "success",
+		"message": "Driver ID updated successfully",
+		"data": gin.H{
+			"booking_id": booking.ID,
+			"driver_id":  booking.DriverID,
+		},
+	})
+}
+
+/*func FinishBooking(c *gin.Context) {
     db := config.DB()
     bookingID := c.Param("id")
 
@@ -308,5 +356,5 @@ func FinishBooking(c *gin.Context) {
             "booking_status": newBookingStatus,
         },
     })
-}
+}*/
 

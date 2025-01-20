@@ -5,7 +5,7 @@ const apiUrl = "http://localhost:8080";
 // แก้ไขประเภท Message
 export interface Message {
   
-  message_id: number; // เปลี่ยนให้เป็น optional
+  message_id?: number; // เปลี่ยนให้เป็น optional
   content: string;
   message_type: string;
   read_status: boolean;
@@ -20,6 +20,8 @@ export interface Message {
 
 
 export async function sendMessageToBackend(data: Message) {
+  console.log('API URL:', apiUrl);
+  
   const requestOptions = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -27,23 +29,29 @@ export async function sendMessageToBackend(data: Message) {
   };
 
   try {
-    const res = await fetch(`${apiUrl}/message`, requestOptions);
-
-    if (res.status === 201) {
-      const result = await res.json();
-      console.log("✅ Message saved to backend:", result);
-      return result;
+    // ส่งคำขอไปยัง Backend
+    const res = await fetch(`${apiUrl}/messages`, requestOptions);  // ใช้ /messages ตามที่ Backend ใช้
+    
+    // ตรวจสอบสถานะการตอบกลับจาก Backend
+    if (res.ok) {  // ตรวจสอบว่า status code เป็น 200 หรือ 201
+      const result = await res.json();  // ดึงข้อมูลที่ตอบกลับ
+      console.log("✅ Message saved to backend:", result);  // Log ข้อมูลที่ตอบกลับ
+      return result;  // ส่งข้อมูลที่ตอบกลับจาก Backend
     } else {
-      console.error("❌ Failed to save message to backend:", res.statusText);
-      return false;
+      // ถ้าสถานะไม่ใช่ 200 หรือ 201 ให้ log ข้อความผิดพลาด
+      console.error("❌ Failed to save message to backend:", res.status, res.statusText);
+      return false;  // คืนค่า false ถ้าไม่สำเร็จ
     }
   } catch (error) {
+    // ถ้ามีข้อผิดพลาดในการส่งคำขอ
     console.error("❌ Error saving message to backend:", error);
-    return false;
+    return false;  // คืนค่า false ถ้ามีข้อผิดพลาด
   }
 }
+
+
 export interface Message {
-  message_id: number;
+  message_id?: number;
   content: string;
   message_type: string;
   read_status: boolean;
@@ -390,7 +398,53 @@ export const fetchHistoryPlacesFromBackend = async (): Promise<{ data: any[]; st
   }
 };
 
+export const updateDriverInBooking = async (bookingId: number, driverId: number) => {
+  try {
+    const response = await fetch(`${apiUrl}/bookings/${bookingId}/driver`, {
+      method: "PATCH",  // เปลี่ยนจาก PUT เป็น PATCH
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        driver_id: driverId,
+      }),
+    });
 
+    const result = await response.json();
 
+    if (!response.ok) {
+      throw new Error(result.message || "Failed to update DriverID");
+    }
 
+    return result;
+  } catch (error: any) {
+    console.error("❌ Error updating DriverID in booking:", error.message || error);
+    throw error;
+  }
+};
+
+export const rejectBooking = async (bookingId: string) => {
+  try {
+    const response = await fetch(`${apiUrl}/bookings/${bookingId}/reject`, {
+      method: "PATCH",  // ใช้ PATCH สำหรับการอัปเดตข้อมูล
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        status_booking: "Rejected",  // อัปเดตสถานะการจองเป็น "Rejected"
+      }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || "Failed to reject booking");
+    }
+
+    return result;
+  } catch (error: any) {
+    console.error("❌ Error rejecting booking:", error.message || error);
+    throw error;
+  }
+};
 

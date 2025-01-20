@@ -31,22 +31,22 @@ type Driver struct {
 	LocationID uint     `json:"location_id"`
 	Location   Location `gorm:"foreignKey:LocationID" json:"location" valid:"-"`
 
-	//  ความสัมพันธ์กับตาราง Vehicle
+	// ความสัมพันธ์กับตาราง Vehicle
 	VehicleID uint    `json:"vehicle_id"`
 	Vehicle   Vehicle `gorm:"foreignKey:VehicleID" json:"vehicle" valid:"-"`
 
-	//  ความสัมพันธ์กับตาราง Employee
+	// ความสัมพันธ์กับตาราง Employee
 	EmployeeID uint     `json:"employee_id"`
 	Employee   Employee `gorm:"foreignKey:EmployeeID" json:"employee" valid:"-"`
 
-	//  ความสัมพันธ์กับตาราง Status
+	// ความสัมพันธ์กับตาราง Status
 	DriverStatusID uint   `json:"driverstatus_id"`
 	DriverStatus   DriverStatus `gorm:"foreignKey:DriverStatusID" json:"driverstatus" valid:"-"`
 
-	//  ความสัมพันธ์กับตาราง Booking
+	// ความสัมพันธ์กับตาราง Booking
 	Bookings []Booking `gorm:"foreignKey:DriverID" json:"bookings" valid:"-"`
 
-	//  ความสัมพันธ์กับตาราง Message
+	// ความสัมพันธ์กับตาราง Message
 	Messages []Message `gorm:"foreignKey:DriverID" json:"messages" valid:"-"`
 
 	RoomChats   []RoomChat `gorm:"foreignKey:PassengerID" json:"room_chats"`

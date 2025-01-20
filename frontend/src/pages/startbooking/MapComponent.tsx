@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { GoogleMap, Marker } from '@react-google-maps/api';
-import { useNavigate } from 'react-router-dom';
+import { useLocation,useNavigate } from 'react-router-dom';
 import './MapComponent.css';
 import { sendDataStartlocationToBackend } from '../../services/https/booking';
 import Loader from '../../components/Loadable/Loader';
@@ -10,13 +10,7 @@ const containerStyle = {
   height: '400px',
 };
 
-const searchContainerStyle = {
-  width: '100%',
-  padding: '10px',
-  backgroundColor: '#D9D7EF',
-  left: '0',
-  zIndex: '1000',
-};
+
 
 const MapComponent: React.FC = () => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -26,6 +20,9 @@ const MapComponent: React.FC = () => {
   const [nearbyPlaces, setNearbyPlaces] = useState<any[]>([]);
   const [map, setMap] = useState<any>(null);
   const navigate = useNavigate();
+  const { state } = useLocation();
+  const { date, time } = state || {};
+
 
   // Load Google Maps API Script
   useEffect(() => {
@@ -33,7 +30,7 @@ const MapComponent: React.FC = () => {
       const existingScript = document.getElementById('google-maps-api');
       if (!existingScript) {
         const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBCporibkdPqd7yC4nJEWMZI2toIlY23jM&libraries=places`;
+        script.src = `https://maps.googleapis.com/maps/api/js?key=api key&libraries=places`;
         script.id = 'google-maps-api';
         script.async = true;
         script.onload = () => {
@@ -203,7 +200,8 @@ const MapComponent: React.FC = () => {
     if (pickupLocation) {
       try {
         const startLocationId = await sendDataStartlocationToBackend(pickupLocation);
-        navigate('/mapdestination', { state: { pickupLocation, startLocationId } });
+        navigate('/mapdestination', { state: { pickupLocation, startLocationId, date, time } });
+
       } catch (error) {
         console.error('Error sending pickup location:', error);
         alert('ไม่สามารถบันทึกข้อมูลจุดเริ่มต้นได้');
@@ -215,64 +213,57 @@ const MapComponent: React.FC = () => {
 
   if (!isLoaded || !location) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <div className="loader-container">
         <Loader />
       </div>
     );
   }
 
   return (
-    <div className="mapcomponent" style={{ position: 'relative' }}>
-      <GoogleMap
-        mapContainerStyle={containerStyle}
-        center={location || { lat: 13.736717, lng: 100.523186 }}
-        zoom={15}
-        onLoad={(mapInstance) => setMap(mapInstance)}
-        onClick={handleMapClick}
-      >
-        {pickupLocation && (
-          <Marker position={{ lat: pickupLocation.lat, lng: pickupLocation.lng }} />
+    <div className="mapcomponent">
+    <GoogleMap
+      mapContainerStyle={containerStyle}
+      center={location || { lat: 13.736717, lng: 100.523186 }}
+      zoom={15}
+      onLoad={(mapInstance) => setMap(mapInstance)}
+      onClick={handleMapClick}
+    >
+      {pickupLocation && (
+        <Marker position={{ lat: pickupLocation.lat, lng: pickupLocation.lng }} />
+      )}
+    </GoogleMap>
+
+      <div className="search-container">
+      <input
+        type="text"
+        value={searchText}
+        onChange={(e) => setSearchText(e.target.value)}
+        placeholder="ค้นหาสถานที่"
+      />
+    </div>
+
+    <div className="list-place">
+      <ul className="place-list">
+        {nearbyPlaces.length > 0 ? (
+          nearbyPlaces.map((place, index) => (
+            <li
+              key={index}
+              className="place-item"
+              onClick={() => handleNearbyPlaceClick(place)}
+            >
+              <img
+                src="https://img.icons8.com/ios-filled/50/FF0000/marker.png"
+                alt="marker icon"
+                className="marker-icon"
+              />
+              <span>{place.name}</span>
+            </li>
+          ))
+        ) : (
+          <li className="place-item">ไม่พบสถานที่ใกล้เคียง</li>
         )}
-      </GoogleMap>
+      </ul>
 
-      <div style={searchContainerStyle}>
-        <input
-          type="text"
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-          placeholder="ค้นหาสถานที่"
-          style={{
-            width: '100%',
-            padding: '10px',
-            borderRadius: '5px',
-            border: '1px solid #D9D7EF',
-            boxSizing: 'border-box',
-          }}
-        />
-      </div>
-
-      <div className="list-place">
-        <ul className="place-list">
-          {nearbyPlaces.length > 0 ? (
-            nearbyPlaces.map((place, index) => (
-              <li
-                key={index}
-                className="place-item"
-                onClick={() => handleNearbyPlaceClick(place)}
-                style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
-              >
-                <img
-                  src="https://img.icons8.com/ios-filled/50/FF0000/marker.png"
-                  alt="marker icon"
-                  style={{ width: '20px', height: '20px' }}
-                />
-                <span>{place.name}</span>
-              </li>
-            ))
-          ) : (
-            <li className="place-item">ไม่พบสถานที่ใกล้เคียง</li>
-          )}
-        </ul>
 
         <div className="pickup-button-container">
           <button className="pickup-button" onClick={handlePickUpSubmit}>

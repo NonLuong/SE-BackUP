@@ -80,3 +80,49 @@
   left: '0',
   zIndex: '1000',*/
 };
+
+
+/* MapComponent.css */
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.mapcomponent {
+  position: relative;
+}
+
+.search-container {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #D9D7EF;
+  box-sizing: border-box;
+}
+
+.place-item {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.marker-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.pickup-button-container {
+  text-align: center;
+}
+
+.pickup-button {
+  padding: 10px 20px;
+  border: none;
+  background-color: #7F6ACB;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}

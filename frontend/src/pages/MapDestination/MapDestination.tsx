@@ -4,19 +4,9 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import './MapDestination.css';
 import { sendDataDestinationToBackend, fetchHistoryPlacesFromBackend } from '../../services/https/booking';
 
-
-
 const containerStyle = {
   width: '100%',
   height: '400px',
-};
-
-const searchContainerStyle = {
-  width: '100%',
-  padding: '10px',
-  backgroundColor: '#D9D7EF',
-  left: '0',
-  zIndex: '1000',
 };
 
 const MapDestination: React.FC = () => {
@@ -24,14 +14,14 @@ const MapDestination: React.FC = () => {
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [destinationLocation, setDestinationLocation] = useState<{ lat: number; lng: number; name: string } | null>(null);
   const [searchText, setSearchText] = useState<string>('');
-  const [nearbyPlaces, setNearbyPlaces] = useState<any[]>([]);
   const [map, setMap] = useState<any>(null);
   const navigate = useNavigate();
   const [historyPlaces, setHistoryPlaces] = useState<{ data: any[]; status: string }>({
     data: [],
     status: '',
   });
-  
+  const { state } = useLocation();
+  const { date, time } = state || {};
 
   const locationFromMapComponent = useLocation();
   const pickupLocation = locationFromMapComponent.state?.pickupLocation || null;
@@ -43,7 +33,7 @@ const MapDestination: React.FC = () => {
       const existingScript = document.getElementById('google-maps-api');
       if (!existingScript) {
         const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBCporibkdPqd7yC4nJEWMZI2toIlY23jM&libraries=places`;
+        script.src = `https://maps.googleapis.com/maps/api/js?key=api key&libraries=places`;
         script.id = 'google-maps-api';
         script.async = true;
         script.onload = () => {
@@ -67,35 +57,6 @@ const MapDestination: React.FC = () => {
       console.error('Pickup location is missing!');
     }
   }, [pickupLocation]);
-
-  // ฟังก์ชันค้นหาสถานที่ใกล้เคียง
-  const fetchNearbyPlaces = (location: { lat: number; lng: number }) => {
-    if (!location) return;
-
-    const placesService = new window.google.maps.places.PlacesService(document.createElement('div'));
-    const types = ['restaurant', 'park', 'shopping_mall'];
-
-    setNearbyPlaces([]);
-
-    types.forEach((type) => {
-      const request: google.maps.places.PlaceSearchRequest = {
-        location: new window.google.maps.LatLng(location.lat, location.lng),
-        radius: 5000,
-        type,
-      };
-
-      placesService.nearbySearch(request, (results, status) => {
-        if (status === window.google.maps.places.PlacesServiceStatus.OK && results) {
-          setNearbyPlaces((prev) => [
-            ...prev,
-            ...results.slice(0, 5).filter(
-              (newPlace) => !prev.some((prevPlace) => prevPlace.place_id === newPlace.place_id)
-            ),
-          ]);
-        }
-      });
-    });
-  };
 
   const handleNearbyPlaceClick = (place: any) => {
     if (!place.geometry || !place.geometry.location) return;
@@ -130,7 +91,6 @@ const MapDestination: React.FC = () => {
   const handlePlaceSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchText(event.target.value);
     if (!event.target.value) {
-      setNearbyPlaces([]);
       return;
     }
 
@@ -144,19 +104,19 @@ const MapDestination: React.FC = () => {
         results.length > 0
       ) {
         const firstResult = results[0];
-    
+
         if (
           firstResult.geometry &&
           firstResult.geometry.location &&
           firstResult.name
         ) {
           const location = firstResult.geometry.location;
-    
+
           if (map) {
             map.panTo(location);
             map.setZoom(15);
           }
-    
+
           setDestinationLocation({
             name: firstResult.name,
             lat: location.lat(),
@@ -167,7 +127,6 @@ const MapDestination: React.FC = () => {
         console.error("Error or no results from findPlaceFromQuery:", status);
       }
     });
-    
   };
 
   useEffect(() => {
@@ -180,7 +139,6 @@ const MapDestination: React.FC = () => {
     getHistoryPlaces();
   }, []);
 
-
   const handleDestinationSubmit = async () => {
     if (destinationLocation) {
       try {
@@ -191,6 +149,7 @@ const MapDestination: React.FC = () => {
             destinationLocation,
             destinationId,
             startLocationId,
+            date, time
           },
         });
       } catch (error) {
@@ -204,7 +163,7 @@ const MapDestination: React.FC = () => {
   if (!isLoaded || !location) return <div>กำลังโหลดแผนที่...</div>;
 
   return (
-    <div className="destination" style={{ position: 'relative' }}>
+    <div className="destination">
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={location}
@@ -217,58 +176,42 @@ const MapDestination: React.FC = () => {
         )}
       </GoogleMap>
 
-      <div style={searchContainerStyle}>
+      <div className="search-container">
         <input
           type="text"
           value={searchText}
           onChange={handlePlaceSearch}
           placeholder="ค้นหาสถานที่"
-          style={{
-            width: '100%',
-            padding: '10px',
-            borderRadius: '5px',
-            border: '1px solid #D9D7EF',
-            boxSizing: 'border-box',
-          }}
         />
       </div>
 
       <div className="list-place">
-  <ul className="place-list">
-    {historyPlaces.data && historyPlaces.data.length > 0 ? (
-      historyPlaces.data.map((place: any, index: number) => (
-        <li
-          key={index}
-          className="place-item"
-          onClick={() => handleNearbyPlaceClick(place)}
-          style={{
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-          }}
-        >
-          {/* Add history icon */}
-          <img
-            src="https://img.icons8.com/ios-filled/50/808080/time-machine.png"
-            alt="history icon"
-            style={{ width: '20px', height: '20px' }}
-          />
-          <span>{place}</span>
-        </li>
-      ))
-    ) : (
-      <li className="place-item">ยังไม่มีสถานที่ที่เคยไป</li>
-    )}
-  </ul>
-
-  {/* ปุ่ม Drop-off point */}
-  <div className="pickup-button-container">
-    <button className="pickup-button" onClick={handleDestinationSubmit}>
-      Drop-off point
-    </button>
-  </div>
-</div>
+        <ul className="place-list">
+          {historyPlaces.data && historyPlaces.data.length > 0 ? (
+            historyPlaces.data.map((place: any, index: number) => (
+              <li
+                key={index}
+                className="place-item"
+                onClick={() => handleNearbyPlaceClick(place)}
+              >
+                <img
+                  src="https://img.icons8.com/ios-filled/50/808080/time-machine.png"
+                  alt="history icon"
+                />
+                <span>{place}</span>
+              </li>
+            ))
+          ) : (
+            <li className="place-item">ยังไม่มีสถานที่ที่เคยไป</li>
+          )}
+        </ul>
+        {/* ปุ่ม Drop-off point */}
+        <div className="pickup-button-container">
+          <button className="pickup-button" onClick={handleDestinationSubmit}>
+            Drop-off point
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

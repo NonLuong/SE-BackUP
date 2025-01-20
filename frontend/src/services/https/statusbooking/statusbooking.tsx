@@ -98,3 +98,29 @@ export const sendBookingStatusToBackend = async (bookingStatusData: any): Promis
     }
   }
   
+  export const getBookings = async (): Promise<any[]> => {
+    try {
+      const response = await fetch(`${apiUrl}/bookings/completed`, { // ใช้ URL สำหรับดึงข้อมูลการจองที่มีสถานะ complete
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Error fetching bookings: ${response.statusText}`);
+      }
+  
+      const data = await response.json();
+      if (data.success) {
+        // คืนค่าข้อมูลที่มีสถานะ 'complete' ที่ดึงมาแล้วจาก API
+        return data.data;
+      } else {
+        throw new Error(`API Error: ${data.message}`);
+      }
+    } catch (error) {
+      console.error("Error fetching bookings:", error);
+      throw error;
+    }
+  };
+  

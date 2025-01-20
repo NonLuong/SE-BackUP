@@ -76,7 +76,9 @@ func registerRoutes(r *gin.Engine) {
 	r.GET("/bookings", controller.GetAllBookings)
 	r.GET("/bookings/:id", controller.GetBookingByID)
 	r.POST("/bookings/:id/accept", controller.AcceptBooking)
-	r.POST("/bookings/:id/finish", controller.FinishBooking)
+	//r.POST("/bookings/:id/finish", controller.FinishBooking)
+	r.PATCH("/bookings/:id/driver", controller.UpdateDriverIDInBooking) //RejectBooking
+	r.GET("/bookings/completed", controller.GetCompletedBookings)
 
 	// WebSocket
 	//socketdriverbooking
@@ -91,7 +93,7 @@ func registerRoutes(r *gin.Engine) {
 	// Route สำหรับ WebSocket Driver chat
 	r.GET("/ws/chat/driver/:bookingID", controller.DriverChatWebSocketHandler)
 	// chat
-	r.POST("/message", controller.CreateMessage)
+	r.POST("/messages", controller.CreateMessage)
 	r.GET("/message/:bookingID", controller.GetMessagesByBookingID) // ดึงข้อความตาม Booking ID
 	r.GET("/message/chat/:roomChatId", controller.GetChatMessages)
 
@@ -100,13 +102,20 @@ func registerRoutes(r *gin.Engine) {
 
 	// bookingsttus
 
-	r.PATCH("/bookingstatus/:id", controller.UpdateBookingStatus)   
+	r.PATCH("/bookingstatus/:id", controller.UpdateBookingStatus) 
+
+	r.PATCH("/bookings/:id/reject", controller.RejectBooking)
+
 	r.POST("/bookingstatus", controller.CreateBookingStatus)
 
 	// Route สำหรับดึง 3 สถานที่ล่าสุด
     r.GET("/history-places", controller.GetLatestDestinations)
 
+	// message
+	r.PUT("/messages/update/:id", controller.UpdateMessage)
 
+	// Define route for deleting a message
+	r.DELETE("/messages/delete/:id", controller.DeleteMessage)
 
 	// Promotion Routes
 	r.GET("/promotions", controller.GetAllPromotion)
