@@ -48,6 +48,9 @@ func CreateRoom(c *gin.Context) {
 		return
 	}
 
+	// ตรวจสอบค่า Title ว่าถูกส่งมาหรือไม่
+	log.Printf("Room Payload: %+v\n", room)
+
 	// ตรวจสอบว่า TrainerID มีอยู่จริงในฐานข้อมูล
 	var trainer entity.Trainers
 	if err := config.DB().First(&trainer, "id = ?", room.TrainerID).Error; err != nil {
@@ -63,8 +66,10 @@ func CreateRoom(c *gin.Context) {
 		return
 	}
 
+	log.Printf("Room created successfully: %+v\n", room)
 	c.JSON(http.StatusCreated, gin.H{"message": "Room created successfully", "data": room})
 }
+
 
 // อัปเดต Room
 func UpdateRoom(c *gin.Context) {
