@@ -11,6 +11,7 @@ import {
   message,
   DatePicker,
   Select,
+  Layout,
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { TrainersInterface } from "../../../interfaces/ITrainer";
@@ -19,6 +20,7 @@ import { GetTrainerById, UpdateTrainerById } from "../../../services/https/Taine
 import { useNavigate, useParams } from "react-router-dom";
 import dayjs from "dayjs";
 import { GetGender } from "../../../services/https/GenderAPI";
+import AdminSidebar from "../../../components/sider/AdminSidebar";
 
 function TrainerEdit() {
   const navigate = useNavigate();
@@ -27,7 +29,7 @@ function TrainerEdit() {
   const [gender, setGender] = useState<Gender[]>([]);
   const [form] = Form.useForm();
 
-  // Fetch gender data
+  // ฟังก์ชันดึงข้อมูลเพศ
   const fetchGenders = async () => {
     try {
       const res = await GetGender();
@@ -42,11 +44,12 @@ function TrainerEdit() {
     }
   };
 
-  // Fetch trainer data by ID
+  // ฟังก์ชันดึงข้อมูลเทรนเนอร์ตาม ID
   const fetchTrainerById = async (trainerId: string) => {
     try {
       const res = await GetTrainerById(trainerId);
       if (res.status === 200) {
+        // เซ็ตค่าให้กับฟอร์ม
         form.setFieldsValue({
           first_name: res.data?.FirstName,
           last_name: res.data?.LastName,
@@ -64,7 +67,7 @@ function TrainerEdit() {
     }
   };
 
-  // Handle form submission
+  // ฟังก์ชันจัดการเมื่อส่งฟอร์ม
   const onFinish = async (values: any) => {
     const payload: TrainersInterface = {
       FirstName: values.first_name,
@@ -97,97 +100,95 @@ function TrainerEdit() {
 
   useEffect(() => {
     if (id) {
-      fetchGenders();
-      fetchTrainerById(id);
+      fetchGenders(); // ดึงข้อมูลเพศ
+      fetchTrainerById(id); // ดึงข้อมูลเทรนเนอร์ตาม ID
     }
   }, [id]);
 
   return (
-    <div>
-      {contextHolder}
-      <Card>
-        <h2>แก้ไขข้อมูล เทรนเนอร์</h2>
-        <Divider />
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={onFinish}
-          autoComplete="off"
-        >
-          <Row gutter={[16, 0]}>
-            <Col xs={24} sm={24} md={12}>
-              <Form.Item
-                label="ชื่อจริง"
-                name="first_name"
-                rules={[{ required: true, message: "กรุณากรอกชื่อ!" }]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
+    <Layout style={{ minHeight: "100vh" }}>
+      <AdminSidebar />
+      <Layout.Content style={{ padding: "20px" }}>
+        {contextHolder}
+        <Card>
+          <h2>แก้ไขข้อมูล เทรนเนอร์</h2>
+          <Divider />
+          <Form form={form} layout="vertical" onFinish={onFinish} autoComplete="off">
+            <Row gutter={[16, 0]}>
+              <Col xs={24} sm={24} md={12}>
+                <Form.Item
+                  label="ชื่อจริง"
+                  name="first_name"
+                  rules={[{ required: true, message: "กรุณากรอกชื่อ!" }]}
+                >
+                  <Input />
+                </Form.Item>
+              </Col>
 
-            <Col xs={24} sm={24} md={12}>
-              <Form.Item
-                label="นามสกุล"
-                name="last_name"
-                rules={[{ required: true, message: "กรุณากรอกนามสกุล!" }]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
+              <Col xs={24} sm={24} md={12}>
+                <Form.Item
+                  label="นามสกุล"
+                  name="last_name"
+                  rules={[{ required: true, message: "กรุณากรอกนามสกุล!" }]}
+                >
+                  <Input />
+                </Form.Item>
+              </Col>
 
-            <Col xs={24} sm={24} md={12}>
-              <Form.Item
-                label="อีเมล"
-                name="email"
-                rules={[
-                  { type: "email", message: "รูปแบบอีเมลไม่ถูกต้อง!" },
-                  { required: true, message: "กรุณากรอกอีเมล!" },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
+              <Col xs={24} sm={24} md={12}>
+                <Form.Item
+                  label="อีเมล"
+                  name="email"
+                  rules={[
+                    { type: "email", message: "รูปแบบอีเมลไม่ถูกต้อง!" },
+                    { required: true, message: "กรุณากรอกอีเมล!" },
+                  ]}
+                >
+                  <Input />
+                </Form.Item>
+              </Col>
 
-            <Col xs={24} sm={24} md={12}>
-              <Form.Item
-                label="วัน/เดือน/ปี เกิด"
-                name="birthday"
-                rules={[{ required: true, message: "กรุณาเลือกวัน/เดือน/ปี เกิด!" }]}
-              >
-                <DatePicker style={{ width: "100%" }} />
-              </Form.Item>
-            </Col>
+              <Col xs={24} sm={24} md={12}>
+                <Form.Item
+                  label="วัน/เดือน/ปี เกิด"
+                  name="birthday"
+                  rules={[{ required: true, message: "กรุณาเลือกวัน/เดือน/ปี เกิด!" }]}
+                >
+                  <DatePicker style={{ width: "100%" }} />
+                </Form.Item>
+              </Col>
 
-            <Col xs={24} sm={24} md={12}>
-              <Form.Item
-                label="เพศ"
-                name="gender_id"
-                rules={[{ required: true, message: "กรุณาเลือกเพศ!" }]}
-              >
-                <Select placeholder="เลือกเพศ">
-                  {gender.map((item) => (
-                    <Select.Option key={item.ID} value={item.ID}>
-                      {item.gender}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
+              <Col xs={24} sm={24} md={12}>
+                <Form.Item
+                  label="เพศ"
+                  name="gender_id"
+                  rules={[{ required: true, message: "กรุณาเลือกเพศ!" }]}
+                >
+                  <Select placeholder="เลือกเพศ">
+                    {gender.map((item) => (
+                      <Select.Option key={item.ID} value={item.ID}>
+                        {item.gender}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Col>
+            </Row>
 
-          <Row justify="end">
-            <Col>
-              <Space>
-                <Button onClick={() => navigate("/trainer")}>ยกเลิก</Button>
-                <Button type="primary" htmlType="submit" icon={<PlusOutlined />}>
-                  บันทึก
-                </Button>
-              </Space>
-            </Col>
-          </Row>
-        </Form>
-      </Card>
-    </div>
+            <Row justify="end">
+              <Col>
+                <Space>
+                  <Button onClick={() => navigate("/trainer")}>ยกเลิก</Button>
+                  <Button type="primary" htmlType="submit" icon={<PlusOutlined />}>
+                    บันทึก
+                  </Button>
+                </Space>
+              </Col>
+            </Row>
+          </Form>
+        </Card>
+      </Layout.Content>
+    </Layout>
   );
 }
 
