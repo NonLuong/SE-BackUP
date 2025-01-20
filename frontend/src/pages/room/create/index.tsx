@@ -169,20 +169,18 @@ function RoomCreate() {
                   <Input.TextArea rows={1} />
                 </Form.Item>
               </Col>
-              <Col xs={24} sm={24} md={12}>
-                <Form.Item
-                  label="รายละเอียด"
-                  name="Detail"
-                  rules={[
-                    {
-                      required: true,
-                      message: "กรุณากรอกรายละเอียดของห้อง",
-                    },
-                  ]}
-                >
-                  <Input.TextArea rows={4} />
-                </Form.Item>
-              </Col>
+              <Col span={24}>
+                  <Form.Item
+                    label="รายละเอียด"
+                    name="Detail"
+                    rules={[{ required: true, message: "กรุณากรอกรายละเอียดของห้อง" }]}
+                  >
+                    <Input.TextArea
+                      autoSize={{ minRows: 4, maxRows: 10 }}
+                      placeholder="กรอกข้อมูลรายละเอียดของห้อง"
+                    />
+                  </Form.Item>
+                </Col>
             </Row>
             <Row justify="end">
               <Col>
