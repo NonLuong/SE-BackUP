@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import AdminSidebar from "../../../components/sider/AdminSidebar";
+import AdminSidebar from "../../../components/sider/DriverSidebar";
 import { Card, message, Row, Col, Button } from "antd";
 import { GetWithdrawal, GetBankName } from "../../../services/https/Driver/withdrawalAPI";
 import { WithdrawalInterface } from "../../../interfaces/IWithdrawal";
@@ -95,87 +95,83 @@ const Statement: React.FC = () => {
         <div className="withdrawals-list">
           {withdrawalData.map((withdrawal) => (
             <Card
-              key={withdrawal.id}
-              className="withdrawal-card"
-              bordered={false}
-            >
-              <Row gutter={[16, 16]} className="card-row">
-                <Col span={16}>
-                  <div className="withdrawal-amount">
-                    เบิกเงิน {withdrawal.withdrawal_amount.toFixed(2)} บาท
-                  </div>
-
-                </Col>
-                <Col span={8} className="text-right">
-                  <div className="transaction-date">
-                    <strong>วันทำรายการ:</strong> {dayjs(withdrawal.withdrawal_date).format("DD/MM/YYYY")}
-                  </div>
-                </Col>
-              </Row>
-
-              {/* Toggle Details Button */}
-              <Row gutter={[16, 16]} style={{ marginTop: 10 }} justify="end">
-                <Col>
-                  <Button
-                    type="link"
-                    onClick={() => toggleDetails(withdrawal.id!)}
-                    className="details-toggle-btn"
-                  >
-                    {visibleDetails[withdrawal.id!] ? "ซ่อนรายละเอียด" : "แสดงรายละเอียด"}
-                  </Button>
-                </Col>
-              </Row>
-
-              {/* Additional Details */}
-              {visibleDetails[withdrawal.id!] && (
-                <>
-                  <Row gutter={[16, 16]} style={{ marginTop: 10 }}>
-                    <Col span={12} className="text-left">
+            key={withdrawal.id}
+            className="withdrawal-card"
+            bordered={false}
+          >
+            <Row gutter={[16, 16]} className="card-row">
+              <Col span={16}>
+                <div className="withdrawal-amount">
+                  เบิกเงิน {withdrawal.withdrawal_amount.toLocaleString()} บาท
+                </div>
+              </Col>
+              <Col span={8} className="text-right">
+                <div className="transaction-date">
+                  <strong>วันทำรายการ:</strong> {dayjs(withdrawal.withdrawal_date).format("DD/MM/YYYY")}
+                </div>
+              </Col>
+            </Row>
+          
+            {/* Toggle Details Button */}
+            <Row gutter={[16, 16]} style={{ marginTop: 10 }} justify="end">
+              <Col>
+                <Button
+                  type="link"
+                  onClick={() => toggleDetails(withdrawal.id!)}
+                  className="details-toggle-btn"
+                >
+                  {visibleDetails[withdrawal.id!] ? "ซ่อนรายละเอียด" : "แสดงรายละเอียด"}
+                </Button>
+              </Col>
+            </Row>
+          
+            {/* Additional Details */}
+            {visibleDetails[withdrawal.id!] && (
+              <>
+                <Row gutter={[16, 16]} style={{ marginTop: 10 }}>
+                  <Col span={12} className="text-left">
                     <div className="commission">
-  <strong>ค่าคอมมิชชั่น </strong> {(withdrawal.withdrawal_commission ?? 0).toFixed(2)} บาท
-</div>
-
-
-                    </Col>
-                    <Col span={12} className="text-right">
-                      <div className="bank-name">
-                        {(() => {
-                          switch (withdrawal.bank_name_id) {
-                            case 1:
-                              return "ธนาคารกรุงเทพ";
-                            case 2:
-                              return "ธนาคารกสิกรไทย";
-                            case 3:
-                              return "ธนาคารไทยพาณิชย์";
-                            case 4:
-                              return "ธนาคารกรุงไทย";
-                            case 5:
-                              return "ธนาคารทหารไทย";
-                            default:
-                              return "ไม่ทราบ";
-                          }
-                        })()}
-                      </div>
-                    </Col>
-                  </Row>
-
-                  <Row gutter={[16, 16]} style={{ marginTop: 10 }}>
-                    <Col span={12} className="text-left">
+                      <strong>ค่าคอมมิชชั่น </strong> {withdrawal.withdrawal_commission?.toLocaleString()} บาท
+                    </div>
+                  </Col>
+                  <Col span={12} className="text-right">
+                    <div className="bank-name">
+                      {(() => {
+                        switch (withdrawal.bank_name_id) {
+                          case 1:
+                            return "ธนาคารกรุงเทพ";
+                          case 2:
+                            return "ธนาคารกสิกรไทย";
+                          case 3:
+                            return "ธนาคารไทยพาณิชย์";
+                          case 4:
+                            return "ธนาคารกรุงไทย";
+                          case 5:
+                            return "ธนาคารทหารไทย";
+                          default:
+                            return "ไม่ทราบ";
+                        }
+                      })()}
+                    </div>
+                  </Col>
+                </Row>
+          
+                <Row gutter={[16, 16]} style={{ marginTop: 10 }}>
+                  <Col span={12} className="text-left">
                     <div className="net-amount">
-  <strong>จำนวนเงินที่ได้ </strong> {(withdrawal.withdrawal_net_amount ?? 0).toFixed(2)} บาท
-</div>
-
-
-                    </Col>
-                    <Col span={12} className="text-right">
-                      <div className="account-number">
-                        <strong>เลขบัญชี</strong> {withdrawal.withdrawal_bank_number}
-                      </div>
-                    </Col>
-                  </Row>
-                </>
-              )}
-            </Card>
+                      <strong>จำนวนเงินที่ได้ </strong> {withdrawal.withdrawal_net_amount?.toLocaleString()} บาท
+                    </div>
+                  </Col>
+                  <Col span={12} className="text-right">
+                    <div className="account-number">
+                      <strong>เลขบัญชี</strong> {withdrawal.withdrawal_bank_number}
+                    </div>
+                  </Col>
+                </Row>
+              </>
+            )}
+          </Card>
+          
           ))}
         </div>
       </div>

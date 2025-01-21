@@ -2,10 +2,9 @@ import { useState, useEffect } from "react";
 import { Row, Col, Divider, message, Image, Card, Tag, Button } from "antd";
 import { GetPromotions } from "../../../services/https/indexpromotion";
 import dayjs from "dayjs";
-import { CopyOutlined } from "@ant-design/icons"; // Make sure to import the Copy icon
-import './promotion.css';  // Assuming you're using a CSS file for styling
+import { CopyOutlined } from "@ant-design/icons";
+import "./view.css";
 
-// เพิ่ม PromotionInterface ที่นี่
 export interface PromotionInterface {
   id: number;
   promotion_code: string;
@@ -15,11 +14,12 @@ export interface PromotionInterface {
   DiscountTypeID: string;
   discount: number;
   status_promotion_id: number;
+  discount_type_id: string;
   use_limit: number;
   use_count: number;
   distance_promotion: number;
   end_date: string;
-  discount_type: string; // เพิ่มในกรณีที่ต้องการใช้ discount_type
+  discount_type: string;
 }
 
 function View() {
@@ -30,7 +30,8 @@ function View() {
     try {
       const res = await GetPromotions();
       if (res.status === 200) {
-        setPromotions(res.data);
+        const sortedPromotions = res.data.sort((a: PromotionInterface, b: PromotionInterface) => a.status_promotion_id - b.status_promotion_id);
+        setPromotions(sortedPromotions);
       } else {
         setPromotions([]);
         messageApi.error(res.data.error);
@@ -44,18 +45,16 @@ function View() {
     getPromotions();
   }, []);
 
-  const formatDate = (date: string) => {
-    return dayjs(date).format("DD/MM/YYYY");
-  };
+  const formatDate = (date: string) => dayjs(date).format("DD/MM/YYYY");
 
   const renderStatus = (statusId: number) => {
     if (statusId === 1) {
-      return <Tag color="green" style={{ fontSize: '15px', padding: '5px 10px', borderRadius: '5px' }}>ใช้งานได้</Tag>;
+      return <Tag color="green" style={{ fontSize: "15px", padding: "5px 10px", borderRadius: "5px" }}>ใช้งานได้</Tag>;
     }
     if (statusId === 2) {
-      return <Tag color="red" style={{ fontSize: '15px', padding: '5px 10px', borderRadius: '5px' }}>ปิดการใช้งาน</Tag>;
+      return <Tag color="red" style={{ fontSize: "15px", padding: "5px 10px", borderRadius: "5px" }}>ปิดการใช้งาน</Tag>;
     }
-    return <Tag color="default" style={{ fontSize: '24px', padding: '10px 20px', borderRadius: '20px' }}>ไม่ระบุ</Tag>;
+    return <Tag color="default" style={{ fontSize: "24px", padding: "10px 20px", borderRadius: "20px" }}>ไม่ระบุ</Tag>;
   };
 
   const copyPromoCode = (code: string) => {
@@ -64,8 +63,11 @@ function View() {
   };
 
   return (
-    <>
+    <div style={{ backgroundColor: "rgb(190, 177, 226)", padding: "40px 20px", minHeight: "100vh" }}>
       {contextHolder}
+      <h1 className="custom-heading">
+        PROMOTION NOW !
+      </h1>
       <Divider />
       <div style={{ marginTop: 20 }}>
         {promotions.map((promotion) => (
@@ -80,9 +82,12 @@ function View() {
                   padding: "20px",
                   display: "flex",
                   flexDirection: "row",
-                  height: "100%",
-                  backgroundColor: "#F9F7FE",
+                  maxWidth: "1400px",
+                  margin: "0 auto",
+                  backgroundImage: "linear-gradient(135deg,rgb(174, 127, 218),rgb(243, 232, 253))",
+                  transition: "transform 0.3s, box-shadow 0.3s",
                 }}
+                hoverable
               >
                 <Row gutter={16} style={{ display: "flex", alignItems: "center", width: "100%" }}>
                   <Col span={8}>
@@ -94,7 +99,7 @@ function View() {
                         height: "330px",
                         objectFit: "cover",
                         borderRadius: "20px",
-                        border: "3px solid #DAD6EF",  // กรอบรอบรูปภาพ
+                        border: "3px solid #DAD6EF",
                       }}
                     />
                   </Col>
@@ -116,30 +121,26 @@ function View() {
                               marginLeft: "10px",
                               fontSize: "48px",
                               fontWeight: "bold",
-                              color: "#575A83",
+                              color: "rgb(181, 14, 187)",
                             }}
                           >
-                            ลดสูงสุด{" "}
-                            {promotion.DiscountTypeID === "amount"
-                              ? `${promotion.discount} บาท`
-                              : `${promotion.discount}%`}
+                            ลด {promotion.discount_type_id == "1" ? `${promotion.discount} บาท` : `${promotion.discount}%`}
                           </span>
                         </div>
                       </Col>
-
                       <Col span={24}>
                         <Row justify="space-between" align="middle" style={{ position: "relative" }}>
                           <Col>
                             <Tag
                               style={{
                                 fontSize: "30px",
-                                backgroundColor: "#7F6BCC",
+                                backgroundColor: "rgba(147, 51, 234, 0.6)",
                                 color: "white",
                                 padding: "10px 30px",
                                 borderRadius: "20px",
                               }}
                             >
-                              ใส่รหัส {promotion.promotion_code}
+                              กรอกโค้ด {promotion.promotion_code}
                               <Button
                                 type="text"
                                 icon={<CopyOutlined style={{ fontSize: "26px" }} />}
@@ -149,7 +150,6 @@ function View() {
                                   padding: "6px 12px",
                                   marginLeft: "10px",
                                   borderRadius: "8px",
-                                  backgroundColor: "#7F6BCC",
                                   color: "white",
                                   transition: "background-color 0.3s",
                                 }}
@@ -158,22 +158,15 @@ function View() {
                               />
                             </Tag>
                           </Col>
-
                           <Col>
-                            <div style={{ textAlign: "right" }}>
-                              {renderStatus(promotion.status_promotion_id)}
-                            </div>
+                            <div style={{ textAlign: "right" }}>{renderStatus(promotion.status_promotion_id)}</div>
                           </Col>
                         </Row>
                       </Col>
-
                       <Col span={24}>
                         <div
                           style={{
-                            display: "flex",
-                            justifyContent: "wrap",
                             padding: "20px",
-                            borderTop: "1px solid #E4E4E4",
                             fontSize: "20px",
                             color: "#47456C",
                             fontWeight: "500",
@@ -185,14 +178,12 @@ function View() {
                           {promotion.promotion_description}
                         </div>
                       </Col>
-
                       <Col span={24}>
                         <div
                           style={{
                             display: "flex",
                             justifyContent: "space-between",
                             padding: "15px 20px",
-                            borderTop: "1px solid #E4E4E4",
                             fontSize: "16px",
                             color: "#47456C",
                             fontWeight: "500",
@@ -214,7 +205,23 @@ function View() {
           </Row>
         ))}
       </div>
-    </>
+      <Button
+        type="primary"
+        style={{
+          position: "fixed",
+          bottom: "20px",
+          right: "20px",
+          backgroundColor: "rgba(146, 51, 234, 0.88)",
+          color: "white",
+          fontSize: "24px",  // Increased font size for a larger button
+          padding: "32px 24px",  // Increased padding
+          borderRadius: "12px",
+        }}
+        onClick={() => (window.location.href = "/home")}
+      >
+        BACK HOME
+      </Button>
+    </div>
   );
 }
 

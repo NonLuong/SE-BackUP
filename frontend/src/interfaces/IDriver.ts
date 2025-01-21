@@ -1,4 +1,4 @@
-export interface IDriver {
+export interface Driver {
   ID?: number; // สำหรับการอัปเดตหรือดึงข้อมูล
   firstname: string;
   lastname: string;

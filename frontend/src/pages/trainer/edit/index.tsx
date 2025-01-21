@@ -11,69 +11,87 @@ import {
   message,
   DatePicker,
   Select,
+  Spin,
+  Layout,
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { TrainersInterface } from "../../../interfaces/ITrainer";
 import { Gender } from "../../../interfaces/IGender";
-import { GetTrainerById, UpdateTrainerById } from "../../../services/https/TainerAPI";
+import {
+  GetTrainerById,
+  UpdateTrainerById,
+} from "../../../services/https/TainerAPI";
 import { useNavigate, useParams } from "react-router-dom";
 import dayjs from "dayjs";
 import { GetGender } from "../../../services/https/GenderAPI";
+import AdminSidebar from "../../../components/sider/AdminSidebar";
 
 function TrainerEdit() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const [messageApi, contextHolder] = message.useMessage();
   const [gender, setGender] = useState<Gender[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [originalData, setOriginalData] = useState<Partial<TrainersInterface>>({});
   const [form] = Form.useForm();
 
-  // Fetch gender data
+  // Fetch gender options
   const fetchGenders = async () => {
+    setLoading(true);
     try {
       const res = await GetGender();
       if (res.status === 200) {
         setGender(res.data);
       } else {
         messageApi.error("ไม่สามารถดึงข้อมูลเพศได้");
-        setTimeout(() => navigate("/trainers"), 2000);
       }
     } catch (error) {
       messageApi.error("เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์");
+    } finally {
+      setLoading(false);
     }
   };
 
   // Fetch trainer data by ID
   const fetchTrainerById = async (trainerId: string) => {
+    setLoading(true);
     try {
       const res = await GetTrainerById(trainerId);
-      if (res.status === 200) {
+      if (res.status === 200 && res.data) {
+        const trainerData = {
+          FirstName: res.data.first_name || "",
+          LastName: res.data.last_name || "",
+          Email: res.data.email || "",
+          BirthDay: res.data.birthday ? dayjs(res.data.birthday).toISOString() : "", // แปลงเป็น string
+          GenderID: res.data.gender_id || undefined,
+        };
+        console.log("Fetched Trainer Data:", trainerData); // Debug ข้อมูลที่ได้มา
+        setOriginalData(trainerData); // อัปเดต State
         form.setFieldsValue({
-          first_name: res.data?.FirstName,
-          last_name: res.data?.LastName,
-          email: res.data?.Email,
-          birthday: dayjs(res.data?.BirthDay),
-          age: res.data?.Age,
-          gender_id: res.data?.GenderID,
+          ...trainerData,
+          BirthDay: trainerData.BirthDay ? dayjs(trainerData.BirthDay) : undefined, // ใช้ dayjs สำหรับการแสดงผล
         });
       } else {
         messageApi.error("ไม่พบข้อมูลเทรนเนอร์");
-        setTimeout(() => navigate("/trainers"), 2000);
+        setTimeout(() => navigate("/trainer"), 2000);
       }
     } catch (error) {
+      console.error("Error fetching trainer data:", error); // Debug ข้อผิดพลาด
       messageApi.error("เกิดข้อผิดพลาดในการดึงข้อมูลเทรนเนอร์");
+    } finally {
+      setLoading(false);
     }
-  };
+  };  
 
   // Handle form submission
-  const onFinish = async (values: any) => {
+  const onFinish = async (values: TrainersInterface) => {
     const payload: TrainersInterface = {
-      FirstName: values.first_name,
-      LastName: values.last_name,
-      Email: values.email,
-      BirthDay: values.birthday?.toISOString(),
-      Age: values.age,
-      GenderID: values.gender_id,
-      rolesId: values.roleId,
+      FirstName: values.FirstName || originalData.FirstName || "",
+      LastName: values.LastName || originalData.LastName || "",
+      Email: values.Email || originalData.Email || "",
+      BirthDay: values.BirthDay?.toString() || originalData.BirthDay || "",
+      GenderID: values.GenderID || originalData.GenderID || 0,
+      rolesId: originalData.rolesId || 0, // Use existing rolesId or default to 0
       message: "",
     };
 
@@ -86,11 +104,12 @@ function TrainerEdit() {
       const res = await UpdateTrainerById(parsedId, payload);
       if (res.status === 200) {
         messageApi.success("แก้ไขข้อมูลสำเร็จ");
-        navigate("/trainers");
+        setTimeout(() => navigate("/trainer"), 2000);
       } else {
         throw new Error(res.error || "เกิดข้อผิดพลาดในการแก้ไขข้อมูล");
       }
     } catch (error: any) {
+      console.error("Error updating trainer:", error);
       messageApi.error(error.message || "ไม่สามารถแก้ไขข้อมูลได้");
     }
   };
@@ -103,91 +122,100 @@ function TrainerEdit() {
   }, [id]);
 
   return (
-    <div>
-      {contextHolder}
-      <Card>
-        <h2>แก้ไขข้อมูล เทรนเนอร์</h2>
-        <Divider />
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={onFinish}
-          autoComplete="off"
-        >
-          <Row gutter={[16, 0]}>
-            <Col xs={24} sm={24} md={12}>
-              <Form.Item
-                label="ชื่อจริง"
-                name="first_name"
-                rules={[{ required: true, message: "กรุณากรอกชื่อ!" }]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-
-            <Col xs={24} sm={24} md={12}>
-              <Form.Item
-                label="นามสกุล"
-                name="last_name"
-                rules={[{ required: true, message: "กรุณากรอกนามสกุล!" }]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-
-            <Col xs={24} sm={24} md={12}>
-              <Form.Item
-                label="อีเมล"
-                name="email"
-                rules={[
-                  { type: "email", message: "รูปแบบอีเมลไม่ถูกต้อง!" },
-                  { required: true, message: "กรุณากรอกอีเมล!" },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-
-            <Col xs={24} sm={24} md={12}>
-              <Form.Item
-                label="วัน/เดือน/ปี เกิด"
-                name="birthday"
-                rules={[{ required: true, message: "กรุณาเลือกวัน/เดือน/ปี เกิด!" }]}
-              >
-                <DatePicker style={{ width: "100%" }} />
-              </Form.Item>
-            </Col>
-
-            <Col xs={24} sm={24} md={12}>
-              <Form.Item
-                label="เพศ"
-                name="gender_id"
-                rules={[{ required: true, message: "กรุณาเลือกเพศ!" }]}
-              >
-                <Select placeholder="เลือกเพศ">
-                  {gender.map((item) => (
-                    <Select.Option key={item.ID} value={item.ID}>
-                      {item.gender}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row justify="end">
-            <Col>
-              <Space>
-                <Button onClick={() => navigate("/trainer")}>ยกเลิก</Button>
-                <Button type="primary" htmlType="submit" icon={<PlusOutlined />}>
-                  บันทึก
-                </Button>
-              </Space>
-            </Col>
-          </Row>
-        </Form>
-      </Card>
-    </div>
+    <Layout style={{ minHeight: "100vh" }}>
+      <AdminSidebar />
+      <Layout.Content style={{ padding: "20px" }}>
+        {contextHolder}
+        <Spin spinning={loading}>
+          <Card>
+            <h2>แก้ไขข้อมูล เทรนเนอร์</h2>
+            <Divider />
+            <Form
+              form={form}
+              layout="vertical"
+              onFinish={onFinish}
+              autoComplete="off"
+            >
+              <Row gutter={[16, 0]}>
+                <Col xs={24} sm={24} md={12}>
+                  <Form.Item
+                    label="ชื่อจริง"
+                    name="FirstName"
+                    rules={[{ required: true, message: "กรุณากรอกชื่อ!" }]}
+                  >
+                    <Input />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} sm={24} md={12}>
+                  <Form.Item
+                    label="นามสกุล"
+                    name="LastName"
+                    rules={[{ required: true, message: "กรุณากรอกนามสกุล!" }]}
+                  >
+                    <Input />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} sm={24} md={12}>
+                  <Form.Item
+                    label="อีเมล"
+                    name="Email"
+                    rules={[
+                      { type: "email", message: "รูปแบบอีเมลไม่ถูกต้อง!" },
+                      { required: true, message: "กรุณากรอกอีเมล!" },
+                    ]}
+                  >
+                    <Input />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} sm={24} md={12}>
+                  <Form.Item
+                    label="วัน/เดือน/ปี เกิด"
+                    name="BirthDay"
+                    rules={[
+                      {
+                        required: true,
+                        message: "กรุณาเลือกวัน/เดือน/ปี เกิด!",
+                      },
+                    ]}
+                  >
+                    <DatePicker style={{ width: "100%" }} />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} sm={24} md={12}>
+                  <Form.Item
+                    label="เพศ"
+                    name="GenderID"
+                    rules={[{ required: true, message: "กรุณาเลือกเพศ!" }]}
+                  >
+                    <Select placeholder="เลือกเพศ">
+                      {gender.map((item) => (
+                        <Select.Option key={item.ID} value={item.ID}>
+                          {item.gender}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row justify="end">
+                <Col>
+                  <Space>
+                    <Button onClick={() => navigate("/trainer")}>ยกเลิก</Button>
+                    <Button
+                      type="primary"
+                      htmlType="submit"
+                      icon={<PlusOutlined />}
+                    >
+                      บันทึก
+                    </Button>
+                  </Space>
+                </Col>
+              </Row>
+            </Form>
+          </Card>
+        </Spin>
+      </Layout.Content>
+    </Layout>
   );
 }
 

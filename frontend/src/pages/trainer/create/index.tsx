@@ -11,6 +11,7 @@ import {
   notification,
   DatePicker,
   Select,
+  Layout,
 } from "antd";
 import { useState, useEffect } from "react";
 import { PlusOutlined } from "@ant-design/icons";
@@ -19,6 +20,7 @@ import { Gender } from "../../../interfaces/IGender";
 import { CreateTrainer } from "../../../services/https/TainerAPI";
 import { GetGender } from "../../../services/https/GenderAPI";
 import { useNavigate, Link } from "react-router-dom";
+import AdminSidebar from "../../../components/sider/AdminSidebar"; // ✅ Import AdminSidebar
 
 function TrainerCreate() {
   const navigate = useNavigate();
@@ -76,100 +78,103 @@ function TrainerCreate() {
   }, []);
 
   return (
-    <div>
-      {contextHolder}
-      <Card>
-        <h2>เพิ่มข้อมูลเทรนเนอร์</h2>
-        <Divider />
-        <Form name="basic" layout="vertical" onFinish={onFinish} autoComplete="off">
-          <Row gutter={[16, 0]}>
-            <Col xs={24} sm={24} md={12}>
-              <Form.Item
-                label="ชื่อจริง"
-                name="first_name"
-                rules={[{ required: true, message: "กรุณากรอกชื่อ !" }]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={24} md={12}>
-              <Form.Item
-                label="นามสกุล"
-                name="last_name"
-                rules={[{ required: true, message: "กรุณากรอกนามสกุล !" }]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={24} md={12}>
-              <Form.Item
-                label="อีเมล"
-                name="email"
-                rules={[
-                  { type: "email", message: "รูปแบบอีเมลไม่ถูกต้อง !" },
-                  { required: true, message: "กรุณากรอกอีเมล !" },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={24} md={12}>
-              <Form.Item
-                label="รหัสผ่าน"
-                name="password"
-                rules={[{ required: true, message: "กรุณากรอกรหัสผ่าน !" }]}
-              >
-                <Input.Password />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={24} md={12}>
-              <Form.Item
-                label="วัน/เดือน/ปี เกิด"
-                name="birthday"
-                rules={[{ required: true, message: "กรุณาเลือกวัน/เดือน/ปี เกิด !" }]}
-              >
-                <DatePicker style={{ width: "100%" }} />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={24} md={12}>
-              <Form.Item
-                label="เพศ"
-                name="gender_id"
-                rules={[{ required: true, message: "กรุณาเลือกเพศ !" }]}
-              >
-                <Select placeholder="เลือกเพศ" style={{ width: "100%" }} loading={loading}>
-                  {gender?.length > 0 ? (
-                    gender.map((item) => (
-                      <Select.Option key={item.ID} value={item.ID}>
-                        {item.gender}
+    <Layout style={{ minHeight: "100vh" }}>
+      <AdminSidebar /> {/* ✅ ใช้ AdminSidebar */}
+      <Layout.Content style={{ padding: "20px" }}>
+        {contextHolder}
+        <Card>
+          <h2>เพิ่มข้อมูลเทรนเนอร์</h2>
+          <Divider />
+          <Form name="basic" layout="vertical" onFinish={onFinish} autoComplete="off">
+            <Row gutter={[16, 0]}>
+              <Col xs={24} sm={24} md={12}>
+                <Form.Item
+                  label="ชื่อจริง"
+                  name="first_name"
+                  rules={[{ required: true, message: "กรุณากรอกชื่อ !" }]}
+                >
+                  <Input />
+                </Form.Item>
+              </Col>
+              <Col xs={24} sm={24} md={12}>
+                <Form.Item
+                  label="นามสกุล"
+                  name="last_name"
+                  rules={[{ required: true, message: "กรุณากรอกนามสกุล !" }]}
+                >
+                  <Input />
+                </Form.Item>
+              </Col>
+              <Col xs={24} sm={24} md={12}>
+                <Form.Item
+                  label="อีเมล"
+                  name="email"
+                  rules={[
+                    { type: "email", message: "รูปแบบอีเมลไม่ถูกต้อง !" },
+                    { required: true, message: "กรุณากรอกอีเมล !" },
+                  ]}
+                >
+                  <Input />
+                </Form.Item>
+              </Col>
+              <Col xs={24} sm={24} md={12}>
+                <Form.Item
+                  label="รหัสผ่าน"
+                  name="password"
+                  rules={[{ required: true, message: "กรุณากรอกรหัสผ่าน !" }]}
+                >
+                  <Input.Password />
+                </Form.Item>
+              </Col>
+              <Col xs={24} sm={24} md={12}>
+                <Form.Item
+                  label="วัน/เดือน/ปี เกิด"
+                  name="birthday"
+                  rules={[{ required: true, message: "กรุณาเลือกวัน/เดือน/ปี เกิด !" }]}
+                >
+                  <DatePicker style={{ width: "100%" }} />
+                </Form.Item>
+              </Col>
+              <Col xs={24} sm={24} md={12}>
+                <Form.Item
+                  label="เพศ"
+                  name="gender_id"
+                  rules={[{ required: true, message: "กรุณาเลือกเพศ !" }]}
+                >
+                  <Select placeholder="เลือกเพศ" style={{ width: "100%" }} loading={loading}>
+                    {gender?.length > 0 ? (
+                      gender.map((item) => (
+                        <Select.Option key={item.ID} value={item.ID}>
+                          {item.gender}
+                        </Select.Option>
+                      ))
+                    ) : (
+                      <Select.Option disabled value="">
+                        ไม่มีข้อมูลเพศ
                       </Select.Option>
-                    ))
-                  ) : (
-                    <Select.Option disabled value="">
-                      ไม่มีข้อมูลเพศ
-                    </Select.Option>
-                  )}
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row justify="end">
-            <Col style={{ marginTop: "40px" }}>
-              <Form.Item>
-                <Space>
-                  <Link to="/trainer">
-                    <Button htmlType="button">ยกเลิก</Button>
-                  </Link>
-                  <Button type="primary" htmlType="submit" icon={<PlusOutlined />}>
-                    ยืนยัน
-                  </Button>
-                </Space>
-              </Form.Item>
-            </Col>
-          </Row>
-        </Form>
-      </Card>
-    </div>
+                    )}
+                  </Select>
+                </Form.Item>
+              </Col>
+            </Row>
+            <Row justify="end">
+              <Col style={{ marginTop: "40px" }}>
+                <Form.Item>
+                  <Space>
+                    <Link to="/trainer">
+                      <Button htmlType="button">ยกเลิก</Button>
+                    </Link>
+                    <Button type="primary" htmlType="submit" icon={<PlusOutlined />}>
+                      ยืนยัน
+                    </Button>
+                  </Space>
+                </Form.Item>
+              </Col>
+            </Row>
+          </Form>
+        </Card>
+      </Layout.Content>
+    </Layout>
   );
 }
 

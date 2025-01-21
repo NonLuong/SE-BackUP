@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import {
-  GiftOutlined,
+  CreditCardOutlined,
   LogoutOutlined,
   DashboardOutlined,
   FundProjectionScreenOutlined,
+  StarOutlined,
 } from "@ant-design/icons";
 import { Layout, Menu } from "antd";
+import { AiOutlineHome } from "react-icons/ai";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./AdminSidebar.css";
 
@@ -23,11 +25,17 @@ type CustomMenuItem = {
 const items: CustomMenuItem[] = [
   { key: "/dashboards", label: "DASHBOARD", icon: <DashboardOutlined /> },
   {
-    key: "/rooms",
-    label: "TRAINING",
+    key: "/room",
+    label: "ROOM",
+    icon: <AiOutlineHome />,
+  },
+  {
+    key: "/training",
+    label: "Traning",
     icon: <FundProjectionScreenOutlined />,
   },
-  { key: "/withdrawal", label: "WITHDRAWAL", icon: <GiftOutlined /> },
+  { key: "/withdrawal", label: "WITHDRAWAL", icon: <CreditCardOutlined />},
+  { key: "/dashboard-driver-review", label: "Review", icon: <StarOutlined /> },
   {
     key: "/",
     label: "Log out",
