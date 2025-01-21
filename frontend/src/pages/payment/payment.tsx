@@ -17,7 +17,7 @@ import { apiRequest } from "../../config/ApiService";
 import { Endpoint } from "../../config/Endpoint";
 import { patchBookingStatus } from "../../services/https/statusbooking/statusbooking"; //อัพเดตสถานนะการจ่ายเงิน
 import CircularProgress from "@mui/material/CircularProgress/CircularProgress";
-import { Alert } from "@mui/material";
+
 
 const Payment: React.FC = () => {
   const [method, setMethod] = useState<string | null>(null);
@@ -297,10 +297,24 @@ const Payment: React.FC = () => {
       {waitingDriver == 1 ? (
         <div className="waiting-container">
           {notifyPayment ? (
-            <Alert icon={false} severity="success">
+           <div
+           style={{
+             backgroundColor: "#FFF",
+             borderRadius: "10px",
+             padding: "10px 20px",
+             marginBottom: "20px",
+             fontSize: "18px",
+             fontWeight: "bold",
+             color: "#000",
+             textAlign: "center",
+             width: "80%",
+             boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+             fontFamily: "Comic Sans MS, sans-serif",
+           }}
+         >
               The journey is complete! Please take a moment to review your
               experience with us.
-            </Alert>
+              </div>
           ) : (
             <></>
           )}
