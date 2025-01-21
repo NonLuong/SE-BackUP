@@ -39,16 +39,20 @@ const PromotionCreate = () => {
 
     if (res.status === 200) {
       messageApi.open({
-        type: 'success',
-        // content: res.data.message,
-        className: 'message-success',  // เพิ่ม className ที่นี่
-        content: 'Promotion created successfully',
+        type: "success",
+        className: "message-success",
+        content: "Promotion created successfully",
       });
       setTimeout(() => {
         navigate('/promotion');
       }, 2000);
     } else {
-      messageApi.error(res.error || 'Create Promotion Fail');
+      messageApi.error({
+        type: "error",
+        className: "message-fail",
+        content: "Promotion created fail",
+      });
+      
     }
   };
 

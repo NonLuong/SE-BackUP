@@ -121,8 +121,11 @@ function WithdrawalCreate() {
 
         await CreateWithdrawal(withdrawalData);
 
-        // แสดงข้อความเสมอว่า "Withdrawal created successfully"
-        messageApi.success("Withdrawal created successfully");
+        messageApi.success({
+            type: "success",
+            className: "message-success",
+            content: "Withdrawal created successfully",
+          });
 
         // นำผู้ใช้งานไปยังหน้า /withdrawal เสมอ
         setTimeout(() => {
@@ -170,8 +173,8 @@ function WithdrawalCreate() {
                                     min={100}
                                     max={drivers.length > 0 ? drivers[0].Income : 0}
                                     style={{ width: "100%" }}
-                                    step={1}
-                                    precision={0}
+                                    // step={1}
+                                    // precision={0}
                                     value={withdrawalAmount}
                                     onChange={handleWithdrawalAmountChange}
                                 />
