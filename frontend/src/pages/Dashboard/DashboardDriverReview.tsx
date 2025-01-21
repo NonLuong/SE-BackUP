@@ -243,6 +243,7 @@ const DashboardDriverReview: React.FC = () => {
             >
               Review By
             </h2>
+            <div style={{ clear: "none", maxWidth: "80%" }}>
             <Table
               className="custom-ant-table"
               columns={columns}
@@ -255,6 +256,7 @@ const DashboardDriverReview: React.FC = () => {
                 minHeight: "495px",
               }}
             />
+            </div>
           </div>
 
           {/* Rating Overview */}
