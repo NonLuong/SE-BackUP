@@ -1,0 +1,187 @@
+/* BookingList.css */
+.booking-list-container {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    padding: 20px;
+    background-color: #f0e7ff;  /* สีพื้นหลังอ่อน */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .booking-list-container h1 {
+    color: #5a2d98;  /* สีม่วงเข้มสำหรับหัวข้อ */
+    font-size: 24px;
+  }
+  
+  .booking-list-container ul {
+    list-style-type: none;
+    padding-left: 0;
+  }
+  
+  .booking-item {
+    background-color: #63426d;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .booking-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+  }
+  
+  .edit-button, .cancel-button {
+    padding: 5px 10px;
+    font-size: 14px;
+    cursor: pointer;
+    border: 1px solid #5a2d98;  /* เส้นขอบสีม่วง */
+    background-color: #f0e7ff;  /* พื้นหลังสีม่วงอ่อน */
+    border-radius: 4px;
+  }
+  
+  .edit-button:hover, .cancel-button:hover {
+    background-color: #e1c9f4;  /* สีม่วงอ่อนเมื่อ hover */
+  }
+  
+  .edit-button {
+    color: #5a2d98;  /* ตัวอักษรสีม่วงเข้ม */
+  }
+  
+  .cancel-button {
+    color: #d9534f;  /* ตัวอักษรสีแดงสำหรับยกเลิก */
+  }
+  
+  .booking-item strong {
+    color: #5a2d98;  /* สีม่วงสำหรับข้อความสำคัญ เช่น "เริ่มต้น", "จุดหมาย" */
+  }
+  
+  .booking-item p {
+    color: #4a2a5a;  /* สีม่วงอ่อนสำหรับข้อความในรายการการจอง */
+  }
+  
+  .booking-list-container p {
+    color: #777;  /* สีข้อความสำหรับข้อความทั่วไปหรือข้อผิดพลาด */
+  }
+  
+  .booking-list-container .error-message {
+    color: #d9534f; /* สีแดงสำหรับข้อความแสดงข้อผิดพลาด */
+  }
+  
+
+ /* Overlay สำหรับ Popup */
+.custom-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  /* กรอบของ Popup */
+  .custom-popup {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    text-align: center;
+  }
+  
+  /* ปุ่มปิด popup */
+  .close-popup-button {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    margin-top: 10px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .close-popup-button:hover {
+    background-color: #d32f2f;
+  }
+  
+  /* Overlay สำหรับ Confirmation Popup */
+  .confirmation-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1001;
+  }
+  
+  /* กรอบของ Confirmation Popup */
+  .confirmation-popup {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    text-align: center;
+  }
+  
+  /* ปุ่มยืนยันและยกเลิก */
+  .confirm-button, .cancel-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    margin-top: 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-right: 5px;
+  }
+  
+  .confirm-button:hover {
+    background-color: #45a049;
+  }
+  
+  .cancel-button {
+    background-color: #f44336;
+  }
+  
+  .cancel-button:hover {
+    background-color: #d32f2f;
+  }
+  
+
+  /* Overlay สำหรับ Confirmation Popup */
+.confirmation-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1001;
+  }
+  
+  /* กรอบของ Confirmation Popup */
+  .confirmation-popup {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    text-align: center;
+  }
+  
+  /* ปุ่มยืนยันและยกเลิก */
+   

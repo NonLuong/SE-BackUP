@@ -47,6 +47,7 @@ import DriverTrackingPage from "./pages/DriverBooking/DriverBooking";
 import Driverontheway from "./pages/DriverBooking/DriverBooking";
 import DriverFinish from "./pages/DriverBooking/DriverBooking";
 import DatePreBooking from "./pages/Dateprebooking/DatePreBooking";
+import BookingHistory from "./pages/prebooking/BookingHistory";
 
 
 const App: React.FC = () => {
@@ -71,6 +72,7 @@ const App: React.FC = () => {
         <Route path="/Passengerprofile" element={<PassengerProfile />} />
 
         <Route path="/DatePreBooking" element={<DatePreBooking />} />
+        <Route path="/BookingHistory" element={<BookingHistory />} />
 
         
 

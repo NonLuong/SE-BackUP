@@ -117,6 +117,11 @@ func registerRoutes(r *gin.Engine) {
 	// Define route for deleting a message
 	r.DELETE("/messages/delete/:id", controller.DeleteMessage)
 
+	//prebooking
+	r.GET("/prebookings", controller.GetPreBookings)
+	r.PATCH("/bookings/:id", controller.UpdateBookingTime) // อัพเดต booking time
+	r.DELETE("/bookings/:id", controller.DeleteBooking) // Route สำหรับการลบ
+
 	// Promotion Routes
 	r.GET("/promotions", controller.GetAllPromotion)
 	r.GET("/promotion/:id", controller.GetPromotion)
