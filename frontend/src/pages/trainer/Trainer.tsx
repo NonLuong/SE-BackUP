@@ -32,10 +32,10 @@ const Trainer: React.FC = () => {
           setTotalTrainers(res.data.length);
 
           const maleTrainers = res.data.filter(
-            (trainer) => trainer.GenderID === 1
+            (trainer) => trainer.gender_id === 1
           );
           const femaleTrainers = res.data.filter(
-            (trainer) => trainer.GenderID === 2
+            (trainer) => trainer.gender_id === 2
           );
 
           setMaleCount(maleTrainers.length);

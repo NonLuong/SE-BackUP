@@ -17,10 +17,7 @@ import {
 import { PlusOutlined } from "@ant-design/icons";
 import { TrainersInterface } from "../../../interfaces/ITrainer";
 import { Gender } from "../../../interfaces/IGender";
-import {
-  GetTrainerById,
-  UpdateTrainerById,
-} from "../../../services/https/TainerAPI";
+import { GetTrainerById, UpdateTrainerById } from "../../../services/https/TainerAPI";
 import { useNavigate, useParams } from "react-router-dom";
 import dayjs from "dayjs";
 import { GetGender } from "../../../services/https/GenderAPI";
@@ -62,26 +59,27 @@ function TrainerEdit() {
           FirstName: res.data.first_name || "",
           LastName: res.data.last_name || "",
           Email: res.data.email || "",
-          BirthDay: res.data.birthday ? dayjs(res.data.birthday).toISOString() : "", // แปลงเป็น string
+          BirthDay: res.data.birthday ? dayjs(res.data.birthday).toISOString() : "",
           GenderID: res.data.gender_id || undefined,
+          rolesId: res.data.rolesId || 0,
         };
-        console.log("Fetched Trainer Data:", trainerData); // Debug ข้อมูลที่ได้มา
-        setOriginalData(trainerData); // อัปเดต State
+        console.log("Fetched Trainer Data:", trainerData);
+        setOriginalData(trainerData);
         form.setFieldsValue({
           ...trainerData,
-          BirthDay: trainerData.BirthDay ? dayjs(trainerData.BirthDay) : undefined, // ใช้ dayjs สำหรับการแสดงผล
+          BirthDay: trainerData.BirthDay ? dayjs(trainerData.BirthDay) : undefined,
         });
       } else {
         messageApi.error("ไม่พบข้อมูลเทรนเนอร์");
         setTimeout(() => navigate("/trainer"), 2000);
       }
     } catch (error) {
-      console.error("Error fetching trainer data:", error); // Debug ข้อผิดพลาด
+      console.error("Error fetching trainer data:", error);
       messageApi.error("เกิดข้อผิดพลาดในการดึงข้อมูลเทรนเนอร์");
     } finally {
       setLoading(false);
     }
-  };  
+  };
 
   // Handle form submission
   const onFinish = async (values: TrainersInterface) => {
@@ -89,11 +87,12 @@ function TrainerEdit() {
       FirstName: values.FirstName || originalData.FirstName || "",
       LastName: values.LastName || originalData.LastName || "",
       Email: values.Email || originalData.Email || "",
-      BirthDay: values.BirthDay?.toString() || originalData.BirthDay || "",
+      BirthDay: values.BirthDay ? dayjs(values.BirthDay).toISOString() : originalData.BirthDay || "",
       GenderID: values.GenderID || originalData.GenderID || 0,
-      rolesId: originalData.rolesId || 0, // Use existing rolesId or default to 0
-      message: "",
+      rolesId: originalData.rolesId || 0,
     };
+
+    console.log("Payload being sent:", payload);
 
     try {
       const parsedId = parseInt(id || "", 10);
@@ -106,7 +105,7 @@ function TrainerEdit() {
         messageApi.success("แก้ไขข้อมูลสำเร็จ");
         setTimeout(() => navigate("/trainer"), 2000);
       } else {
-        throw new Error(res.error || "เกิดข้อผิดพลาดในการแก้ไขข้อมูล");
+        throw new Error(res.message || "เกิดข้อผิดพลาดในการแก้ไขข้อมูล");
       }
     } catch (error: any) {
       console.error("Error updating trainer:", error);
