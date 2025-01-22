@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import {
   Space,
   Table,
-  Button,
   Col,
   Row,
   Card,
@@ -11,18 +10,13 @@ import {
   Popconfirm,
   Layout,
 } from "antd";
-import {
-  PlusOutlined,
-  EditOutlined,
-  DeleteOutlined,
-  HomeOutlined,
-  TeamOutlined,
-} from "@ant-design/icons";
+import { DeleteOutlined, TeamOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import { GetRooms, DeleteRoomById } from "../../services/https/RoomAPI";
 import { RoomInterface } from "../../interfaces/IRoom";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import AdminSidebar from "../../components/sider/AdminSidebar"; // ✅ ใช้ Sidebar ของ Admin
+import "./AdminRoom.css";
 
 function Rooms() {
   const [rooms, setRooms] = useState<RoomInterface[]>([]);
@@ -75,11 +69,6 @@ function Rooms() {
     }
   };
 
-  // ✅ ฟังก์ชันเรียกหลังการจองสำเร็จ เพื่ออัปเดตจำนวนการจองในตาราง
-  // const handleBookingSuccess = () => {
-  //   fetchRooms(); // โหลดข้อมูลห้องใหม่หลังจองสำเร็จ
-  // };
-
   // ✅ ฟังก์ชันลบห้อง
   const handleDelete = async (id: number) => {
     try {
@@ -106,6 +95,7 @@ function Rooms() {
       title: "ลำดับ",
       key: "index",
       render: (_: any, __: any, index: number) => index + 1,
+      width: 80,
     },
     {
       title: "ชื่อห้อง",
@@ -139,37 +129,55 @@ function Rooms() {
     {
       title: "การกระทำ",
       key: "actions",
+      width: 150,
+      //onClick={() => navigate(`/rooms/edit/${record.ID}`)}
       render: (record: RoomInterface) => (
         <Space>
-          {/* <Button
-            type="primary"
-            onClick={() => {
-              navigate(`/trainbook/${record.ID}`);
-              handleBookingSuccess(); // ✅ โหลดข้อมูลห้องใหม่หลังจองสำเร็จ
-            }}
-          >
-            จอง
-          </Button> */}
           {userRole === "admin" && (
             <>
-              <Button
-                type="primary"
-                icon={<EditOutlined />}
+              <button
+                className="AdminRoom-Btn"
                 onClick={() => navigate(`/rooms/edit/${record.ID}`)}
               >
-                แก้ไข
-              </Button>
+                Edit
+                <svg className="AdminRoom-svg" viewBox="0 0 512 512">
+                  <path d="M410.3 231l11.3-11.3-33.9-33.9-62.1-62.1L291.7 89.8l-11.3 11.3-22.6 22.6L58.6 322.9c-10.4 10.4-18 23.3-22.2 37.4L1 480.7c-2.5 8.4-.2 17.5 6.1 23.7s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L387.7 253.7 410.3 231zM160 399.4l-9.1 22.7c-4 3.1-8.5 5.4-13.3 6.9L59.4 452l23-78.1c1.4-4.9 3.8-9.4 6.9-13.3l22.7-9.1v32c0 8.8 7.2 16 16 16h32zM362.7 18.7L348.3 33.2 325.7 55.8 314.3 67.1l33.9 33.9 62.1 62.1 33.9 33.9 11.3-11.3 22.6-22.6 14.5-14.5c25-25 25-65.5 0-90.5L453.3 18.7c-25-25-65.5-25-90.5 0zm-47.4 168l-144 144c-6.2 6.2-16.4 6.2-22.6 0s-6.2-16.4 0-22.6l144-144c6.2-6.2 16.4-6.2 22.6 0s6.2 16.4 0 22.6z"></path>
+                </svg>
+              </button>
               <Popconfirm
-                title="ยืนยันการลบห้อง?"
+                title={
+                  <div className="AdminRoom-popconfirm">
+                    <h3 className="AdminRoom-popconfirm-title">
+                      <DeleteOutlined
+                        style={{ fontSize: "20px", color: "#f5222d" }}
+                      />
+                      <br />
+                      ยืนยันการลบห้อง?
+                    </h3>
+                    <p className="AdminRoom-popconfirm-message">
+                      การลบห้องนี้ไม่สามารถกู้คืนได้ คุณแน่ใจหรือไม่?
+                    </p>
+                  </div>
+                }
                 onConfirm={() =>
                   record.ID !== undefined && handleDelete(record.ID)
                 }
                 okText="ใช่"
                 cancelText="ไม่"
+                okButtonProps={{
+                  danger: true,
+                  className: "AdminRoom-popconfirm-ok",
+                }}
+                cancelButtonProps={{
+                  className: "AdminRoom-popconfirm-cancel",
+                }}
               >
-                <Button danger icon={<DeleteOutlined />}>
-                  ลบ
-                </Button>
+                <button className="AdminRoom-Btn">
+                  Delete
+                  <svg className="AdminRoom-svg" viewBox="0 0 448 512">
+                    <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"></path>
+                  </svg>
+                </button>
               </Popconfirm>
             </>
           )}
@@ -218,23 +226,63 @@ function Rooms() {
           columns={columns}
           dataSource={rooms}
           loading={loading}
-          style={{ backgroundColor: "#fff", borderRadius: "8px" }}
+          className="AdminRoom-table"
+          bordered
+          size="middle"
+          pagination={{ pageSize: 5 }}
+          scroll={{ x: 800 }}
+          style={{
+            backgroundColor: "#fff",
+            borderRadius: "8px",
+            boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
+          }}
         />
 
         {/* Add Room Button */}
         <div style={{ textAlign: "right", marginTop: "20px" }}>
-          <Space>
-            <Link to="/employees">
-              <Button type="default" icon={<HomeOutlined />}>
-                หน้าแรก
-              </Button>
-            </Link>
-            <Link to="/rooms/create">
-              <Button type="primary" icon={<PlusOutlined />}>
-                สร้างห้อง
-              </Button>
-            </Link>
-          </Space>
+          <button
+            onClick={() => navigate("/rooms/create")}
+            style={{
+              border: "2px solid #24b4fb",
+              backgroundColor: "#24b4fb",
+              borderRadius: "0.5em",
+              cursor: "pointer",
+              padding: "0.4em 0.8em",
+              transition: "all ease-in-out 0.2s",
+              fontSize: "16px",
+            }}
+            onMouseOver={(e) =>
+              (e.currentTarget.style.backgroundColor = "#0071e2")
+            }
+            onMouseOut={(e) =>
+              (e.currentTarget.style.backgroundColor = "#24b4fb")
+            }
+          >
+            <span
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                color: "#fff",
+                fontWeight: 600,
+              }}
+            >
+              <svg
+                height="24"
+                width="24"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                style={{ marginRight: "3px" }}
+              >
+                <path d="M0 0h24v24H0z" fill="none"></path>
+                <path
+                  d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2z"
+                  fill="currentColor"
+                ></path>
+              </svg>
+              Create
+            </span>
+          </button>
         </div>
       </Layout>
     </Layout>
