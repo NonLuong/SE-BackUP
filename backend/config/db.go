@@ -138,6 +138,7 @@ func SetupDatabase() {
 			Photo:                "https://i.imgur.com/qsk8kle.gif",
 			DiscountTypeID:       2, // Percent discount
 			StatusPromotionID:    1, // ACTIVE
+			DistanceCondition: "free",
 		},
 		{
 			PromotionCode:        "DRIVE002",
@@ -151,6 +152,7 @@ func SetupDatabase() {
 			Photo:                "https://i.imgur.com/PHZXXIY.gif",
 			DiscountTypeID:       1, // Amount discount
 			StatusPromotionID:             1, // ACTIVE
+			DistanceCondition: "greater_equal",
 		},
 		{
 			PromotionCode:        "DRIVE003",
@@ -164,6 +166,7 @@ func SetupDatabase() {
 			Photo:                "https://i.imgur.com/Xp7h3Zn.gif",
 			DiscountTypeID:       2, // Percent discount
 			StatusPromotionID:              1, // ACTIVE
+			DistanceCondition: "greater_equal",
 		},
 		{
 			PromotionCode:        "DRIVE004",
@@ -177,6 +180,7 @@ func SetupDatabase() {
 			Photo:                "https://i.imgur.com/rkxFKdU.gif",
 			DiscountTypeID:       1, // Amount discount
 			StatusPromotionID:             1, // ACTIVE
+			DistanceCondition: "greater",
 		},
 		{
 			PromotionCode:        "DRIVE005",
@@ -190,6 +194,7 @@ func SetupDatabase() {
 			Photo:                "https://i.imgur.com/7gbPAUZ.gif",
 			DiscountTypeID:       2, // Percent discount
 			StatusPromotionID:             1, // ACTIVE
+			DistanceCondition: "less_equal",
 		},
 		{
 			PromotionCode:        "DRIVE006",
@@ -203,11 +208,18 @@ func SetupDatabase() {
 			Photo:                "https://i.imgur.com/wNNnRDL.gif",
 			DiscountTypeID:       2, // Percent discount
 			StatusPromotionID:              2, // ACTIVE
+			DistanceCondition: "greater_equal",
 		},
 	}
 	// บันทึกข้อมูลโปรโมชั่นตัวอย่างลงในฐานข้อมูล
 	for _, promo := range promotions {
-		db.FirstOrCreate(&promo, &entity.Promotion{PromotionCode: promo.PromotionCode})
+		db.FirstOrCreate(
+			&promo,
+			entity.Promotion{
+				PromotionCode:     promo.PromotionCode,
+				DistanceCondition: promo.DistanceCondition, // เพิ่มเงื่อนไขนี้
+			},
+		)
 	}
 
 	// สร้างข้อมูลตัวอย่าง Status

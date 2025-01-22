@@ -16,6 +16,7 @@ const PromotionCreate = () => {
   const [discountType, setDiscountType] = useState<'amount' | 'percent'>('amount');
   const [status, setStatus] = useState<'active' | 'expired'>('active');
   const [fileList, setFileList] = useState<any[]>([]);
+  const [distanceCondition, setDistanceCondition] = useState<string>("");
 
   const discountTypeMap = {
     amount: 1,
@@ -33,6 +34,7 @@ const PromotionCreate = () => {
       discount_type_id: discountTypeMap[discountType],
       status_promotion_id: statusMap[status],
       photo: fileList.length > 0 ? fileList[0].thumbUrl : null,
+      distance_condition: distanceCondition,
     };
 
     const res = await CreatePromotion(promotionData);
@@ -239,6 +241,43 @@ const PromotionCreate = () => {
                             style={{ width: '100%' }}
                             disabledDate={(current) => current && current < dayjs().endOf('day')}
                           />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                  </Col>
+                  <Col xs={24}>
+                    <Row gutter={[16, 16]}>
+                      <Col xs={24} sm={12}>
+                        <Form.Item
+                          label="เงื่อนไขระยะทาง"
+                          name="distance_condition"
+                          rules={[
+                            {
+                              required: true,
+                              message: "กรุณาเลือกเงื่อนไขระยะทาง !",
+                            },
+                          ]}
+                        >
+                          <Select
+                            value={distanceCondition}
+                            onChange={(value) => setDistanceCondition(value)}
+                          >
+                            <Select.Option value="greater">
+                              ระยะทางมากกว่า
+                            </Select.Option>
+                            <Select.Option value="greater_equal">
+                              ระยะทางไม่น้อยกว่า
+                            </Select.Option>
+                            <Select.Option value="less_equal">
+                              ระยะทางไม่เกิน
+                            </Select.Option>
+                            <Select.Option value="less">
+                              ระยะทางน้อยกว่า
+                            </Select.Option>
+                            <Select.Option value="free">
+                              ทุกระยะทาง
+                            </Select.Option>
+                          </Select>
                         </Form.Item>
                       </Col>
                     </Row>
