@@ -90,6 +90,7 @@ function TrainerEdit() {
       BirthDay: values.BirthDay ? dayjs(values.BirthDay).toISOString() : originalData.BirthDay || "",
       GenderID: values.GenderID || originalData.GenderID || 0,
       rolesId: originalData.rolesId || 0,
+      message: ""
     };
 
     console.log("Payload being sent:", payload);

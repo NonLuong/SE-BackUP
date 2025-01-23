@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Table, Card, Layout, Statistic, message, Button, Radio } from "antd";
+import { Table, Card, Layout, Statistic, message } from "antd";
 import { TeamOutlined } from "@ant-design/icons";
 import { GetRooms } from "../../services/https/RoomAPI";
 import { CreateTrainbook } from "../../services/https/TrainBookAPI";
@@ -81,10 +81,10 @@ function DriverRooms() {
         fetchRooms();
         setTimeout(() => navigate("/training"), 1500);
       } else {
-        message.error("❌ เกิดข้อผิดพลาดในการจองห้อง");
+        message.error("เกิดข้อผิดพลาดในการจองห้อง");
       }
     } catch (error) {
-      message.error("❌ เกิดข้อผิดพลาดขณะจอง");
+      message.error("เกิดข้อผิดพลาดขณะจอง");
     } finally {
       setBookingLoading(false);
     }
@@ -117,18 +117,40 @@ function DriverRooms() {
         <h1 className="DriverRoom-header-title">
           ระบบการจองห้องอบรมสำหรับคนขับ
         </h1>
-        <Card className="DriverRoom-statistic-card">
+        <Card
+          className="DriverRoom-statistic-card"
+          style={{
+            width: "150px", // ลดความกว้าง
+            padding: "10px", // ลด padding
+            textAlign: "center", // จัดให้อยู่ตรงกลาง
+            boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.1)", // เงาเล็กลง
+            borderRadius: "8px", // มุมโค้ง
+          }}
+        >
+          <div
+            style={{ fontSize: "14px", fontWeight: "500", marginBottom: "8px" }}
+          >
+            Room(Totle)
+          </div>
           <Statistic
-            title="จำนวนห้องอบรม (ทั้งหมด)"
             value={totalRooms}
             prefix={<TeamOutlined />}
+            valueStyle={{
+              fontSize: "20px", // ขนาดตัวเลข
+              fontWeight: "bold",
+            }}
           />
         </Card>
+
         <Table
+          className="DriverRoom-table"
           dataSource={rooms}
           rowKey="ID"
-          pagination={false}
+          pagination={{ pageSize: 5 }}
           loading={loading}
+          bordered
+          size="middle"
+          scroll={{ x: 800 }}
           expandedRowKeys={selectedRoomID ? [selectedRoomID] : []}
           onRow={(record) => ({
             onClick: () => toggleExpandRoom(record.ID ?? 0),
@@ -139,6 +161,12 @@ function DriverRooms() {
                 className={`DriverRoom-detail-card ${
                   selectedRoomID === record.ID ? "show" : ""
                 }`}
+                style={{
+                  backgroundColor: "#f8f8f8",
+                  borderRadius: "8px",
+                  padding: "16px",
+                  textAlign: "left", // ชิดซ้าย
+                }}
               >
                 <h2 className="DriverRoom-detail-title">รายละเอียดห้อง</h2>
                 <p>
@@ -151,7 +179,7 @@ function DriverRooms() {
                   <strong>รายละเอียดการอบรม:</strong> {record.Detail}
                 </p>
                 <p>
-                  <strong>ชื่อเทรนเนอร์:</strong>
+                  <strong>ชื่อเทรนเนอร์:</strong>{" "}
                   {record.Trainer
                     ? `${record.Trainer.FirstName} ${record.Trainer.LastName}`
                     : "ไม่ระบุ"}
@@ -161,19 +189,18 @@ function DriverRooms() {
                   {record.Capacity ?? 0}
                 </p>
                 <div className="DriverRoom-button-group">
-                  <Button
+                  <button
                     className="DriverRoom-cancel-button"
                     onClick={() => setSelectedRoomID(null)}
                   >
                     ยกเลิก
-                  </Button>
-                  <Button
+                  </button>
+                  <button
                     className="DriverRoom-confirm-button"
-                    type="primary"
                     onClick={() => handleBooking(record.ID ?? 0)}
                   >
                     ยืนยัน
-                  </Button>
+                  </button>
                 </div>
               </div>
             ),
@@ -181,34 +208,39 @@ function DriverRooms() {
           }}
           columns={[
             {
-              title: "",
-              dataIndex: "ID",
-              render: (id) => (
-                <Radio
-                  checked={selectedRoomID === id}
-                  onClick={() => toggleExpandRoom(id ?? 0)}
-                />
-              ),
-            },
-            { title: "Room", dataIndex: "RoomName" },
-            { title: "Title", dataIndex: "Title" },
-            {
-              title: "Capacity",
-              dataIndex: "CurrentBookings",
-              render: (_, record) =>
-                `${record.CurrentBookings ?? 0}/${record.Capacity ?? 0}`,
+              title: "ลำดับ",
+              key: "index",
+              render: (_: any, __: any, index: number) => index + 1,
+              width: 80,
             },
             {
-              title: "Trainer",
-              dataIndex: "Trainer",
-              render: (_, record) =>
+              title: "ชื่อห้อง",
+              dataIndex: "RoomName",
+              key: "RoomName",
+            },
+            {
+              title: "หัวข้อ",
+              dataIndex: "Title",
+              key: "Title",
+            },
+            {
+              title: "ความจุ",
+              key: "Capacity",
+              render: (record: RoomInterface) =>
+                `${record.CurrentBookings || 0}/${record.Capacity || 0}`,
+            },
+            {
+              title: "เทรนเนอร์",
+              key: "Trainer",
+              render: (record: RoomInterface) =>
                 record.Trainer
                   ? `${record.Trainer.FirstName} ${record.Trainer.LastName}`
-                  : "ไม่ระบุ",
+                  : "ไม่ระบุเทรนเนอร์",
             },
             {
-              title: "Status",
-              dataIndex: "CurrentBookings",
+              title: "สถานะ",
+              dataIndex: "Status",
+              key: "Status",
               render: (_, record) =>
                 getStatusColor(
                   record.CurrentBookings ?? 0,

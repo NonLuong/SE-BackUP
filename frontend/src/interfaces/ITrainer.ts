@@ -1,4 +1,5 @@
 export interface TrainersInterface {
+  message: string;
   ID?: number;
   FirstName?: string;
   first_name?: string;
