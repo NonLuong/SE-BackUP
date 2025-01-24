@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { getBookings } from "../../services/https/statusbooking/statusbooking"; // นำเข้าฟังก์ชัน
+import { getBookings } from "../../services/https/statusbooking/statusbooking";
 import "./RideHistory.css";
 
 type Booking = {
   id: number;
-  beginning: string;
-  terminus: string;
-  start_time: string;
+  beginning: string | null;
+  terminus: string | null;
+  start_time: string | null;
   end_time: string | null;
-  distance: number;
-  total_price: number;
-  booking_status: string;
-  vehicle: string;
+  distance: number | null;
+  total_price: number | null;
+  booking_status: string | null;
+  vehicle: string | null;
 };
 
 const RideHistory: React.FC = () => {
@@ -21,9 +21,20 @@ const RideHistory: React.FC = () => {
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        const bookingsData = await getBookings(); // เรียกใช้ฟังก์ชัน getBookings
-        console.log("Fetched bookings:", bookingsData); // Debug
-        setBookings(bookingsData); // อัปเดต state ด้วยข้อมูลการจอง
+        const response = await getBookings();
+        console.log("Fetched bookings:", response);
+        const formattedBookings = response.map((item: any) => ({
+          id: item.booking.id,
+          beginning: item.booking.beginning || "Data not available",
+          terminus: item.booking.terminus || "Data not available",
+          start_time: item.booking.start_time || null,
+          end_time: item.booking.end_time || null,
+          distance: item.booking.distance || 0,
+          total_price: item.booking.total_price || 0,
+          booking_status: item.status_booking || "unknown",
+          vehicle: item.booking.vehicle || "Unknown vehicle",
+        }));
+        setBookings(formattedBookings);
       } catch (error) {
         console.error("Error fetching bookings:", error);
       } finally {
@@ -35,45 +46,59 @@ const RideHistory: React.FC = () => {
   }, []);
 
   if (loading) {
-    return <div>กำลังโหลดข้อมูลการเดินทาง...</div>;
+    return <div>Loading travel history...</div>;
   }
 
   return (
-    <div className="ride-history">
-      <div className="header">ประวัติการเดินทาง</div>
-
-      <table className="ride-table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>เส้นทาง</th>
-            <th>วันที่เริ่มต้น</th>
-            <th>ยานพาหนะ</th>
-            <th>ระยะทาง (กม.)</th>
-            <th>ค่าโดยสาร (บาท)</th>
-            <th>สถานะ</th>
-          </tr>
-        </thead>
-        <tbody>
+    <div className="ride-history-container">
+      <div className="ride-history">
+        <div className="header">Travel History</div>
+        <div className="ride-cards">
           {bookings.map((booking, index) => (
-            <tr key={booking.id}>
-              <td>{index + 1}</td>
-              <td>{`${booking.beginning} - ${booking.terminus}`}</td>
-              <td>{new Date(booking.start_time).toLocaleDateString()}</td>
-              <td>{booking.vehicle}</td>
-              <td>{booking.distance}</td>
-              <td>{booking.total_price.toFixed(2)}</td>
-              <td>
-                <span className={`status ${booking.booking_status}`}>
-                  {booking.booking_status}
+            <div key={booking.id} className="ride-card">
+              <div className="ride-card-header">
+                <h3>Trip #{index + 1}</h3>
+                <span
+                  className={`status ${booking.booking_status || "unknown"}`}
+                >
+                  {booking.booking_status || "Status unknown"}
                 </span>
-              </td>
-            </tr>
+              </div>
+              <div className="ride-card-body">
+                <p>
+                  <strong>Route:</strong>{" "}
+                  {booking.beginning} - {booking.terminus}
+                </p>
+                <p>
+                  <strong>Start Date:</strong>{" "}
+                  {booking.start_time
+                    ? new Date(booking.start_time).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })
+                    : "Unknown date"}
+                </p>
+                <p>
+                  <strong>Vehicle:</strong> {booking.vehicle}
+                </p>
+                <p>
+                  <strong>Distance:</strong>{" "}
+                  {booking.distance !== null
+                    ? `${booking.distance} km`
+                    : "Data not available"}
+                </p>
+                <p>
+                  <strong>Total Fare:</strong>{" "}
+                  {booking.total_price !== null
+                    ? `${booking.total_price.toFixed(2)} THB`
+                    : "Data not available"}
+                </p>
+              </div>
+            </div>
           ))}
-        </tbody>
-      </table>
-
-      <div className="footer">© 2024 Cabana Travel. All rights reserved.</div>
+        </div>
+      </div>
     </div>
   );
 };

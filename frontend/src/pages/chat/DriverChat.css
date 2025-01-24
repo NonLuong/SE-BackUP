@@ -1,89 +1,122 @@
-/* DriverChat.css */
-
 .containerdriverchat {
   font-family: 'Arial, sans-serif';
-  text-align: center;
-  max-width: 100%;
-  margin: auto;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  background-color: #fff;
-  color: #000; /* สีตัวอักษรเป็นสีดำ */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  height: 100vh; /* ครอบคลุมเต็มหน้าจอ */
+  width: 100vw; /* ครอบคลุมความกว้างหน้าจอ */
+  background-color: #f5f5f5; /* สีพื้นหลัง */
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
 }
 
-.containerdriverchat .connected {
+.containerdriverchat h1 {
+  font-size: 24px;
+  color: #37474f;
+  margin: 20px 0 10px;
+}
+
+.containerdriverchat p {
+  margin: 5px 0;
+}
+
+.connected {
   color: green;
   font-weight: bold;
 }
 
-.containerdriverchat .disconnected {
+.disconnected {
   color: red;
   font-weight: bold;
 }
 
-.containerdriverchat .chatBox {
-  margin-top: 20px;
-  height: 400px;
-  overflow-y: scroll;
+.chatBox {
+  flex: 1; /* ขยายเพื่อเติมเต็มพื้นที่ */
+  width: 100%;
+  max-width: 800px;
+  overflow-y: auto;
   border: 1px solid #ddd;
-  padding: 10px;
-  border-radius: 5px;
-  background-color: #f9f9f9;
+  padding: 15px;
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  color: #000; /* สีตัวอักษรเป็นสีดำ */
+  gap: 10px;
+  margin-bottom: 10px; /* เว้นช่องว่างระหว่าง chatBox และ input */
 }
 
-.containerdriverchat .message {
-  padding: 8px 12px;
-  border-radius: 8px;
+/* ตกแต่งข้อความ */
+.message {
+  padding: 12px 15px;
+  border-radius: 15px;
   max-width: 70%;
-  word-wrap: break-word;
-  color: #000; /* สีข้อความเป็นสีดำ */
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
 }
 
-.containerdriverchat .timestamp {
+.message-user {
+  align-self: flex-end;
+  background-color: #d1e7dd;
+  color: #000;
+}
+
+.message-other {
+  align-self: flex-start;
+  background-color: #f8d7da;
+  color: #000;
+}
+
+.timestamp {
   font-size: 10px;
-  color: #666; /* สีเวลาเป็นสีเทาเข้มเพื่อความแตกต่าง */
-  margin-top: 4px;
+  color: #666;
+  text-align: right;
+  margin-top: 5px;
 }
 
-.containerdriverchat .inputSection {
+/* กล่องอินพุต */
+.inputSection {
+  width: 100%;
+  max-width: 800px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 10px;
-  width: 100%;
-  padding: 10px;
-  background-color: #D1C4E9;
-  border-radius: 10px;
-  border-top: 1px solid #ccc;
+  padding: 15px;
+  background-color: #d1c4e9;
+  border-radius: 0; /* ไม่มีเส้นโค้ง */
+  border-top: 1px solid #b39ddb;
+  position: sticky; /* ให้กล่องอินพุตติดอยู่ด้านล่าง */
+  bottom: 0;
 }
 
-.containerdriverchat .input {
+.input {
   flex: 1;
   padding: 12px 15px;
   border-radius: 25px;
-  border: 1px solid #ccc;
+  border: 1px solid #b39ddb;
   font-size: 14px;
-  outline: none;
   background-color: #fff;
-  color: #000; /* สีข้อความใน input เป็นสีดำ */
+  outline: none;
 }
 
-.containerdriverchat .sendButton {
-  padding: 10px 15px;
-  background-color: #9575CD;
-  color: #fff;
-  border: none;
+.sendButton {
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
+  background-color: #8e24aa;
+  color: #fff;
   font-size: 20px;
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 50px;
-  height: 50px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.sendButton:hover {
+  background-color: #7b1fa2;
 }

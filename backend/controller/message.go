@@ -6,7 +6,7 @@ import (
 	"project-se/config"
 	"github.com/gin-gonic/gin"
 	"strconv"
-	"fmt"
+	
 )
 
 // 📥 CreateMessage - บันทึกข้อความลงฐานข้อมูล
@@ -113,13 +113,15 @@ func DeleteMessage(c *gin.Context) {
 }
 
 
-func UpdateMessage(c *gin.Context) {
+/*func UpdateMessage(c *gin.Context) {
     messageID := c.Param("id") // รับ message ID จาก URL
     var message entity.Message // ใช้ entity.Message
-	var message2 entity.Message 
+    var updates struct {
+        Content string `json:"content"` // กำหนดเฉพาะฟิลด์ Content ที่จะอัปเดต
+    }
 
-    // Bind ข้อมูล JSON จาก request ไปที่ message struct
-    if err := c.ShouldBindJSON(&message2); err != nil {
+    // Bind ข้อมูล JSON จาก request ไปที่ updates struct
+    if err := c.ShouldBindJSON(&updates); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
@@ -130,31 +132,19 @@ func UpdateMessage(c *gin.Context) {
         return
     }
 
-    // ตรวจสอบว่า content เปลี่ยนแปลงหรือไม่
-    originalMessage := message.Content // ค่าเดิมจากฐานข้อมูล
-    fmt.Println("Original message content:", originalMessage)  // การดีบัก
-    fmt.Println("New content:", message.Content)  // การดีบัก
-
-    if originalMessage == message.Content {
-        fmt.Println("No change in content. Skipping update.")
-        c.JSON(http.StatusOK, gin.H{"data": message})
-        return
-    }
-
     // ตรวจสอบว่า content ใหม่ไม่ว่างเปล่า
-    if message.Content == "" {
+    if updates.Content == "" {
         c.JSON(http.StatusBadRequest, gin.H{"error": "Content cannot be empty"})
         return
     }
 
-    // อัพเดตเนื้อหาของข้อความ
-    fmt.Println("Updated content:", message.Content) // เพิ่มการดีบัก
-
-    if err := config.DB().Save(&message).Error; err != nil {
+    // อัพเดตเฉพาะฟิลด์ Content
+    message.Content = updates.Content
+    if err := config.DB().Model(&message).Update("content", message.Content).Error; err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
     }
 
-    // ส่งข้อความที่อัพเดตแล้วกลับไป
+    // ส่งข้อมูลที่อัปเดตแล้วกลับไป
     c.JSON(http.StatusOK, gin.H{"data": message})
-}
+}*/

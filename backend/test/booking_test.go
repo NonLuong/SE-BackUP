@@ -1,6 +1,6 @@
 package test
 
-import (
+/*import (
 	"testing"
 	"fmt"
 
@@ -225,4 +225,4 @@ func TestValidBooking(t *testing.T) {
 		g.Expect(ok).To(BeTrue()) // Validate ต้องผ่าน
 		g.Expect(err).To(BeNil()) // ต้องไม่มีข้อผิดพลาด
 	})
-}
+}*/

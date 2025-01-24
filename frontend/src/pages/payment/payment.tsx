@@ -219,7 +219,9 @@ const Payment: React.FC = () => {
         "POST",
         Endpoint.PAYMENT + card,
         paymentData
+        
       );
+      navigate("/passengernotification");
 
       if (promotionId != undefined || promotionId != null) {
         await apiRequest(

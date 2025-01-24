@@ -38,18 +38,18 @@ import PassengerNotification from "./pages/passengerbooking/passengerbooking";
 import DriverChat from "./pages/chat/DriverChat";
 import PassengerChatPage from "./pages/chat/PassengerChat";
 import PassengerProfile from "./pages/historypassenger/passengerprofile";
-import PreBooking from "./pages/prebooking/prebooking";
+
 import AddDriver from "./pages/Driver/Adddriver";
 import Passenger from "./pages/Passenger/Passenger";
 import Dashboard from "./pages/Dashboard/Admindashboard";
 import Dashboards from "./pages/Dashboard/Driverdashboard";
-import FinishJob from "./pages/finishjob/finishjob";
+
 import DriverTrackingPage from "./pages/DriverBooking/DriverBooking";
 import Driverontheway from "./pages/DriverBooking/DriverBooking";
 import DriverFinish from "./pages/DriverBooking/DriverBooking";
 import DatePreBooking from "./pages/Dateprebooking/DatePreBooking";
 import BookingHistory from "./pages/prebooking/BookingHistory";
-
+import DriverBookingtest from "./pages/DriverBooking/driverbookingtest.tsx";
 
 import Training from "./pages/training/Training.tsx";
 import DashboardDriverReview from "./pages/Dashboard/DashboardDriverReview.tsx";
@@ -79,11 +79,13 @@ const App: React.FC = () => {
         <Route path="/DatePreBooking" element={<DatePreBooking />} />
         <Route path="/BookingHistory" element={<BookingHistory />} />
 
+        <Route path="/DriverBookingtest" element={<DriverBookingtest />} />
+
         
 
         
-        <Route path="/Prebooking" element={<PreBooking />} />
-        <Route path="/Finishjob" element={<FinishJob/>} />
+       
+        
         <Route path="/DriverTrackingPage" element={<DriverTrackingPage/>} />
 
 

@@ -44,7 +44,7 @@
 .vehicle-item {
   /*background-color: #8792E7; /* สีพื้นหลังอ่อน ๆ */
   padding: 20px; /* เพิ่ม padding เพื่อให้ขยายใหญ่ขึ้น */
-  
+  justify-content: center; /* ทำให้แนวนอนอยู่ตรงกลาง */
   cursor: pointer;
   transition: background-color 0.3s, transform 0.2s; /* เพิ่มการเปลี่ยนแปลงขนาดในระหว่าง hover */
   font-size: 18px; /* เพิ่มขนาดตัวอักษร */
@@ -144,7 +144,7 @@ position: relative;
 width: 250px; /* ความกว้าง */
 height: 150px; /* ความสูง */
 border-radius: 20px;
-background-color: #EADCF8; /* สีม่วงอ่อนเริ่มต้น */
+background-color: #ffffff; /* สีม่วงอ่อนเริ่มต้น */
 overflow: hidden;
 box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
@@ -200,7 +200,7 @@ background-color: #bdb3f5;
 /* ตั๋ว */
 .ticket {
 position: relative;
-width: 90%; /* กำหนดความกว้างแต่ละบล็อก */
+width: 70%; /* กำหนดความกว้างแต่ละบล็อก */
 margin: 10px auto; /* จัดตรงกลางและเพิ่มระยะห่างระหว่างบล็อก */
 border-radius: 20px;
 background-color: #EADCF8; /* สีม่วงอ่อน */
@@ -262,27 +262,32 @@ font-weight: bold;
 }
 
 .success-message {
-  background-color: #685e83;
-  color: #ede9f5;
-  padding: 10px;
-  margin: 20px 0;
-  border: 1px solid #9c72a0;
-  border-radius: 5px;
-  text-align: center;
-  font-size: 16px;
-  font-weight: bold;
-  animation: fadeIn 1s ease-in-out;
-  
+  position: fixed; /* ตำแหน่งคงที่บนหน้าจอ */
+  top: 20%; /* เลื่อนขึ้นจากกึ่งกลาง */
+  left: 50%; /* ตรงกลางหน้าจอในแนวนอน */
+  transform: translate(-50%, -50%); /* ปรับให้ข้อความอยู่ตรงกลาง */
+  background-color: #CDC1FF; /* สีเขียวเพื่อแสดงความสำเร็จ */
+  color: #ffffff; /* สีตัวอักษร */
+  padding: 20px; /* ระยะห่างภายในเพิ่มขึ้น */
+  border: 2px solid #CDC1FF; /* ขอบสีเขียวเข้ม */
+  border-radius: 10px; /* มุมโค้งมน */
+  text-align: center; /* จัดข้อความให้อยู่กลาง */
+  font-size: 22px; /* ขนาดตัวอักษรใหญ่ขึ้น */
+  font-weight: bold; /* ความหนาของตัวอักษร */
+  width: 300px; /* ความกว้างของกล่องข้อความเพิ่มขึ้น */
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3); /* เงาสวยงาม */
+  animation: fadeIn 1s ease-in-out; /* เพิ่มอนิเมชัน */
+  z-index: 1000; /* อยู่ด้านบนสุดของหน้า */
 }
 
-/* เพิ่มเอฟเฟกต์ Fade-in */
+/* อนิเมชันการแสดง */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translate(-50%, -60%);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate(-50%, -50%);
   }
 }

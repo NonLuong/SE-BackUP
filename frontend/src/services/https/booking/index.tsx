@@ -244,7 +244,7 @@ export const getBookingById = async (bookingId: string): Promise<any> => {
 export const acceptBooking = async (bookingId: string) => {
   try {
     const response = await fetch(`${apiUrl}/bookings/${bookingId}/accept`, {
-      method: 'POST',
+      method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
       },
@@ -448,3 +448,25 @@ export const rejectBooking = async (bookingId: string) => {
   }
 };
 
+export const getVehicles = async () => {
+  
+  try {
+    const response = await fetch(`${apiUrl}/nametypevehicles`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log("Vehicles Data from API:", data.data); // ตรวจสอบข้อมูล API
+    return data;
+  } catch (error) {
+    console.error("Error fetching vehicles:", error);
+    throw error;
+  }
+};

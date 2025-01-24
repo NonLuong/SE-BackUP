@@ -55,6 +55,24 @@ func GetAllBookings(c *gin.Context) {
 	})
 }
 
+
+func GetAllVehicles(c *gin.Context) {
+	var vehicles []entity.NametypeVechicle
+	db := config.DB()
+
+	if err := db.Preload("VehicleType").Find(&vehicles).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to fetch vehicles",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"data":    vehicles,
+	})
+}
+
 // ดึงข้อมูล Booking ตาม ID
 func GetBookingByID(c *gin.Context) {
 	var booking entity.Booking
@@ -244,13 +262,10 @@ func AcceptBooking(c *gin.Context) {
         return
     }
 
-    // สร้างสถานะใหม่เป็น "Accepted"
-    newBookingStatus := entity.BookingStatus{
-        BookingID:     booking.ID,
-        StatusBooking: "Accepted",
-    }
-    if err := db.Create(&newBookingStatus).Error; err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create new booking status"})
+    // อัปเดตสถานะเป็น "Accepted"
+    currentBookingStatus.StatusBooking = "Accepted"
+    if err := db.Save(&currentBookingStatus).Error; err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update booking status"})
         return
     }
 
@@ -260,7 +275,7 @@ func AcceptBooking(c *gin.Context) {
         "message": "Booking accepted successfully",
         "data": gin.H{
             "booking":        booking,
-            "booking_status": newBookingStatus,
+            "booking_status": currentBookingStatus,
         },
     })
 }

@@ -25,25 +25,25 @@ const Navbar: React.FC = () => {
       </div>
       <ul className="nav-links">
         <li>
-          <Link to="/home">Home</Link>
+          <Link to="/home">HOME</Link>
         </li>
         <li>
-          <Link to="/RideHistory">Rides</Link>
+          <Link to="/RideHistory">RIDES</Link>
         </li>
         <li>
-          <Link to="/Promotion/view">Promotion</Link>
+          <Link to="/Promotion/view">PROMOTION</Link>
+        </li>
+        <li>
+          <Link to="/BookingHistory">MY PRE BOOKING</Link>
         </li>
         {/* <li>
-          <Link to="/Finishjob">Finishjob</Link>
-        </li>
-        <li>
           <Link to="/DriverTrackingPage">DriverTrackingPage</Link>
         </li>
         <li>
           <Link to="/DriverBooking">Dirverbooking</Link>
-        </li> */}
+        </li>  */}
         <li>
-          <Link to="/DatePreBooking">Prebooking</Link>
+          <Link to="/DatePreBooking">PREBOOKING</Link>
         </li> 
         <li>
           <Link to="/PassengerProfile">

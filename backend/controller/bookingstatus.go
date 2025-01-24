@@ -186,13 +186,14 @@ func RejectBooking(c *gin.Context) {
         return
     }
 
-    // ค้นหาคนขับที่ใกล้ที่สุด
+    // ค้นหาตำแหน่งเริ่มต้น
     var startLocation entity.StartLocation
     if err := db.First(&startLocation, "id = ?", booking.StartLocationID).Error; err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch start location"})
         return
     }
 
+    // ค้นหาคนขับทั้งหมด
     var drivers []entity.Driver
     if err := db.Find(&drivers).Error; err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch drivers"})
@@ -206,14 +207,16 @@ func RejectBooking(c *gin.Context) {
     fmt.Println("Searching for closest driver...")
 
     for _, driver := range drivers {
-        fmt.Printf("Driver ID: %d\n", driver.ID)
+        // ข้ามคนขับเดิมที่ปฏิเสธงาน
+        if driver.ID == booking.DriverID {
+            fmt.Printf("Skipping previous driver: %d\n", driver.ID)
+            continue
+        }
 
         var driverLocation entity.Location
         if err := db.First(&driverLocation, "driver_id = ?", driver.ID).Error; err != nil {
             continue
         }
-
-        fmt.Printf("Driver %d Location: %f, %f\n", driver.ID, driverLocation.Latitude, driverLocation.Longitude)
 
         distance := calculateDistance(startLocation.Latitude, startLocation.Longitude, driverLocation.Latitude, driverLocation.Longitude)
         fmt.Printf("Distance to driver %d: %f meters\n", driver.ID, distance)
@@ -235,10 +238,15 @@ func RejectBooking(c *gin.Context) {
 
     // อัปเดตการจับคู่กับคนขับใหม่
     booking.DriverID = closestDriver.ID
-    bookingStatus.StatusBooking = "Waiting for driver acceptance"
-
     if err := db.Save(&booking).Error; err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update booking with new driver"})
+        return
+    }
+
+    // อัปเดตสถานะใหม่เป็น "Waiting for driver acceptance"
+    bookingStatus.StatusBooking = "Waiting for driver acceptance"
+    if err := db.Save(&bookingStatus).Error; err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update booking status to 'Waiting for driver acceptance'"})
         return
     }
 
@@ -259,7 +267,6 @@ func RejectBooking(c *gin.Context) {
 
 
 
-
 func GetCompletedBookings(c *gin.Context) {
 	var bookings []entity.BookingStatus
 	db := config.DB()
@@ -277,3 +284,23 @@ func GetCompletedBookings(c *gin.Context) {
 		"data":    bookings,
 	})
 }
+
+func GetBookingStatus(c *gin.Context) {
+	bookingID := c.Param("id") // ดึงค่า booking ID จาก URL
+	var booking entity.BookingStatus
+	db := config.DB()
+
+	// ค้นหาสถานะของ booking ที่ตรงกับ ID
+	if err := db.Where("id = ?", bookingID).First(&booking).Error; err != nil {
+		// ถ้าไม่พบข้อมูล booking
+		c.JSON(http.StatusNotFound, gin.H{"success": false, "message": "Booking not found"})
+		return
+	}
+
+	// ส่งสถานะของ booking กลับไป
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"status":  booking.StatusBooking,
+	})
+}
+

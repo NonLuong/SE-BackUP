@@ -57,9 +57,11 @@ func SetupDatabase() {
 		&entity.BankName{},
 		&entity.RoomChat{},
 		&entity.BookingStatus{},
+		&entity.NametypeVechicle{},
 		&entities.Payment{},
 		&entities.Review{},
 		&entities.Paid{},
+		
 	)
 
 	GenderMale := entity.Gender{Gender: "Male"}
@@ -513,12 +515,24 @@ func SetupDatabase() {
 		db.FirstOrCreate(e, entity.Trainers{Email: e.Email})
 	}
 
-	// สร้าง Gender
-	VehicleType1 := entity.VehicleType{VehicleType: "Motorcycle"}
-	VehicleType2 := entity.VehicleType{VehicleType: "Car"}
-	// ใช้ db.FirstOrCreate เพื่อป้องกันข้อมูลซ้ำ
-	db.FirstOrCreate(&VehicleType1, &entity.VehicleType{VehicleType: "Motorcycle"})
-	db.FirstOrCreate(&VehicleType2, &entity.VehicleType{VehicleType: "Car"})
+	// สร้าง VehicleType
+	vehicleType1 := entity.VehicleType{VehicleType: "Motorcycle"}
+	vehicleType2 := entity.VehicleType{VehicleType: "Car"}
+
+	// ใช้ db.FirstOrCreate เพื่อป้องกันการสร้างข้อมูลซ้ำ
+	db.FirstOrCreate(&vehicleType1, entity.VehicleType{VehicleType: "Motorcycle"})
+	db.FirstOrCreate(&vehicleType2, entity.VehicleType{VehicleType: "Car"})
+
+	// สร้างข้อมูล NametypeVechicle
+	nametypeVehicles := []entity.NametypeVechicle{
+		{NameCar: "cabanabike", BaseFare: 20, PerKm: 5, Capacity: 1, VehicleTypeID: vehicleType1.ID},
+		{NameCar: "cabanacar", BaseFare: 40, PerKm: 8, Capacity: 4, VehicleTypeID: vehicleType2.ID},
+	}
+	
+	// เพิ่มข้อมูล NametypeVechicle โดยใช้ FirstOrCreate เพื่อตรวจสอบว่ามีข้อมูลอยู่แล้วหรือไม่
+	for _, nametypeVehicles := range nametypeVehicles {
+		db.FirstOrCreate(&nametypeVehicles, entity.NametypeVechicle{NameCar: nametypeVehicles.NameCar})
+	}
 
 	vehicles := []entity.Vehicle{
 		// มอเตอร์ไซค์ 3 คัน

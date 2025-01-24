@@ -1,6 +1,6 @@
 /* Container */
 .containerdate {
-    width: 100%; /* ปรับความกว้างให้เต็มหน้าจอ */
+    width: 100%; 
     margin: 0; /* ลบ margin ออก */
     text-align: center;
     background-color: #e6e6fa;
@@ -52,7 +52,7 @@
     font-size: 16px;
     font-weight: bold;
     color: white;
-    background-color: #28a745;
+    background-color: #CDC1FF;
     padding: 8px 0; /* ขยายพื้นที่บล็อกสีเขียว */
     border-radius: 5px;
     margin-bottom: 5px; /* เพิ่มช่องว่างระหว่างข้อความและช่องเลือก */
@@ -77,8 +77,8 @@
     padding: 15px;
     font-size: 18px;
     font-weight: bold;
-    color: black;
-    background-color: #dcdcdc;
+    color: white;
+    background-color: #A294F9;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -88,6 +88,95 @@
   }
   
   .containerdate .confirm-button:hover {
-    background-color: #c0c0c0;
+    background-color: #E5D9F2;
   }
   
+
+  .description-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px 0;
+    text-align: center;
+  }
+  
+  .calendar-icon {
+    color: #4caf50; /* สีเขียวของไอคอน */
+    margin-bottom: 10px;
+  }
+  
+  .description-text {
+    font-size: 18px;
+    font-weight: 400;
+    color: #333;
+    line-height: 1.5;
+  }
+  
+  .description-text strong {
+    color: #4caf50; /* ไฮไลต์คำสำคัญ */
+  }
+  
+  .banner-image {
+  
+  border-radius: 10px; /* มุมโค้งมนของกรอบ */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* เงาเพื่อความสวยงาม */
+  max-width: 100%; /* ป้องกันรูปภาพเกินขนาด */
+  height: auto; /* ให้รูปภาพคงสัดส่วน */
+  display: block;
+  margin: 0 auto; /* จัดให้อยู่ตรงกลาง */
+}
+
+.description-section {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.calendar-icon {
+  color: #5a2d98; /* สีไอคอน */
+  margin-bottom: 10px;
+}
+
+.description-text {
+  font-size: 16px;
+  color: #4a2a5a; /* สีข้อความ */
+  line-height: 1.5; /* ระยะห่างระหว่างบรรทัด */
+}
+
+.description-text ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 10px 0;
+}
+
+.description-text ul li {
+  margin: 8px 0;
+  font-size: 14px;
+  color: #4a4a4a;
+  display: flex;
+  align-items: center;
+}
+
+.description-text ul li strong {
+  color: #4a148c;
+  margin-left: 5px;
+}
+
+.description-text ul li::before {
+  list-style-type: none; /* เอาจุดออกจากรายการ */
+  color: #4a148c;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+/* DatePreBooking.css */
+.list-container {
+  margin: 10px 0;
+}
+
+.list-container div {
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #4a4a4a;
+  display: flex;
+  align-items: center;
+}

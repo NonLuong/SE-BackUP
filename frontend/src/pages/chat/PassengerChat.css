@@ -1,108 +1,133 @@
-/* General container style */
+/* Container ครอบคลุมทั้งหน้าจอ */
 .containerpassengerchat {
   font-family: 'Arial, sans-serif';
-  text-align: center;
-  max-width: 100%;
-  margin: auto;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  background-color: #fff;
-  color: #000;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  height: 100vh; /* ครอบคลุมความสูงเต็มหน้าจอ */
+  margin: 0;
+  padding: 20px;
+  background-color: #f5f5f5; /* พื้นหลังสีอ่อน */
+  box-sizing: border-box;
 }
 
-/* Connection status */
-.containerpassengerchat .connected {
+/* ส่วนหัว */
+.containerpassengerchat header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.containerpassengerchat h1 {
+  font-size: 24px;
+  color: #37474f;
+  margin: 0;
+}
+
+.containerpassengerchat p {
+  margin: 5px 0;
+}
+
+/* แสดงสถานะการเชื่อมต่อ */
+.connected {
   color: green;
   font-weight: bold;
 }
 
-.containerpassengerchat .disconnected {
+.disconnected {
   color: red;
   font-weight: bold;
 }
 
-/* Chat box */
-.containerpassengerchat .chatBox {
-  margin-top: 20px;
-  height: 400px;
-  overflow-y: scroll;
+/* กล่องแชท */
+.chatBox {
+  flex: 1; /* ขยายพื้นที่ */
+  width: 100%;
+  max-width: 800px;
+  overflow-y: auto;
   border: 1px solid #ddd;
-  padding: 10px;
-  border-radius: 5px;
-  background-color: #f9f9f9;
+  padding: 15px;
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  color: #000;
+  gap: 10px;
 }
 
-/* Individual message styles */
-.containerpassengerchat .message {
-  padding: 8px 12px;
-  border-radius: 8px;
+/* ข้อความในแชท */
+.message {
+  padding: 12px 15px;
+  border-radius: 15px;
   max-width: 70%;
   word-wrap: break-word;
-  color: #000;
-  margin-bottom: 8px;
+  font-size: 14px;
   display: flex;
   flex-direction: column;
+  gap: 5px;
 }
 
-.containerpassengerchat .sender {
+.message-user {
   align-self: flex-end;
-  background-color: #d1e7dd; /* Light green for "You" */
+  background-color: #d1e7dd; /* สีเขียวอ่อน */
+  color: #000;
 }
 
-.containerpassengerchat .receiver {
+.message-other {
   align-self: flex-start;
-  background-color: #f8d7da; /* Light red for others */
+  background-color: #f8d7da; /* สีชมพูอ่อน */
+  color: #000;
 }
 
-/* Timestamp */
-.containerpassengerchat .timestamp {
-  font-size: 10px;
+.timestamp {
+  font-size: 12px;
   color: #666;
-  margin-top: 4px;
+  text-align: right;
+  margin-top: 5px;
 }
 
-/* Input section styles */
-.containerpassengerchat .inputSection {
+/* กล่องพิมพ์ข้อความ */
+.inputSection {
+  width: 100%;
+  max-width: 800px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 10px;
-  width: 100%;
-  padding: 10px;
-  background-color: #D1C4E9;
-  border-radius: 10px;
-  border-top: 1px solid #ccc;
+  padding: 15px;
+  background-color: #d1c4e9; /* สีม่วง */
+  border-radius: 12px;
+  border-top: 1px solid #b39ddb;
 }
 
-/* Input field styles */
-.containerpassengerchat .input {
+/* ช่องข้อความ */
+.input {
   flex: 1;
   padding: 12px 15px;
   border-radius: 25px;
-  border: 1px solid #ccc;
+  border: 1px solid #b39ddb;
   font-size: 14px;
   outline: none;
-  background-color: #fff;
+  background-color: #ffffff;
   color: #000;
 }
 
-/* Send button styles */
-.containerpassengerchat .sendButton {
-  padding: 10px 15px;
-  background-color: #9575CD;
-  color: #fff;
-  border: none;
+/* ปุ่มส่ง */
+.sendButton {
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
+  background-color: #8e24aa;
+  color: #fff;
   font-size: 20px;
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 50px;
-  height: 50px;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+}
+
+.sendButton:hover {
+  background-color: #7b1fa2;
 }

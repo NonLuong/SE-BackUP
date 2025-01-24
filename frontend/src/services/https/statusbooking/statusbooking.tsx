@@ -124,3 +124,30 @@ export const sendBookingStatusToBackend = async (bookingStatusData: any): Promis
     }
   };
   
+
+  export const getBookingStatus = async (bookingId: string): Promise<string> => {
+    try {
+      const response = await fetch(`${apiUrl}/bookings/${bookingId}/status`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Error fetching booking status: ${response.statusText}`);
+      }
+  
+      const data = await response.json();
+      if (data.success) {
+        // คืนค่าข้อมูลสถานะของ booking
+        return data.status;
+      } else {
+        throw new Error(`API Error: ${data.message}`);
+      }
+    } catch (error) {
+      console.error("Error fetching booking status:", error);
+      throw error;
+    }
+  };
+  
