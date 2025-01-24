@@ -222,6 +222,7 @@ function Promotion() {
       prefix={<SearchOutlined />}
     />
   </Col>
+  
   <Col>
     <Link to="/promotion/create">
       <Button

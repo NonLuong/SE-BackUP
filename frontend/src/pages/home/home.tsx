@@ -243,7 +243,6 @@ const Home: React.FC = () => {
                           {promotion.promotion_description}
                         </div>
                       </Col>
-
                       {/* End Date and Other Details */}
                       <Col span={24}>
                         <div
