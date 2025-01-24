@@ -260,7 +260,7 @@ const Home: React.FC = () => {
                         >
                           <div>หมดเขตโปรโมชั่น {formatDate(promotion.end_date)}</div>
                           <div style={{ textAlign: "right" }}>
-                            ระยะทางขั้นต่ำ: {promotion.distance_promotion} กม. / จำกัดสิทธิ์ {promotion.use_limit} คน
+                            ระยะทาง: {promotion.distance_promotion} กม. / จำกัดสิทธิ์ {promotion.use_limit} คน
                           </div>
                         </div>
                       </Col>
