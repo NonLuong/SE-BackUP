@@ -212,8 +212,8 @@ function Promotion() {
             <h2 className="promotion-header" style={{ textAlign: "center" }}>ระบบจัดการโปรโมชั่น</h2>
           </Col>
         </Row>
-        <Row justify="center" align="middle" style={{ marginBottom: 16 }}>
-  <Col style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
+  <Col>
     <Input
       placeholder="ค้นหารหัสโปรโมชั่น"
       value={searchTerm}
@@ -221,18 +221,21 @@ function Promotion() {
       style={{ width: 200, height: 32 }}
       prefix={<SearchOutlined />}
     />
+  </Col>
+  <Col>
     <Link to="/promotion/create">
       <Button
         type="primary"
         icon={<PlusOutlined />}
         className="promotion-button"
-        style={{ height: 32, marginTop: "10px" }} // เพิ่ม marginTop เพื่อสร้างระยะห่างระหว่างปุ่มและช่องค้นหา
+        style={{ height: 32 }}
       >
         สร้างโปรโมชั่นใหม่
       </Button>
     </Link>
   </Col>
 </Row>
+
 
 
 
