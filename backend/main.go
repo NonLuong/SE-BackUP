@@ -75,10 +75,11 @@ func registerRoutes(r *gin.Engine) {
 	r.POST("/bookings", controller.CreateBooking)
 	r.GET("/bookings", controller.GetAllBookings)
 	r.GET("/bookings/:id", controller.GetBookingByID)
-	r.POST("/bookings/:id/accept", controller.AcceptBooking)
+	r.PATCH("/bookings/:id/accept", controller.AcceptBooking)
 	//r.POST("/bookings/:id/finish", controller.FinishBooking)
 	r.PATCH("/bookings/:id/driver", controller.UpdateDriverIDInBooking) //RejectBooking
 	r.GET("/bookings/completed", controller.GetCompletedBookings)
+	r.GET("/nametypevehicles", controller.GetAllVehicles)
 
 	// WebSocket
 	//socketdriverbooking
@@ -97,6 +98,8 @@ func registerRoutes(r *gin.Engine) {
 	r.GET("/message/:bookingID", controller.GetMessagesByBookingID) // ดึงข้อความตาม Booking ID
 	r.GET("/message/chat/:roomChatId", controller.GetChatMessages)
 
+	r.GET("/bookings/:id/status", controller.GetBookingStatus) // เส้นทางสำหรับตรวจสอบสถานะ booking
+
 	//roomchat
 	r.POST("/roomchat", controller.CreateRoomChat)
 
@@ -112,7 +115,7 @@ func registerRoutes(r *gin.Engine) {
     r.GET("/history-places", controller.GetLatestDestinations)
 
 	// message
-	r.PUT("/messages/update/:id", controller.UpdateMessage)
+	r.PATCH("/messages/update/:id", controller.UpdateMessage)
 
 	// Define route for deleting a message
 	r.DELETE("/messages/delete/:id", controller.DeleteMessage)

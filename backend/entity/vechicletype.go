@@ -7,4 +7,6 @@ type VehicleType struct {
     VehicleType 	string `json:"vehicle_type" valid:"required~VehicleType is required."`
     
     Vehicles      []Vehicle `gorm:"foreignKey:VehicleTypeID" json:"vehicles"` // ความสัมพันธ์ hasMany
+
+    NametypeVehicles []NametypeVechicle `gorm:"foreignKey:VehicleTypeID" json:"nametype_vehicles"` // เชื่อม hasMany
 }

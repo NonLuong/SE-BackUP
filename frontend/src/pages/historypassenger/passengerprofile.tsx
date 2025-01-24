@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, Avatar, Button, Typography, message } from "antd";
 import { UserOutlined } from "@ant-design/icons";
-import { fetchUserData } from "../../services/https/passenger/passenger"; // นำฟังก์ชัน fetchUserData เข้ามาใช้
+
+import { fetchUserData } from "../../services/https/Passenger/passenger";
+import "./PassengerProfile.css"; // Import CSS
 
 const { Title, Text } = Typography;
 
@@ -17,30 +19,27 @@ const PassengerProfile: React.FC = () => {
 
     console.log("JWT Token:", token);
     console.log("User Role:", userRole);
-    console.log("id passenger:",userId)
+    console.log("id passenger:", userId);
 
     if (!userId || !userRole || !token) {
-        message.error("Unauthorized access.");
-        navigate("/home");
-        return;
+      message.error("Unauthorized access.");
+      navigate("/home");
+      return;
     }
 
     if (userRole.toLowerCase() !== "passenger") {
-        message.error("Access restricted to passengers only.");
-        navigate("/home");
-        return;
+      message.error("Access restricted to passengers only.");
+      navigate("/home");
+      return;
     }
 
     fetchUserData(userId, userRole, setPassengerData).catch((err) => {
-        console.error("Error fetching user data:", err);
-        message.error("Failed to load profile. Please try again.");
+      console.error("Error fetching user data:", err);
+      message.error("Failed to load profile. Please try again.");
     });
-}, [navigate]);
+  }, [navigate]);
 
-
-
-    console.log("Passenger Data:", passengerData);
-
+  console.log("Passenger Data:", passengerData);
 
   // ตรวจสอบข้อมูลที่ได้จาก API
   if (!passengerData) {
@@ -48,31 +47,25 @@ const PassengerProfile: React.FC = () => {
   }
 
   return (
-    <div style={{ padding: "20px", maxWidth: "600px", margin: "0 auto" }}>
-      <Card
-        style={{
-          borderRadius: "10px",
-          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-          textAlign: "center",
-        }}
-      >
+    <div className="profile-container">
+      <Card className="profile-card">
         <Avatar
           size={100}
           icon={<UserOutlined />}
-          style={{ marginBottom: "20px" }}
+          className="profile-avatar"
         />
         <Title level={3}>
           {passengerData.first_name} {passengerData.last_name}
         </Title>
-        <Text type="secondary" style={{ display: "block", marginBottom: "10px" }}>
+        <Text type="secondary" className="profile-email">
           Email: {passengerData.email || "Not available"}
         </Text>
-        <Text style={{ display: "block", marginBottom: "20px" }}>
+        <Text className="profile-phone">
           Phone: {passengerData.phone || "Not available"}
         </Text>
         <Button
           type="primary"
-          style={{ marginRight: "10px" }}
+          className="profile-button"
           onClick={() => navigate("/Editprofile")}
         >
           Edit Profile

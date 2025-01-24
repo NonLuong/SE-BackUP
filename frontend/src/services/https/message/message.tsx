@@ -33,7 +33,7 @@ export interface UpdateMessage {
       }
   
       const response = await fetch(`${apiUrl}/messages/update/${updatedMessage.message_id}`, {
-        method: 'PUT',
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },

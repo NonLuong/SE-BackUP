@@ -1,0 +1,30 @@
+.profile-container {
+    padding: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .profile-container .profile-card {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .profile-container .profile-avatar {
+    margin-bottom: 20px;
+  }
+  
+  .profile-container .profile-email {
+    display: block;
+    margin-bottom: 10px;
+  }
+  
+  .profile-container .profile-phone {
+    display: block;
+    margin-bottom: 20px;
+  }
+  
+  .profile-container .profile-button {
+    margin-right: 10px;
+  }
+  

@@ -65,7 +65,7 @@
 }
 
 /* MapComponent.css */
-.search-input {
+.mapcomponent .search-input {
   width: 100%;
   padding: 10px;
   border-radius: 5px;

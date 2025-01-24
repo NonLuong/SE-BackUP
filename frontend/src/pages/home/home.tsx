@@ -279,10 +279,10 @@ const Home: React.FC = () => {
       <div className="content">
           <div className="banner-container">
              <div className="banner-slider">
-                <img src="รถครอบครัวimage0_0.jpeg" alt="Car 1" />
-                <img src="iรูปรถมอเตอร์ไวต์mage0_0.jpeg" alt="Car 2" />
-                <img src="รูปรถimage1_0.jpeg" alt="Car 3" />
-                <img src="รถถถถ.jpeg" alt="Car 4" />
+                <img src="1.png" alt="Car 1" />
+                <img src="2.png" alt="Car 2" />
+                <img src="3.png" alt="Car 3" />
+                <img src="4.png" alt="Car 4" />
               </div>
           </div>
 
