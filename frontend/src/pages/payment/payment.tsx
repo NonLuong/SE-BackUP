@@ -337,7 +337,7 @@ const Payment: React.FC = () => {
           </div>
           <button
             style={{
-              backgroundColor: "#FFF",
+              backgroundColor: "#8f7ceb",
               borderRadius: "10px",
               padding: "10px 20px",
               marginBottom: "20px",
