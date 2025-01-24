@@ -22,7 +22,6 @@ const PromotionCreate = () => {
     amount: 1,
     percent: 2,
   };
-
   const statusMap = {
     active: 1,
     expired: 2,
