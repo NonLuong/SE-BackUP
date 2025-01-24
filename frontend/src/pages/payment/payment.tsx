@@ -18,7 +18,6 @@ import { Endpoint } from "../../config/Endpoint";
 import { patchBookingStatus } from "../../services/https/statusbooking/statusbooking"; //อัพเดตสถานนะการจ่ายเงิน
 import CircularProgress from "@mui/material/CircularProgress/CircularProgress";
 
-
 const Payment: React.FC = () => {
   const [method, setMethod] = useState<string | null>(null);
   const [cardDetails, setCardDetails] = useState({
@@ -219,9 +218,8 @@ const Payment: React.FC = () => {
         "POST",
         Endpoint.PAYMENT + card,
         paymentData
-        
       );
-      navigate("/passengernotification");
+      //navigate("/passengernotification");
 
       if (promotionId != undefined || promotionId != null) {
         await apiRequest(
@@ -299,24 +297,24 @@ const Payment: React.FC = () => {
       {waitingDriver == 1 ? (
         <div className="waiting-container">
           {notifyPayment ? (
-           <div
-           style={{
-             backgroundColor: "#FFF",
-             borderRadius: "10px",
-             padding: "10px 20px",
-             marginBottom: "20px",
-             fontSize: "18px",
-             fontWeight: "bold",
-             color: "#000",
-             textAlign: "center",
-             width: "80%",
-             boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-             fontFamily: "Comic Sans MS, sans-serif",
-           }}
-         >
+            <div
+              style={{
+                backgroundColor: "#FFF",
+                borderRadius: "10px",
+                padding: "10px 20px",
+                marginBottom: "20px",
+                fontSize: "18px",
+                fontWeight: "bold",
+                color: "#000",
+                textAlign: "center",
+                width: "80%",
+                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                fontFamily: "Comic Sans MS, sans-serif",
+              }}
+            >
               The journey is complete! Please take a moment to review your
               experience with us.
-              </div>
+            </div>
           ) : (
             <></>
           )}
@@ -337,6 +335,21 @@ const Payment: React.FC = () => {
             <span data-text="N">N</span>
             <span data-text="G">G</span>
           </div>
+          <button
+            style={{
+              marginTop: "10px",
+              backgroundColor: "#4CAF50",
+              color: "white",
+              padding: "10px 20px",
+              border: "none",
+              borderRadius: "5px",
+              cursor: "pointer",
+              fontSize: "16px",
+            }}
+            onClick={() => (window.location.href = "/passengernotification")}
+          >
+            Go to Notification
+          </button>
         </div>
       ) : (
         <div className="payment-container1">
@@ -605,7 +618,7 @@ const Payment: React.FC = () => {
             >
               {isSubmitting ? "Processing..." : "Confirm Payment"}
             </button>
-            <button className="cx" onClick={() => navigate(-1)}>
+            <button className="cx" onClick={() => navigate("/home")}>
               Cancel
             </button>
           </div>

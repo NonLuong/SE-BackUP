@@ -35,7 +35,7 @@ const items: CustomMenuItem[] = [
     icon: <FundProjectionScreenOutlined />,
   },
   { key: "/withdrawal", label: "WITHDRAWAL", icon: <CreditCardOutlined />},
-  { key: "/dashboard-driver-review", label: "Review", icon: <StarOutlined /> },
+  { key: "/dashboad-driver-review", label: "Review", icon: <StarOutlined /> },
   {
     key: "/",
     label: "Log out",
