@@ -187,11 +187,7 @@ const PromotionCreate = () => {
                           name="discount"
                           rules={[{ required: true, message: 'กรุณากรอกจำนวนส่วนลด !' }]}
                         >
-                          <InputNumber
-                            min={0}
-                            max={discountType === 'percent' ? 100 : undefined}
-                            style={{ width: '100%' }}
-                          />
+                          <InputNumber min={0} max={discountType === "percent" ? 100 : 1000} style={{ width: "100%" }} />
                         </Form.Item>
                       </Col>
                     </Row>
@@ -217,7 +213,7 @@ const PromotionCreate = () => {
                           name="use_limit"
                           rules={[{ required: true, message: 'กรุณากรอกจำนวนครั้งที่ใช้ได้ !' }]}
                         >
-                          <InputNumber min={1} style={{ width: '100%' }} />
+                          <InputNumber min={1} max={100} style={{ width: "100%" }} />
                         </Form.Item>
                       </Col>
                     </Row>
@@ -227,7 +223,7 @@ const PromotionCreate = () => {
                     <Row gutter={[16, 16]}>
                       <Col xs={24} sm={12}>
                         <Form.Item label="ระยะทางขั้นต่ำ (กิโลเมตร)" name="distance_promotion">
-                          <InputNumber min={0} style={{ width: '100%' }} />
+                        <InputNumber min={0} max={100} style={{ width: "100%" }} />
                         </Form.Item>
                       </Col>
 

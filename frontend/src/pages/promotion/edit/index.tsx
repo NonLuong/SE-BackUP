@@ -215,7 +215,7 @@ function PromotionEdit() {
 
                     <Col xs={24} sm={12}>
                       <Form.Item label={discountType === "amount" ? "ส่วนลด (บาท)" : "ส่วนลด (%)"} name="discount" rules={[{ required: true, message: "กรุณากรอกจำนวนส่วนลด !" }]}>
-                        <InputNumber min={0} max={discountType === "percent" ? 100 : 99999999} style={{ width: "100%" }} />
+                        <InputNumber min={0} max={discountType === "percent" ? 100 : 1000} style={{ width: "100%" }} />
                       </Form.Item>
                     </Col>
                   </Row>
