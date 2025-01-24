@@ -28,6 +28,7 @@ import Trainer from "./pages/trainer/Trainer";
 import CreateTrainer from "./pages/trainer/create";
 import EditTrainer from './pages/trainer/edit';
 import Login from "./pages/login/login";
+import SignUP from "./pages/signup/SignUP.tsx";
 import Driver from "./pages/Driver/Driver";
 import Employee from "./pages/Employee/Employee";
 import EditEmployee from "./pages/Employee/EditEmployee";
@@ -61,7 +62,8 @@ const App: React.FC = () => {
     <Router>
       <Routes>
 
-      <Route path="/" element={<Login />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<SignUP />} />
 
 
       {/* ของเปิ้ล Booking and Chat */}

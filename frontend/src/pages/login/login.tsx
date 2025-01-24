@@ -54,12 +54,12 @@ const Login: React.FC = () => {
       } else {
         messageApi.error("Login failed. Please check your email or password.");
         console.error("API Response Error:", res);
-        setErrorMessage("ไม่สามารถเข้าสู่ระบบได้ กรุณาตรวจสอบอีเมลหรือรหัสผ่าน");
+        setErrorMessage("Login failed. Please check your email or password.");
       }
     } catch (error) {
       messageApi.error("An error occurred while signing in");
       console.error("Error during sign-in:", error);
-      setErrorMessage("ไม่สามารถเข้าสู่ระบบได้ กรุณาตรวจสอบอีเมลหรือรหัสผ่าน");
+      setErrorMessage("Login failed. Please check your email or password.");
     }
   };
 
@@ -84,41 +84,77 @@ const Login: React.FC = () => {
           position: "absolute",
           left: "75%",
           transform: "translateX(-50%)",
+          color: "#fff", // ตัวอักษรทั้งหมดเป็นสีขาว
         }}
       >
         <div className="login">
-        <img src={logo} alt="Logo" className="logo" />
-        <h2>เข้าสู่ระบบ</h2>
-        {errorMessage && <div className="error-message">{errorMessage}</div>}
-        <form onSubmit={handleSubmit}>
-          <div className="input-group">
-            <label htmlFor="email">EMAIL</label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="กรุณากรอกอีเมล"
-              required
-            />
-          </div>
-          <div className="input-group">
-            <label htmlFor="password">PASSWORD</label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="กรุณากรอกรหัสผ่าน"
-              required
-            />
-          </div>
-          <button type="submit" className="login-btn">
-            LOGIN
-          </button>
-        </form>
+          <img src={logo} alt="Logo" className="logo" />
+          <h2 style={{ color: "#fff" }}>Login</h2>
+          {errorMessage && (
+            <div
+              className="error-message"
+              style={{
+                color: "#ff4d4f", // สีข้อความข้อผิดพลาด
+                marginBottom: "10px",
+              }}
+            >
+              {errorMessage}
+            </div>
+          )}
+          <form onSubmit={handleSubmit}>
+            <div className="input-group">
+              <label htmlFor="email" style={{ color: "#fff" }}>
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+                required
+              />
+            </div>
+            <div className="input-group">
+              <label htmlFor="password" style={{ color: "#fff" }}>
+                Password
+              </label>
+              <input
+                type="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                required
+              />
+            </div>
+            <button type="submit" className="login-btn">
+              Login
+            </button>
+
+            <div
+              style={{
+                marginTop: "10px",
+                textAlign: "center",
+                color: "#fff",
+              }}
+            >
+              <span>Don't have an account yet?</span>
+              <br /> {/* เพิ่มบรรทัดนี้เพื่อให้ "Sign Up" ขึ้นบรรทัดใหม่ */}
+              <a
+                style={{
+                  color: "#61b0ff",
+                  cursor: "pointer",
+                  textDecoration: "underline",
+                }}
+                onClick={() => navigate("/signup")}
+              >
+                Sign Up
+              </a>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
     </div>
   );
 };

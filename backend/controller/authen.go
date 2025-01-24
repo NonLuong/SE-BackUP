@@ -31,17 +31,40 @@ type (
 )
 
 func SignUp(c *gin.Context) {
-
 	var payload signUp
- 
+
 	// Bind JSON payload to the struct
-
 	if err := c.ShouldBindJSON(&payload); err != nil {
-
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-
+		// แสดง Error เมื่อ Payload ไม่ถูกต้อง
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Invalid input",
+			"message": err.Error(),
+		})
+		fmt.Println("Payload Error:", err.Error()) // Debug
 		return
+	}
 
+	// แสดงค่าที่ได้รับจาก Frontend เพื่อ Debug
+	fmt.Printf("Payload received: %+v\n", payload)
+
+	// ตรวจสอบว่า Field ที่จำเป็นมีค่าหรือไม่
+	if payload.UserName == "" || payload.FirstName == "" || payload.LastName == "" || payload.Email == "" || payload.Password == "" || payload.PhoneNumber == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Missing required fields",
+			"message": "Please provide all required fields",
+		})
+		fmt.Println("Missing required fields in payload") // Debug
+		return
+	}
+
+	// ตรวจสอบความยาวของ PhoneNumber
+	if len(payload.PhoneNumber) != 10 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Invalid phone number",
+			"message": "Phone number must be 10 digits",
+		})
+		fmt.Println("Invalid PhoneNumber:", payload.PhoneNumber) // Debug
+		return
 	}
 
 	db := config.DB()
@@ -50,54 +73,47 @@ func SignUp(c *gin.Context) {
 
 	// Check if the user with the provided email already exists
 	result := db.Where("email = ?", payload.Email).First(&userCheck)
-
 	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
-
 		// If there's a database error other than "record not found"
-
 		c.JSON(http.StatusInternalServerError, gin.H{"error": result.Error.Error()})
-
 		return
-
 	}
 
 	if userCheck.ID != 0 {
-
 		// If the user with the provided email already exists
-
 		c.JSON(http.StatusConflict, gin.H{"error": "Email is already registered"})
-
 		return
-
 	}
 
 	// Hash the user's password
-
-	hashedPassword, _ := config.HashPassword(payload.Password)
+	hashedPassword, err := config.HashPassword(payload.Password)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to hash password"})
+		fmt.Println("Hashing Error:", err.Error()) // Debug
+		return
+	}
 
 	// Create a new user
-
 	user := entity.Passenger{
-		UserName: payload.UserName,
-		FirstName: payload.FirstName,
-		LastName: payload.LastName,
-		Email: payload.Email,
-		Password: hashedPassword,
-		GenderID: payload.GenderID,
+		UserName:    payload.UserName,
+		FirstName:   payload.FirstName,
+		LastName:    payload.LastName,
+		Email:       payload.Email,
+		PhoneNumber: payload.PhoneNumber,
+		Password:    hashedPassword,
+		GenderID:    payload.GenderID,
+		RoleID:      1, // Default role ID
 	}
 
 	// Save the user to the database
-
 	if err := db.Create(&user).Error; err != nil {
-
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-
+		fmt.Println("Database Error:", err.Error()) // Debug
 		return
- 
 	}
 
 	c.JSON(http.StatusCreated, gin.H{"message": "Sign-up successful"})
-
+	fmt.Println("New user created:", user) // Debug
 }
 
 // UniversalSignin handles user sign-in requests
