@@ -32,7 +32,7 @@ function PromotionEdit() {
   const [form] = Form.useForm();
   const [distanceCondition, setDistanceCondition] = useState<string>("");
 
-  // Fetch promotion data by ID
+  // ดึง promotion data by ID
   const getPromotionById = async (id: string) => {
     let res = await GetPromotionById(id);
 

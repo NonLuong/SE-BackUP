@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-// GetAll Promotions - ดึงข้อมูลโปรโมชั่นทั้งหมด
+// GetAll Promotions - ดึงข้อมูลโปรโมชั่นทั้งหมดเลย
 func GetAllPromotion(c *gin.Context) {
 	var promotions []entity.Promotion
 
