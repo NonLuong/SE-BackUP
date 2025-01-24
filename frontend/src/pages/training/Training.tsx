@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { message, Layout, Button } from "antd";
-import { GetTrainbooks, UpdateTrainbookStatus } from "../../services/https/TrainBookAPI";
+import {
+  GetTrainbooks,
+  UpdateTrainbookStatus,
+} from "../../services/https/TrainBookAPI";
 import DriverSidebar from "../../components/sider/DriverSidebar";
 import { useNavigate } from "react-router-dom";
 import "./Training.css";
@@ -8,7 +11,7 @@ import "./Training.css";
 function Training() {
   const [room, setRoom] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [messageApi, contextHolder] = message.useMessage();
+  const [messageApi] = message.useMessage();
   const navigate = useNavigate();
 
   const driverID = localStorage.getItem("id")
@@ -27,15 +30,20 @@ function Training() {
       const res = await GetTrainbooks();
       if (res && Array.isArray(res)) {
         const driverBooking = res.find(
-          (trainbook: any) => trainbook.driver_id === driverID && trainbook.status === "in-progress"
+          (trainbook: any) =>
+            trainbook.driver_id === driverID &&
+            trainbook.status === "in-progress"
         );
 
         if (!driverBooking) {
-          messageApi.info("คุณยังไม่ได้จองห้อง หรือสถานะการจองของคุณไม่อยู่ระหว่างอบรม");
+          messageApi.info(
+            "คุณยังไม่ได้จองห้อง หรือสถานะการจองของคุณไม่อยู่ระหว่างอบรม"
+          );
           setRoom(null);
         } else {
           setRoom({
             TrainbookID: driverBooking.ID,
+            Title: driverBooking.room.title ?? "ไม่ระบุหัวข้อ",
             RoomName: driverBooking.room?.room_name ?? "ไม่พบชื่อห้อง",
             Trainer: driverBooking.room.trainer
               ? `${driverBooking.room.trainer.first_name} ${driverBooking.room.trainer.last_name}`
@@ -59,7 +67,9 @@ function Training() {
     if (!room || !room.TrainbookID) return;
 
     try {
-      const res = await UpdateTrainbookStatus(room.TrainbookID, { status: "completed" });
+      const res = await UpdateTrainbookStatus(room.TrainbookID, {
+        status: "completed",
+      });
       if (res && res.status === 200) {
         messageApi.success("สถานะอัปเดตเป็น 'Completed' สำเร็จ");
         fetchDriverTrainbooks();
@@ -81,7 +91,6 @@ function Training() {
     <Layout style={{ minHeight: "100vh" }}>
       <DriverSidebar />
       <Layout className="training-layout">
-        {contextHolder}
         <div className="training-container">
           <h1 className="training-title">ห้องอบรม</h1>
           {loading ? (
@@ -89,15 +98,22 @@ function Training() {
           ) : room ? (
             <div className="training-details">
               <p>
-                <strong>ชื่อห้อง:</strong> {room.RoomName}
+                <strong>เลขห้อง:</strong> {room.RoomName}
+              </p>
+              <p>
+                <strong>หัวข้อ:</strong> {room.Title}
               </p>
               <p>
                 <strong>เทรนเนอร์:</strong> {room.Trainer}
               </p>
               <p>
-                <strong>รายละเอียดการอบรม:</strong> {room.Details}
+                <strong>เนื้อหา:</strong> {room.Details}
               </p>
-              <Button type="primary" onClick={markAsCompleted}>
+              <Button
+                type="primary"
+                className="training-complete-btn"
+                onClick={markAsCompleted}
+              >
                 สำเร็จ
               </Button>
             </div>

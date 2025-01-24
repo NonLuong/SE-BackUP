@@ -86,12 +86,12 @@ const Home: React.FC = () => {
   // Render promotion status with larger size
   const renderStatus = (statusId: number) => {
     if (statusId === 1) {
-      return <Tag color="green" style={{ fontSize: '15px', padding: '5px 10px', borderRadius: '5px' }}>ใช้งานได้</Tag>;
+      return <Tag color="green" style={{ fontSize: '25px', padding: '15px 10px', borderRadius: '15px' }}>ใช้งานได้</Tag>;
     }
     if (statusId === 2) {
-      return <Tag color="red" style={{ fontSize: '15px', padding: '5px 10px', borderRadius: '5px' }}>ปิดการใช้งาน</Tag>;
+      return <Tag color="red" style={{ fontSize: '25px', padding: '15px 10px', borderRadius: '15px' }}>ปิดการใช้งาน</Tag>;
     }
-    return <Tag color="default" style={{ fontSize: '24px', padding: '10px 20px', borderRadius: '20px' }}>ไม่ระบุ</Tag>;
+    return <Tag color="default" style={{ fontSize: '24px', padding: '15px 20px', borderRadius: '15px' }}>ไม่ระบุ</Tag>;
   };
 
   const navigate = useNavigate(); // ใช้ useNavigate สำหรับการนำทาง
@@ -120,7 +120,7 @@ const Home: React.FC = () => {
       {/* Promotion Section */}
       <div className="promotion-banner">
       <div className="promotion-banner" style={{ position: "relative", padding: "30px 0" }}>
-        <h2 style={{ textAlign: "center", marginBottom: "30px", color: "#464468", fontSize: "24px" }}>
+        <h2 style={{ textAlign: "center", marginBottom: "30px", color: "#464468", fontSize: "34px" }}>
         Boost Your Savings with Our Promotions!
         </h2>
         <Divider />
@@ -243,7 +243,6 @@ const Home: React.FC = () => {
                           {promotion.promotion_description}
                         </div>
                       </Col>
-
                       {/* End Date and Other Details */}
                       <Col span={24}>
                         <div

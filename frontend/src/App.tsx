@@ -19,7 +19,7 @@ import Review from "./pages/review/review";
 import Payment from "./pages/payment/payment";
 import History from "./pages/review/review_history/history";
 import Edit from "./pages/review/edit/edit";
-import AdminRoom from "./pages/room/AdminRoom.tsx";
+import AdminRoom from "./pages/room/AdminRoom";
 import DriverRoom from "./pages/room/DriverRoom";
 import CreateRoom from "./pages/room/create";
 import EditRoom from "./pages/room/edit";
@@ -47,12 +47,13 @@ import Dashboards from "./pages/Dashboard/Driverdashboard";
 import DriverTrackingPage from "./pages/DriverBooking/DriverBooking";
 import Driverontheway from "./pages/DriverBooking/DriverBooking";
 import DriverFinish from "./pages/DriverBooking/DriverBooking";
-import DatePreBooking from "./pages/Dateprebooking/DatePreBooking";
-import BookingHistory from "./pages/prebooking/BookingHistory";
-import DriverBookingtest from "./pages/DriverBooking/driverbookingtest.tsx";
 
 import Training from "./pages/training/Training.tsx";
 import DashboardDriverReview from "./pages/Dashboard/DashboardDriverReview.tsx";
+
+import DatePreBooking from "./pages/Dateprebooking/DatePreBooking";
+import BookingHistory from "./pages/prebooking/BookingHistory";
+
 
 
 const App: React.FC = () => {
@@ -79,10 +80,6 @@ const App: React.FC = () => {
         <Route path="/DatePreBooking" element={<DatePreBooking />} />
         <Route path="/BookingHistory" element={<BookingHistory />} />
 
-        <Route path="/DriverBookingtest" element={<DriverBookingtest />} />
-
-        
-
         
        
         
@@ -105,18 +102,20 @@ const App: React.FC = () => {
         <Route path="/payment" element={<Payment/>} /> 
         <Route path="/review/history" element={<History/>} /> 
         <Route path="/edit" element={<Edit/>} /> 
-        <Route path="/dashboard-driver-review" element={<DashboardDriverReview/>} /> 
+        <Route path="/dashboad-driver-review" element={<DashboardDriverReview />} /> 
 
-        {/*นนท์ Room and Trainer แก้*/}
+
+        {/*นนท์ Room and Trainer */}
         <Route path="/rooms" element={<AdminRoom />} />
         <Route path="/room" element={<DriverRoom />} />
         <Route path="/rooms/create" element={<CreateRoom />} />
         <Route path="/rooms/edit/:id" element={<EditRoom />} />
-        <Route path="/trainbook/:id" element={<Trainbook />} />
+        <Route path="/rooms/trainbook/:id" element={<Trainbook />} />
         <Route path="/trainer" element={<Trainer />} />
         <Route path="/trainer/create" element={<CreateTrainer />} />
         <Route path="/trainer/edit/:id" element={<EditTrainer />} />
         <Route path="/training" element={<Training />} />
+
 
         {/*น้ำฝน Admin*/}
         <Route path="/Dashboard" element={<Dashboard />} />

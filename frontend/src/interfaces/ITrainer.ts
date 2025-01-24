@@ -7,8 +7,6 @@ export interface TrainersInterface {
   last_name?: string;
   Email?: string;
   email?: string;
-  Phone?: string;
-  Age?: number;
   BirthDay?: string;
   birthday?: string;
   GenderID?: number;

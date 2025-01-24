@@ -6,7 +6,6 @@ import {
   GiftOutlined,
   LogoutOutlined,
   DashboardOutlined,
-  FundProjectionScreenOutlined,
   IdcardOutlined,
 } from "@ant-design/icons";
 import { AiOutlineHome } from "react-icons/ai";
@@ -31,12 +30,12 @@ const items: CustomMenuItem[] = [
   { key: "/members", label: "MEMBER", icon: <TeamOutlined /> },
   { key: "/drivers", label: "DRIVER", icon: <IdcardOutlined /> },
   { key: "/vehicles", label: "VEHICLE", icon: <CarOutlined /> },
+  { key: "/promotion", label: "PROMOTION", icon: <GiftOutlined /> },
   {
     key: "/trainer",
-    label: "TRAINING",
-    icon: <FundProjectionScreenOutlined />,
+    label: "TRAINER",
+    icon: <UserOutlined />,
   },
-  { key: "/promotion", label: "PROMOTION", icon: <GiftOutlined /> },
   { key: "/rooms", label: "ROOM", icon: <AiOutlineHome /> },
   {
     key: "/",

@@ -27,4 +27,5 @@ type Promotion struct {
 
 	StatusPromotionID  	uint      		`json:"status_promotion_id" valid:"required~StatusPromotionID is required"` // ID สถานะโปรโมชั่น
 	StatusPromotion    	*StatusPromotion  `gorm:"foreignKey: status_promotion_id" json:"status_promotion"`
+	DistanceCondition string `gorm:"type:text" json:"distance_condition" valid:"required~DistanceCondition is required"` // เงื่อนไขระยะทาง
 }
