@@ -141,8 +141,9 @@ func registerRoutes(r *gin.Engine) {
 	r.GET("/bankname", controller.GetAllBankName)
 
 	// Routes สำหรับ Room
-	r.GET("/rooms", controller.GetRooms)          // ดึงข้อมูลห้องทั้งหมด
-	r.GET("/rooms/:id", controller.GetRoomByID)   // ดึงข้อมูลห้องตาม ID
+	r.GET("/rooms", controller.GetRooms)        // ดึงข้อมูลห้องทั้งหมด
+	r.GET("/rooms/:id", controller.GetRoomByID) // ดึงข้อมูลห้องตาม ID
+	r.GET("/rooms/edit/:id", controller.GetRoomByID)
 	r.POST("/rooms", controller.CreateRoom)       // สร้างห้องใหม่
 	r.PATCH("/rooms/:id", controller.UpdateRoom)  // อัปเดตข้อมูลห้อง
 	r.DELETE("/rooms/:id", controller.DeleteRoom) // ลบห้อง
@@ -153,6 +154,13 @@ func registerRoutes(r *gin.Engine) {
 	r.POST("/trainers", controller.CreateTrainer)       // สร้าง Trainer ใหม่
 	r.PATCH("/trainers/:id", controller.UpdateTrainer)  // อัปเดตข้อมูล Trainer
 	r.DELETE("/trainers/:id", controller.DeleteTrainer) // ลบ Trainer
+
+	r.GET("/trainbook", controller.GetTrainBookings)                      // ✅ ดึงข้อมูลการจองทั้งหมด
+	r.GET("/trainbook/:id", controller.GetTrainBookingByID)               // ✅ ดึงข้อมูลการจองตาม ID
+	r.POST("/trainbook", controller.CreateTrainBookingByRoom)             // ✅ แก้ไขให้เส้นทาง POST ทำงานถูกต้อง
+	r.PATCH("/trainbook/:id", controller.UpdateTrainBooking)              // ✅ อัปเดตข้อมูลการจองทั่วไป
+	r.PATCH("/trainbook/:id/status", controller.UpdateTrainBookingStatus) // ✅ อัปเดตสถานะการจอง
+	r.DELETE("/trainbook/:id", controller.DeleteTrainBooking)             // ✅ ลบข้อมูลการจอง
 
 	r.GET("/gender", controller.GetAllGender)      // ดึงข้อมูล Gender ทั้งหมด
 	r.GET("/gender/:id", controller.GetGenderByID) // ดึงข้อมูล Gender ตาม ID

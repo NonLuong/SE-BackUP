@@ -1,0 +1,183 @@
+{
+  "id": "5334c744-e999-4ec4-8017-3c76d592b176",
+  "version": "2.0",
+  "name": "ProjectTest",
+  "url": "http://localhost:5173/rooms/create",
+  "tests": [{
+    "id": "8aa2b307-0afb-4e60-8a7e-db02a1a12632",
+    "name": "CreateRoomSuccess",
+    "commands": [{
+      "id": "72e465d0-6edb-4858-941c-bd58c76a2473",
+      "comment": "",
+      "command": "open",
+      "target": "http://localhost:5173/rooms/create",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "80f8f59b-c2d8-4bf8-949d-0d70b3969948",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1248x811",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "7723a49d-a381-452e-affa-0c80ade4e2af",
+      "comment": "",
+      "command": "type",
+      "target": "id=basic_RoomName",
+      "targets": [
+        ["id=basic_RoomName", "id"],
+        ["css=#basic_RoomName", "css:finder"],
+        ["xpath=//input[@id='basic_RoomName']", "xpath:attributes"],
+        ["xpath=//form[@id='basic']/div/div/div/div/div[2]/div/div/input", "xpath:idRelative"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "Test"
+    }, {
+      "id": "5e8c9ed2-3721-4e3f-850c-1004c1244082",
+      "comment": "",
+      "command": "type",
+      "target": "id=basic_Capacity",
+      "targets": [
+        ["id=basic_Capacity", "id"],
+        ["css=#basic_Capacity", "css:finder"],
+        ["xpath=//input[@id='basic_Capacity']", "xpath:attributes"],
+        ["xpath=//form[@id='basic']/div/div[2]/div/div/div[2]/div/div/div/div[2]/input", "xpath:idRelative"],
+        ["xpath=//div[2]/input", "xpath:position"]
+      ],
+      "value": "20"
+    }, {
+      "id": "6e89fdd9-e33f-4638-9186-9b56502c4b70",
+      "comment": "",
+      "command": "click",
+      "target": "id=basic_TrainerID",
+      "targets": [
+        ["id=basic_TrainerID", "id"],
+        ["css=#basic_TrainerID", "css:finder"],
+        ["xpath=//input[@id='basic_TrainerID']", "xpath:attributes"],
+        ["xpath=//form[@id='basic']/div/div[3]/div/div/div[2]/div/div/div/div/span/span/input", "xpath:idRelative"],
+        ["xpath=//span/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "bedbe7ac-e0e7-44cd-9144-116c48f4ead9",
+      "comment": "",
+      "command": "click",
+      "target": "css=.ant-select-item-option-active > .ant-select-item-option-content",
+      "targets": [
+        ["css=.ant-select-item-option-active > .ant-select-item-option-content", "css:finder"],
+        ["xpath=//div/div/div[4]/div", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "2673f750-76c9-448e-9fe6-0c8fa411e2c4",
+      "comment": "",
+      "command": "click",
+      "target": "css=.ant-col:nth-child(4)",
+      "targets": [
+        ["css=.ant-col:nth-child(4)", "css:finder"],
+        ["xpath=//form[@id='basic']/div/div[4]", "xpath:idRelative"],
+        ["xpath=//div[4]", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "f3b06853-2e52-441c-9d5d-ca0d6638360c",
+      "comment": "",
+      "command": "click",
+      "target": "id=basic_Title",
+      "targets": [
+        ["id=basic_Title", "id"],
+        ["css=#basic_Title", "css:finder"],
+        ["xpath=//textarea[@id='basic_Title']", "xpath:attributes"],
+        ["xpath=//form[@id='basic']/div/div[4]/div/div/div[2]/div/div/textarea", "xpath:idRelative"],
+        ["xpath=//textarea", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "6cb5c3a1-5c37-41c5-92e9-a459a275ee21",
+      "comment": "",
+      "command": "type",
+      "target": "id=basic_Title",
+      "targets": [
+        ["id=basic_Title", "id"],
+        ["css=#basic_Title", "css:finder"],
+        ["xpath=//textarea[@id='basic_Title']", "xpath:attributes"],
+        ["xpath=//form[@id='basic']/div/div[4]/div/div/div[2]/div/div/textarea", "xpath:idRelative"],
+        ["xpath=//textarea", "xpath:position"]
+      ],
+      "value": "test"
+    }, {
+      "id": "47200b4d-17ca-48b0-85cd-2831d2e1ae3c",
+      "comment": "",
+      "command": "click",
+      "target": "id=basic_Detail",
+      "targets": [
+        ["id=basic_Detail", "id"],
+        ["css=#basic_Detail", "css:finder"],
+        ["xpath=//textarea[@id='basic_Detail']", "xpath:attributes"],
+        ["xpath=//form[@id='basic']/div/div[5]/div/div/div[2]/div/div/textarea", "xpath:idRelative"],
+        ["xpath=//div[5]/div/div/div[2]/div/div/textarea", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "15d7b020-9b07-4376-be25-60bce12ba0a3",
+      "comment": "",
+      "command": "type",
+      "target": "id=basic_Detail",
+      "targets": [
+        ["id=basic_Detail", "id"],
+        ["css=#basic_Detail", "css:finder"],
+        ["xpath=//textarea[@id='basic_Detail']", "xpath:attributes"],
+        ["xpath=//form[@id='basic']/div/div[5]/div/div/div[2]/div/div/textarea", "xpath:idRelative"],
+        ["xpath=//div[5]/div/div/div[2]/div/div/textarea", "xpath:position"]
+      ],
+      "value": "testtest"
+    }, {
+      "id": "c811348d-0f0a-4dfd-a523-f41606820ed5",
+      "comment": "",
+      "command": "click",
+      "target": "css=.ant-btn > span:nth-child(2)",
+      "targets": [
+        ["css=.ant-btn > span:nth-child(2)", "css:finder"],
+        ["xpath=//form[@id='basic']/div[2]/div/div/div[2]/button/span[2]", "xpath:idRelative"],
+        ["xpath=//button/span[2]", "xpath:position"],
+        ["xpath=//span[contains(.,'บันทึก')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "1b592e72-2823-41c4-ae78-17bb77521365",
+      "comment": "",
+      "command": "mouseOver",
+      "target": "css=.ant-btn > span:nth-child(2)",
+      "targets": [
+        ["css=.ant-btn > span:nth-child(2)", "css:finder"],
+        ["xpath=//form[@id='basic']/div[2]/div/div/div[2]/button/span[2]", "xpath:idRelative"],
+        ["xpath=//button/span[2]", "xpath:position"],
+        ["xpath=//span[contains(.,'บันทึก')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "f5c9589e-d2cf-420b-a298-22340bf159b9",
+      "comment": "",
+      "command": "mouseOut",
+      "target": "css=span:nth-child(3)",
+      "targets": [
+        ["css=span:nth-child(3)", "css:finder"],
+        ["xpath=//form[@id='basic']/div[2]/div/div/div[2]/button/span[2]", "xpath:idRelative"],
+        ["xpath=//button/span[2]", "xpath:position"],
+        ["xpath=//span[contains(.,'บันทึก')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }]
+  }],
+  "suites": [{
+    "id": "701c21ad-5458-41db-b239-41f9f240846a",
+    "name": "Default Suite",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": []
+  }],
+  "urls": ["http://localhost:5173/", "http://localhost:5173/trainer/create", "http://localhost:5173/rooms/create"],
+  "plugins": []
+}

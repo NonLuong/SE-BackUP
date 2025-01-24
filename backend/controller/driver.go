@@ -126,13 +126,27 @@ func GetDrivers(c *gin.Context) {
 	var drivers []entity.Driver
 
 	// ดึงข้อมูล Driver พร้อม Preload ข้อมูลที่เกี่ยวข้อง
-	if err := config.DB().Preload("Gender").Preload("Status").Find(&drivers).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch drivers"})
+	err := config.DB().
+		Preload("Gender").
+		Preload("Location").
+		Preload("Vehicle").
+		Preload("Employee").
+		Preload("DriverStatus").
+		Preload("Bookings").
+		Preload("Messages").
+		Preload("RoomChats").
+		Preload("Role").
+		Find(&drivers).Error
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch drivers", "details": err.Error()})
 		return
 	}
 
+	// ส่งข้อมูลกลับในรูปแบบ JSON
 	c.JSON(http.StatusOK, gin.H{"drivers": drivers})
 }
+
 
 // GetDriverDetail - ดึงข้อมูล Driver รายบุคคล
 func GetDriverDetail(c *gin.Context) {

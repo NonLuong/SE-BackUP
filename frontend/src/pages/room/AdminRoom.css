@@ -1,0 +1,151 @@
+/* ปรับขนาดปุ่มหลัก */
+.AdminRoom-Btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 80px; /* ลดความกว้าง */
+  height: 32px; /* ลดความสูง */
+  border: none;
+  padding: 0px 16px; /* ลด padding */
+  background-color: rgb(168, 38, 255);
+  color: white;
+  font-weight: 500;
+  font-size: 12px; /* ลดขนาดฟอนต์ */
+  cursor: pointer;
+  border-radius: 8px; /* ลดความโค้ง */
+  box-shadow: 3px 3px 0px rgb(140, 32, 212); /* ลดความโดดเด่น */
+  transition-duration: 0.3s;
+}
+
+.AdminRoom-svg {
+  width: 12px; /* ลดขนาด SVG */
+  position: absolute;
+  right: 8px; /* ปรับระยะห่าง */
+  fill: white;
+  transition-duration: 0.3s;
+}
+
+.AdminRoom-Btn:hover {
+  color: transparent;
+}
+
+.AdminRoom-Btn:hover svg {
+  right: 40%; /* ลดการเคลื่อนไหว */
+  margin: 0;
+  padding: 0;
+  border: none;
+  transition-duration: 0.3s;
+}
+
+.AdminRoom-Btn:active {
+  transform: translate(2px, 2px); /* ลดการเคลื่อนไหว */
+  transition-duration: 0.3s;
+  box-shadow: 1px 1px 0px rgb(140, 32, 212);
+}
+
+/* ปุ่ม Delete */
+.AdminRoom-delete-button {
+  width: 32px; /* ลดขนาดความกว้าง */
+  height: 32px; /* ลดขนาดความสูง */
+  border-radius: 50%;
+  background-color: rgb(20, 20, 20);
+  border: none;
+  font-weight: 500; /* ลดความหนาของฟอนต์ */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.164); /* ลดเงา */
+  cursor: pointer;
+  transition-duration: 0.3s;
+  overflow: hidden;
+  position: relative;
+}
+
+.AdminRoom-delete-svgIcon {
+  width: 12px; /* ลดขนาดไอคอน */
+  transition-duration: 0.3s;
+}
+
+.AdminRoom-delete-button:hover {
+  width: 80px; /* ลดความกว้างเมื่อ hover */
+  border-radius: 16px; /* ลดความโค้ง */
+  transition-duration: 0.3s;
+  background-color: rgb(255, 69, 69);
+  align-items: center;
+}
+
+.AdminRoom-delete-button:hover .AdminRoom-delete-svgIcon {
+  width: 16px; /* ลดขนาดไอคอนเมื่อ hover */
+  transition-duration: 0.3s;
+  transform: translateY(40%);
+  transform: rotate(360deg);
+}
+
+.AdminRoom-delete-button::before {
+  display: none;
+  content: "Delete";
+  color: white;
+  transition-duration: 0.3s;
+  font-size: 10px; /* ลดขนาดฟอนต์ */
+}
+
+.AdminRoom-delete-button:hover::before {
+  display: block;
+  padding-right: 8px; /* ลดระยะห่าง */
+  font-size: 12px; /* ขนาดข้อความเมื่อ hover */
+  opacity: 1;
+  transform: translateY(0px);
+  transition-duration: 0.3s;
+}
+
+/* ปรับ Table Header */
+.AdminRoom-table .ant-table-thead > tr > th {
+  background-color: #47456c; /* สีพื้นหลัง Header */
+  color: #fff;
+  font-weight: bold;
+  text-align: center;
+  border-bottom: 2px solid #d9d9d9; /* เส้นขอบด้านล่าง */
+}
+
+/* ปรับ Table Rows */
+.AdminRoom-table .ant-table-tbody > tr > td {
+  text-align: center; /* จัดข้อความให้อยู่กึ่งกลาง */
+  vertical-align: middle;
+  border-bottom: 1px solid #f0f0f0; /* เส้นขอบระหว่างแถว */
+}
+
+/* Hover Effect */
+.AdminRoom-table .ant-table-tbody > tr:hover > td {
+  background-color: #fafafa; /* เปลี่ยนสีพื้นหลังเมื่อ Hover */
+}
+
+/* AdminRoom - Popconfirm Styling */
+.AdminRoom-popconfirm {
+  max-width: 300px; /* กำหนดขนาดความกว้าง */
+}
+
+.AdminRoom-popconfirm-title {
+  text-align: center;
+  font-size: 16px; /* ลดขนาดข้อความ */
+  font-weight: bold;
+  color: #f5222d; /* สีแดงเตือน */
+  margin-bottom: 8px;
+}
+
+.AdminRoom-popconfirm-message {
+  text-align: center;
+  font-size: 14px; /* ลดขนาดข้อความรายละเอียด */
+  color: #555;
+}
+
+.AdminRoom-popconfirm-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+
+.AdminRoom-popconfirm-buttons button {
+  font-size: 14px; /* ลดขนาดปุ่ม */
+  padding: 4px 12px; /* ลด padding ของปุ่ม */
+}

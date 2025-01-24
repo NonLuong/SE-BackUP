@@ -30,8 +30,9 @@ function PromotionEdit() {
   const [discountType, setDiscountType] = useState<"amount" | "percent">("amount");
   const [statusPromotion, setStatusPromotion] = useState<"active" | "expired">("active");
   const [form] = Form.useForm();
+  const [distanceCondition, setDistanceCondition] = useState<string>("");
 
-  // Fetch promotion data by ID
+  // ดึง promotion data by ID
   const getPromotionById = async (id: string) => {
     let res = await GetPromotionById(id);
 
@@ -47,9 +48,11 @@ function PromotionEdit() {
         distance_promotion: promotion.distance_promotion ,  // Optional distance_promotion
         end_date: promotion.end_date ? dayjs(promotion.end_date) : null,
         promotion_description: promotion.promotion_description || "",
+        distance_condition: promotion.distance_condition || "",
       });
       setDiscountType(promotion.discount_type_id === 2 ? "percent" : "amount");
       setStatusPromotion(promotion.status_promotion_id === 1 ? "active" : "expired");
+      setDistanceCondition(promotion.distance_condition);
       setFileList(promotion.photo ? [{ url: promotion.photo }] : []);
     } else {
       messageApi.open({
@@ -69,6 +72,7 @@ function PromotionEdit() {
       discount_type_id: discountType === "percent" ? 2 : 1, // Map to numeric value
       status_promotion_id: statusPromotion === "active" ? 1 : 2, // Map to numeric value
       photo: fileList.length > 0 ? fileList[0].thumbUrl : null,
+      distance_condition: distanceCondition,
     };
 
     let res = await UpdatePromotionById(id || "", promotionData);
@@ -211,7 +215,7 @@ function PromotionEdit() {
 
                     <Col xs={24} sm={12}>
                       <Form.Item label={discountType === "amount" ? "ส่วนลด (บาท)" : "ส่วนลด (%)"} name="discount" rules={[{ required: true, message: "กรุณากรอกจำนวนส่วนลด !" }]}>
-                        <InputNumber min={0} max={discountType === "percent" ? 100 : 99999999} style={{ width: "100%" }} />
+                        <InputNumber min={0} max={discountType === "percent" ? 100 : 1000} style={{ width: "100%" }} />
                       </Form.Item>
                     </Col>
                   </Row>
@@ -231,7 +235,7 @@ function PromotionEdit() {
 
                     <Col xs={24} sm={12}>
                       <Form.Item label="จำนวนสิทธิ์" name="use_limit" rules={[{ required: true, message: "กรุณากรอกจำนวนครั้งที่ใช้ได้ !" }]}>
-                        <InputNumber min={0} max={100} style={{ width: "100%" }} />
+                        <InputNumber min={1} max={100} style={{ width: "100%" }} />
                       </Form.Item>
                     </Col>
                   </Row>
@@ -242,7 +246,7 @@ function PromotionEdit() {
                   <Row gutter={[16, 16]}>
                     <Col xs={24} sm={12}>
                       <Form.Item label="ระยะทางขั้นต่ำ (กิโลเมตร)" name="distance_promotion">
-                        <InputNumber min={0} max={1000} style={{ width: "100%" }} />
+                        <InputNumber min={0} max={100} style={{ width: "100%" }} />
                       </Form.Item>
                     </Col>
                     <Col xs={24} sm={12}>
@@ -255,7 +259,43 @@ function PromotionEdit() {
                     </Col>
                   </Row>
                 </Col>
-
+                <Col xs={24}>
+                    <Row gutter={[16, 16]}>
+                      <Col xs={24} sm={12}>
+                        <Form.Item
+                          label="เงื่อนไขระยะทาง"
+                          name="distance_condition"
+                          rules={[
+                            {
+                              required: true,
+                              message: "กรุณาเลือกเงื่อนไขระยะทาง !",
+                            },
+                          ]}
+                        >
+                          <Select
+                            value={distanceCondition}
+                            onChange={(value) => setDistanceCondition(value)}
+                          >
+                            <Select.Option value="greater">
+                              ระยะทางมากกว่า
+                            </Select.Option>
+                            <Select.Option value="greater_equal">
+                              ระยะทางไม่น้อยกว่า
+                            </Select.Option>
+                            <Select.Option value="less_equal">
+                              ระยะทางไม่เกิน
+                            </Select.Option>
+                            <Select.Option value="less">
+                              ระยะทางน้อยกว่า
+                            </Select.Option>
+                            <Select.Option value="free">
+                              ทุกระยะทาง
+                            </Select.Option>
+                          </Select>
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                  </Col>
                 {/* Description and Image Upload */}
                 <Col xs={24}>
                   <Row gutter={[16, 16]}>

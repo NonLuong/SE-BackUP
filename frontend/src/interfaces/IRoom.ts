@@ -10,6 +10,8 @@ export interface RoomInterface {
   Trainer?: Pick<TrainersInterface, "FirstName" | "LastName"> | null; // จำกัดข้อมูลเฉพาะ FirstName และ LastName ของ Trainer
   Detail?: string; // รายละเอียดห้อง (สำหรับ Frontend)
   detail?: string; // รายละเอียดห้อง (สำหรับ API)
+  Title?: string; // รายละเอียดห้อง (สำหรับ Frontend)
+  title?: string; // รายละเอียดห้อง (สำหรับ API)
   CurrentBookings?: number; // จำนวนผู้จองห้อง (สำหรับ Frontend)
   current_bookings?: number; // จำนวนผู้จองห้อง (สำหรับ API)
   Status?: string; // สถานะห้อง (Frontend)

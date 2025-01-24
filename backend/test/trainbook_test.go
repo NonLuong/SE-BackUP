@@ -22,13 +22,14 @@ func setupTestTrainBook() entity.TrainBook {
 
     return entity.TrainBook{
         RoomID:   roomID,
-        DriverID: &driverID,
-        Status:   "completed", // ค่าเริ่มต้นที่ถูกต้อง
+        DriverID: driverID,
+        Status:   "completed", // ค่าเริ่มต้นเป็น 'completed'
         Room: entity.Rooms{
+            Title:     "Training Room A", // เพิ่ม Title
             Capacity:  10,
             RoomName:  "Room A",
             TrainerID: trainerID,
-			Detail: "This is a valid train book",
+            Detail:    "This is a valid train book",
         },
         Driver: entity.Driver{
             Firstname:                  "John",
@@ -68,7 +69,7 @@ func TestTrainBookDriverID(t *testing.T) {
 
     t.Run("Invalid DriverID (Nil)", func(t *testing.T) {
         trainbook := setupTestTrainBook()
-        trainbook.DriverID = nil // DriverID เป็น nil ซึ่งไม่ถูกต้อง
+        trainbook.DriverID = 0 // DriverID เป็น nil ซึ่งไม่ถูกต้อง
 
         ok, err := govalidator.ValidateStruct(trainbook)
         if err != nil {

@@ -86,12 +86,12 @@ const Home: React.FC = () => {
   // Render promotion status with larger size
   const renderStatus = (statusId: number) => {
     if (statusId === 1) {
-      return <Tag color="green" style={{ fontSize: '15px', padding: '5px 10px', borderRadius: '5px' }}>ใช้งานได้</Tag>;
+      return <Tag color="green" style={{ fontSize: '25px', padding: '15px 10px', borderRadius: '15px' }}>ใช้งานได้</Tag>;
     }
     if (statusId === 2) {
-      return <Tag color="red" style={{ fontSize: '15px', padding: '5px 10px', borderRadius: '5px' }}>ปิดการใช้งาน</Tag>;
+      return <Tag color="red" style={{ fontSize: '25px', padding: '15px 10px', borderRadius: '15px' }}>ปิดการใช้งาน</Tag>;
     }
-    return <Tag color="default" style={{ fontSize: '24px', padding: '10px 20px', borderRadius: '20px' }}>ไม่ระบุ</Tag>;
+    return <Tag color="default" style={{ fontSize: '24px', padding: '15px 20px', borderRadius: '15px' }}>ไม่ระบุ</Tag>;
   };
 
   const navigate = useNavigate(); // ใช้ useNavigate สำหรับการนำทาง
@@ -120,8 +120,8 @@ const Home: React.FC = () => {
       {/* Promotion Section */}
       <div className="promotion-banner">
       <div className="promotion-banner" style={{ position: "relative", padding: "30px 0" }}>
-        <h2 style={{ textAlign: "center", marginBottom: "30px", color: "#464468", fontSize: "24px" }}>
-          Promotions
+        <h2 style={{ textAlign: "center", marginBottom: "30px", color: "#464468", fontSize: "34px" }}>
+        Boost Your Savings with Our Promotions!
         </h2>
         <Divider />
 
@@ -137,9 +137,12 @@ const Home: React.FC = () => {
                   padding: "20px",
                   display: "flex",
                   flexDirection: "row",
-                  height: "100%",
-                  backgroundColor: "#F9F7FE",
+                  maxWidth: "1800px",
+                  margin: "0 auto",
+                  backgroundImage: "linear-gradient(135deg,rgb(188, 185, 238),rgba(202, 163, 238, 0.32))",
+                  transition: "transform 0.3s, box-shadow 0.3s",
                 }}
+                hoverable
               >
                 <Row gutter={16} style={{ display: "flex", alignItems: "center", width: "100%" }}>
                   <Col span={8}>
@@ -173,13 +176,10 @@ const Home: React.FC = () => {
                               marginLeft: "10px",
                               fontSize: "48px",
                               fontWeight: "bold",
-                              color: "#575A83",
+                              color: "rgb(181, 14, 187)",
                             }}
                           >
-                            ลดสูงสุด{" "}
-                            {promotion.discount_type_id === "amount"
-                              ? `${promotion.discount} บาท`
-                              : `${promotion.discount}%`}
+                            ลด {promotion.discount_type_id == "1" ? `${promotion.discount} บาท` : `${promotion.discount}%`}
                           </span>
                         </div>
                       </Col>
@@ -197,7 +197,7 @@ const Home: React.FC = () => {
                                 borderRadius: "20px",
                               }}
                             >
-                              ใส่รหัส {promotion.promotion_code}
+                              กรอกโค้ด {promotion.promotion_code}
                               <Button
                                 type="text"
                                 icon={<CopyOutlined style={{ fontSize: "26px" }} />}  // Set the icon size here
@@ -207,7 +207,6 @@ const Home: React.FC = () => {
                                   padding: "6px 12px",
                                   marginLeft: "10px",
                                   borderRadius: "8px",
-                                  backgroundColor: "#7F6BCC",
                                   color: "white",
                                   transition: "background-color 0.3s",
                                 }}
@@ -244,7 +243,6 @@ const Home: React.FC = () => {
                           {promotion.promotion_description}
                         </div>
                       </Col>
-
                       {/* End Date and Other Details */}
                       <Col span={24}>
                         <div
