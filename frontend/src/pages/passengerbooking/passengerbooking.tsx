@@ -98,22 +98,6 @@ const PassengerNotification: React.FC = () => {
       >
         💬 Go to Chat
       </button>
-      <button
-              style={{
-                marginTop: "10px",
-                backgroundColor: "#4CAF50",
-                color: "white",
-                padding: "10px 20px",
-                border: "none",
-                borderRadius: "5px",
-                cursor: "pointer",
-                fontSize: "16px",
-              }}
-              onClick={() => window.location.href = "/payment"}
-            >
-              Back
-            </button>
-
     </div>
   );
 };

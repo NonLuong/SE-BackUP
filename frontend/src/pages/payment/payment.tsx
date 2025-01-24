@@ -337,16 +337,30 @@ const Payment: React.FC = () => {
           </div>
           <button
             style={{
-              marginTop: "10px",
-              backgroundColor: "#4CAF50",
-              color: "white",
+              backgroundColor: "#FFF",
+              borderRadius: "10px",
               padding: "10px 20px",
-              border: "none",
-              borderRadius: "5px",
-              cursor: "pointer",
-              fontSize: "16px",
+              marginBottom: "20px",
+              fontSize: "18px",
+              fontWeight: "bold",
+              color: "#000",
+              textAlign: "center",
+              width: "30%",
+              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+              fontFamily: "Comic Sans MS, sans-serif",
+              transition: "background-color 0.3s ease, color 0.3s ease",
             }}
-            onClick={() => (window.location.href = "/passengernotification")}
+            onMouseEnter={(e) => {
+              const target = e.target as HTMLButtonElement; // แปลงชนิดให้เป็น HTMLButtonElement
+              target.style.backgroundColor = "#a09bff"; // เปลี่ยนสีพื้นหลังเป็นสีดำ
+              target.style.color = "#FFF"; // เปลี่ยนสีตัวอักษรเป็นสีขาว
+            }}
+            onMouseLeave={(e) => {
+              const target = e.target as HTMLButtonElement; // แปลงชนิดให้เป็น HTMLButtonElement
+              target.style.backgroundColor = "#8f7ceb"; // คืนสีพื้นหลังเป็นสีขาว
+              target.style.color = "#FFF"; // คืนสีตัวอักษรเป็นสีดำ
+            }}
+            onClick={() => window.open("/passengernotification", "_blank")}
           >
             Go to Notification
           </button>
@@ -618,7 +632,10 @@ const Payment: React.FC = () => {
             >
               {isSubmitting ? "Processing..." : "Confirm Payment"}
             </button>
-            <button className="cx" onClick={() => navigate(`/paid/${bookingId}`)}>
+            <button
+              className="cx"
+              onClick={() => navigate(`/paid/${bookingId}`)}
+            >
               Cancel
             </button>
           </div>
