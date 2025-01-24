@@ -618,7 +618,7 @@ const Payment: React.FC = () => {
             >
               {isSubmitting ? "Processing..." : "Confirm Payment"}
             </button>
-            <button className="cx" onClick={() => navigate("/home")}>
+            <button className="cx" onClick={() => navigate(`/paid/${bookingId}`)}>
               Cancel
             </button>
           </div>
