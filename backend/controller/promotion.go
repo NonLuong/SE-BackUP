@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"project-se/entity"
     "project-se/config"
+	"time"
 )
 
 // GetAll Promotions - ดึงข้อมูลโปรโมชั่นทั้งหมด
@@ -13,12 +14,21 @@ func GetAllPromotion(c *gin.Context) {
 
 	db := config.DB()
 
-	// ดึงข้อมูลโปรโมชั่นทั้งหมด พร้อมข้อมูล DiscountType และ Status
+	// ดึงข้อมูลโปรโมชั่นทั้งหมด พร้อมข้อมูล DiscountType และ StatusPromotion
 	results := db.Preload("DiscountType").Preload("StatusPromotion").Find(&promotions)
 
 	if results.Error != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": results.Error.Error()})
 		return
+	}
+
+	// อัปเดต DiscountTypeID เป็น 2 ถ้า EndDate เป็นวันปัจจุบัน
+	currentDate := time.Now().Format("2006-01-02")
+	for i := range promotions {
+		if promotions[i].EndDate.Format("2006-01-02") == currentDate {
+			promotions[i].DiscountTypeID = 2
+			db.Save(&promotions[i]) // บันทึกข้อมูลที่แก้ไขกลับไปยังฐานข้อมูล
+		}
 	}
 
 	c.JSON(http.StatusOK, promotions)
