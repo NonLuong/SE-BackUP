@@ -711,5 +711,77 @@ func SetupDatabase() {
 		db.FirstOrCreate(&p, entity.Passenger{Email: p.Email})
 	}
 
+	rooms := []entity.Rooms{
+		{
+			RoomName:        "A15",
+			Capacity:        20,
+			CurrentBookings: 0,
+			TrainerID:       1,
+			Detail:          "The application is designed to streamline the customer transportation experience, focusing on efficiency, safety, and convenience. As a driver, your role is crucial in ensuring a high-quality experience for all users. This section introduces the app’s main features, including navigation, booking management, earnings tracking, and communication tools. Drivers will learn how to set up their profiles, accept ride requests, and manage daily operations seamlessly.",
+			Title:           "Introduction to the Driver Application",
+		},
+		{
+			RoomName:        "D09",
+			Capacity:        15,
+			CurrentBookings: 0,
+			TrainerID:       2,
+			Detail:          "Building trust and maintaining professionalism with customers are key to success. This section emphasizes effective communication, maintaining a polite demeanor, and understanding diverse customer needs. Drivers will be guided on how to handle common scenarios, such as assisting passengers with luggage, addressing complaints constructively, and ensuring a comfortable journey for all.",
+			Title:           "Professional Customer Interaction",
+		},
+		{
+			RoomName:        "D00",
+			Capacity:        25,
+			CurrentBookings: 0,
+			TrainerID:       3,
+			Detail:          "A well-maintained vehicle is essential for providing safe and reliable services. This topic covers regular vehicle checkups, cleanliness standards, and handling minor issues before they escalate. Drivers will also learn about emergency protocols, such as responding to accidents or unexpected mechanical problems, ensuring both their safety and that of the passengers.",
+			Title:           "Vehicle Maintenance and Safety",
+		},
+		{
+			RoomName:        "B10",
+			Capacity:        30,
+			CurrentBookings: 0,
+			TrainerID:       4,
+			Detail:          "Efficient navigation is a key component of providing timely and reliable service. This section explains how to utilize the app’s GPS features to find optimal routes, avoid traffic, and adjust to real-time conditions. Drivers will also be trained on how to deal with unexpected detours and provide updates to passengers in case of delays.",
+			Title:           "Using the Navigation System Effectively",
+		},
+		{
+			RoomName:        "C14",
+			Capacity:        10,
+			CurrentBookings: 0,
+			TrainerID:       5,
+			Detail:          "Understanding the financial aspects of the app ensures transparency and satisfaction for both drivers and customers. This section teaches drivers how to process payments via the app, handle cash transactions when necessary, and access their earnings summary. Drivers will also be advised on managing disputes related to payments and maintaining accurate records.",
+			Title:           "Handling Payments and Earnings Tracking",
+		},
+		{
+			RoomName:        "D07",
+			Capacity:        20,
+			CurrentBookings: 0,
+			TrainerID:       6,
+			Detail:          "Drivers may encounter various unexpected scenarios during their service. This section prepares them to handle emergencies, such as accidents, medical situations, or confrontations, with a calm and professional approach. Drivers will also learn how to assist customers with special needs or provide extra support for vulnerable passengers.",
+			Title:           "Emergency and Special Situations",
+		},
+		{
+			RoomName:        "D11",
+			Capacity:        15,
+			CurrentBookings: 0,
+			TrainerID:       7,
+			Detail:          "Feedback is an essential part of maintaining quality service. This section discusses the importance of customer reviews and ratings, how to address constructive criticism, and ways to consistently improve performance. Drivers will also learn how to seek support from the app’s team if they face challenges or need assistance.",
+			Title:           "Customer Feedback and Continuous Improvement",
+		},
+		{
+			RoomName:        "B00",
+			Capacity:        25,
+			CurrentBookings: 0,
+			TrainerID:       8,
+			Detail:          "Operating as a driver involves adhering to laws and ethical standards. This topic outlines drivers’ responsibilities, including respecting traffic laws, ensuring customer privacy, and avoiding discrimination. Drivers will also be informed about the consequences of violating these standards and the importance of fostering a safe and inclusive environment.",
+			Title:           "Legal and Ethical Responsibilities",
+		},
+	}
+
+	// เพิ่มข้อมูล Room ลงในฐานข้อมูล
+	for _, room := range rooms {
+		db.FirstOrCreate(&room, entity.Rooms{RoomName: room.RoomName})
+	}
+
 	fmt.Println("Database setup and seeding completed")
 }
