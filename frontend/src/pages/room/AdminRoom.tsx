@@ -92,12 +92,6 @@ function Rooms() {
   // ✅ กำหนด Columns ของ Table
   const columns: ColumnsType<RoomInterface> = [
     {
-      title: "ลำดับ",
-      key: "index",
-      render: (_: any, __: any, index: number) => index + 1,
-      width: 80,
-    },
-    {
       title: "ชื่อห้อง",
       dataIndex: "RoomName",
       key: "RoomName",

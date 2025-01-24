@@ -80,12 +80,6 @@ const Trainer: React.FC = () => {
 
   const columns = [
     {
-      title: "ID",
-      dataIndex: "ID",
-      key: "id",
-      width: 80,
-    },
-    {
       title: "ชื่อ",
       dataIndex: "first_name",
       key: "first_name",

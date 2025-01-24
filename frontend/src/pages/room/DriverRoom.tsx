@@ -81,7 +81,7 @@ function DriverRooms() {
         fetchRooms();
         setTimeout(() => navigate("/training"), 1500);
       } else {
-        message.error("เกิดข้อผิดพลาดในการจองห้อง");
+        message.error("คุณได้จองห้องนี้ไปแล้ว");
       }
     } catch (error) {
       message.error("เกิดข้อผิดพลาดขณะจอง");
@@ -207,12 +207,6 @@ function DriverRooms() {
             showExpandColumn: false,
           }}
           columns={[
-            {
-              title: "ลำดับ",
-              key: "index",
-              render: (_: any, __: any, index: number) => index + 1,
-              width: 80,
-            },
             {
               title: "ชื่อห้อง",
               dataIndex: "RoomName",
