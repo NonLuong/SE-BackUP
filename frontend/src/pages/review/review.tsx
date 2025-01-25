@@ -117,7 +117,7 @@ const Review: React.FC = () => {
         message: "update",
       };
 
-      await apiRequest("POST", Endpoint.REVIEW_NOTIFY, notifyReview);
+      apiRequest("POST", Endpoint.REVIEW_NOTIFY, notifyReview);
 
       if (response) {
         alert("Review Submitted Successfully!");
