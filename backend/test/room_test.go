@@ -13,10 +13,11 @@ func TestRoomName(t *testing.T) {
 
 	t.Run(`RoomName is required`, func(t *testing.T) {
 		room := entity.Rooms{
-			RoomName: "", // ทดสอบชื่อห้องเว้นว่าง
+			RoomName: "", // ชื่อห้องเว้นว่าง
 			Capacity: 10,
 			TrainerID: 1,
-			Detail: "ห้องประชุมใหญ่",
+			Detail:    "ห้องประชุมใหญ่",
+			Title:     "หัวข้อการประชุม",
 		}
 
 		ok, err := govalidator.ValidateStruct(room)
@@ -35,7 +36,8 @@ func TestRoomCapacity(t *testing.T) {
 			RoomName: "Meeting Room A",
 			Capacity: 0, // ความจุไม่ถูกต้อง
 			TrainerID: 1,
-			Detail: "ห้องประชุมใหญ่",
+			Detail:    "ห้องประชุมใหญ่",
+			Title:     "หัวข้อการประชุม",
 		}
 
 		ok, err := govalidator.ValidateStruct(room)
@@ -53,8 +55,9 @@ func TestRoomTrainerID(t *testing.T) {
 		room := entity.Rooms{
 			RoomName: "Meeting Room A",
 			Capacity: 10,
-			TrainerID: 0, // ไม่มี Trainer
-			Detail: "ห้องประชุมใหญ่",
+			TrainerID: 0, // TrainerID ว่าง
+			Detail:    "ห้องประชุมใหญ่",
+			Title:     "หัวข้อการประชุม",
 		}
 
 		ok, err := govalidator.ValidateStruct(room)
@@ -73,7 +76,8 @@ func TestRoomDetail(t *testing.T) {
 			RoomName: "Meeting Room A",
 			Capacity: 10,
 			TrainerID: 1,
-			Detail: "", // รายละเอียดว่าง
+			Detail:    "", // Detail ว่าง
+			Title:     "หัวข้อการประชุม",
 		}
 
 		ok, err := govalidator.ValidateStruct(room)
@@ -81,6 +85,26 @@ func TestRoomDetail(t *testing.T) {
 		g.Expect(ok).NotTo(BeTrue()) // Validate ต้องไม่ผ่าน
 		g.Expect(err).NotTo(BeNil()) // ต้องมีข้อผิดพลาด
 		g.Expect(err.Error()).To(ContainSubstring("Detail is required"))
+	})
+}
+
+func TestRoomTitle(t *testing.T) {
+	g := NewGomegaWithT(t)
+
+	t.Run(`Title is required`, func(t *testing.T) {
+		room := entity.Rooms{
+			RoomName: "Meeting Room A",
+			Capacity: 10,
+			TrainerID: 1,
+			Detail:    "ห้องประชุมใหญ่",
+			Title:     "", // Title ว่าง
+		}
+
+		ok, err := govalidator.ValidateStruct(room)
+
+		g.Expect(ok).NotTo(BeTrue()) // Validate ต้องไม่ผ่าน
+		g.Expect(err).NotTo(BeNil()) // ต้องมีข้อผิดพลาด
+		g.Expect(err.Error()).To(ContainSubstring("title is required"))
 	})
 }
 
@@ -92,7 +116,8 @@ func TestValidRoom(t *testing.T) {
 			RoomName: "Meeting Room A",
 			Capacity: 10,
 			TrainerID: 1,
-			Detail: "ห้องประชุมใหญ่",
+			Detail:    "ห้องประชุมใหญ่",
+			Title:     "หัวข้อการประชุม",
 		}
 
 		ok, err := govalidator.ValidateStruct(room)

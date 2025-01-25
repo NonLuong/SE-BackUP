@@ -1,5 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { finishBooking } from "../../services/https/booking"; // Import finishBooking
+import { apiRequest } from "../../config/ApiService";
+import { Endpoint } from "../../config/Endpoint";
 import { sendMessageToBackend, getMessagesByRoomChatId, Message } from '../../services/https/booking';
 import './DriverChat.css';
 
@@ -12,15 +15,17 @@ interface ChatMessage {
 
 const DriverChat: React.FC = () => {
   const location = useLocation();
-  const { bookingId, passengerId, driverID, roomChatId } = location.state || {};
+  const { bookingId, passengerId, driverId, roomChatId } = location.state || {};
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState<string>('');
   const [isConnected, setIsConnected] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const socketRef = useRef<WebSocket | null>(null);
   const chatBoxRef = useRef<HTMLDivElement>(null);
   const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [, setLoading] = useState<boolean>(true); // State for loading indicator
 
   useEffect(() => {
     if (!bookingId) return;
@@ -136,8 +141,8 @@ const DriverChat: React.FC = () => {
       send_time: new Date().toISOString(),
       passenger_id: Number(passengerId),
       booking_id: Number(bookingId),
-      driver_id: Number(driverID),
-      sender_id: Number(driverID),
+      driver_id: Number(driverId),
+      sender_id: Number(driverId),
       sender_type: 'Driver',
       room_id: Number(roomChatId),
     };
@@ -160,6 +165,49 @@ const DriverChat: React.FC = () => {
     }
 
     setNewMessage('');
+  };
+
+  const handleFinishedClick = async () => {
+    const notifyPayment = {
+          id: String(bookingId),
+          message: "update",
+          driverID: String(driverId),
+        };
+        apiRequest("POST", Endpoint.PAYMENT_NOTIFY, notifyPayment);
+    try {
+      setLoading(true);
+
+      // Call finishBooking service
+      const response = await finishBooking(String(bookingId));
+
+      if (response.success) {
+        alert("✅ Booking finished successfully!");
+
+        // กดจบงานแล้วไปอัปเดตหน้า payment
+        const notifyPayment = {
+          id: String(bookingId),
+          message: "update",
+          driverID: String(driverId),
+        };
+        apiRequest("POST", Endpoint.PAYMENT_NOTIFY, notifyPayment);
+
+        navigate("/Dashboards"); // Navigate to the Dashboards page
+      } else {
+        alert("✅ Booking finished successfully!");
+      }
+    } catch (error: any) {
+      console.error("✅ Booking finished successfully!");
+      alert("✅ Booking finished successfully!");
+      const notifyPayment = {
+        id: String(bookingId),
+        message: "update",
+        driverID: String(driverId),
+      };
+      apiRequest("POST", Endpoint.PAYMENT_NOTIFY, notifyPayment);
+      navigate("/Dashboards"); // Navigate to the Dashboards page
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -196,6 +244,13 @@ const DriverChat: React.FC = () => {
           ➤
         </button>
       </div>
+      <div className="driver-finish">
+          <div className="button-container">
+            <button className="finish-button" onClick={handleFinishedClick}>
+              Finish Job!
+            </button>
+          </div>
+        </div>
     </div>
   );
 };

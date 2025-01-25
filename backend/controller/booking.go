@@ -328,48 +328,35 @@ func UpdateDriverIDInBooking(c *gin.Context) {
 	})
 }
 
-/*func FinishBooking(c *gin.Context) {
-    db := config.DB()
-    bookingID := c.Param("id")
+func UpdateBookingStatusToComplete(c *gin.Context) {
+	// ใช้ DB จาก config
+	db := config.DB()
 
-    // ตรวจสอบว่ามีการจองที่สอดคล้องกับ bookingID หรือไม่
-    var booking entity.Booking
-    if err := db.First(&booking, bookingID).Error; err != nil {
-        c.JSON(http.StatusNotFound, gin.H{"error": "Booking not found"})
-        return
-    }
+	// รับค่า BookingID จากพารามิเตอร์ใน URL
+	bookingIDParam := c.Param("id")
+	bookingID, err := strconv.ParseUint(bookingIDParam, 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Booking ID"})
+		return
+	}
 
-    // ตรวจสอบสถานะการจอง
-    if booking.BookingStatus != "Accepted" {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Booking in an incorrect state"})
-        return
-    }
+	// ค้นหา BookingStatus ที่ตรงกับ BookingID
+	var bookingStatus entity.BookingStatus
+	if err := db.Where("booking_id = ?", bookingID).First(&bookingStatus).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "BookingStatus not found"})
+		return
+	}
 
-    // สร้างรายการใหม่ใน entity.BookingStatus
-    newBookingStatus := entity.BookingStatus{
-        BookingID:     booking.ID,
-        StatusBooking: "Finished",
-    }
-    if err := db.Create(&newBookingStatus).Error; err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update booking status"})
-        return
-    }
+	// อัพเดท StatusBooking เป็น "complete"
+	bookingStatus.StatusBooking = "complete"
+	if err := db.Save(&bookingStatus).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update BookingStatus"})
+		return
+	}
 
-    // อัปเดตสถานะของ booking (ถ้าจำเป็น)
-    booking.BookingStatus = "Finished"
-    if err := db.Save(&booking).Error; err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update booking entity"})
-        return
-    }
-
-    // ส่งข้อมูลกลับไป
-    c.JSON(http.StatusOK, gin.H{
-        "success": true,
-        "message": "Booking Finished",
-        "data": gin.H{
-            "booking":        booking,
-            "booking_status": newBookingStatus,
-        },
-    })
-}*/
-
+	// ส่งผลลัพธ์กลับไปยังผู้ใช้
+	c.JSON(http.StatusOK, gin.H{
+		"message": "BookingStatus updated to complete successfully",
+		"data":    bookingStatus,
+	})
+}

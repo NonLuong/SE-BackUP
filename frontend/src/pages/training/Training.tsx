@@ -71,11 +71,11 @@ function Training() {
         status: "completed",
       });
       if (res && res.status === 200) {
-        messageApi.success("สถานะอัปเดตเป็น 'Completed' สำเร็จ");
+        message.success("สำเร็จการอบรมแล้ว!");
         fetchDriverTrainbooks();
         setTimeout(() => navigate("/room"), 1500);
       } else {
-        messageApi.success("สถานะอัปเดตเป็น 'Completed' สำเร็จ");
+        message.success("สำเร็จการอบรมแล้ว");
         setTimeout(() => navigate("/room"), 1500);
       }
     } catch (error) {

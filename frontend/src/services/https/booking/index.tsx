@@ -270,20 +270,28 @@ export const acceptBooking = async (bookingId: string) => {
 
 export const finishBooking = async (bookingId: string) => {
   try {
+    // ตรวจสอบ URL และ bookingId
+    console.log('API URL:', `${apiUrl}/bookings/${bookingId}/finish`);
+    console.log('Booking ID:', bookingId);
+
+    // ส่งคำขอไปยัง Backend
     const response = await fetch(`${apiUrl}/bookings/${bookingId}/finish`, {
-      method: 'POST',
+      method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
       },
     });
 
+    // ตรวจสอบ Response Status
     if (!response.ok) {
-      // ตรวจสอบ Response Status
       const errorText = await response.text();
+      console.error('Response Status:', response.status, 'Response Text:', errorText);
       throw new Error(`Failed to finish booking. Status: ${response.status}, Message: ${errorText}`);
     }
 
     const data = await response.json();
+    console.log('Response Data:', data);
+
     if (data.success) {
       return data; 
     } else {
@@ -294,6 +302,7 @@ export const finishBooking = async (bookingId: string) => {
     throw new Error(error.message || 'Unknown error occurred while finishing booking');
   }
 };
+
 
 
 // services/https.ts

@@ -76,7 +76,7 @@ func registerRoutes(r *gin.Engine) {
 	r.GET("/bookings", controller.GetAllBookings)
 	r.GET("/bookings/:id", controller.GetBookingByID)
 	r.PATCH("/bookings/:id/accept", controller.AcceptBooking)
-	//r.POST("/bookings/:id/finish", controller.FinishBooking)
+	r.PATCH("/bookings/:id/finish", controller.UpdateBookingStatusToComplete)
 	r.PATCH("/bookings/:id/driver", controller.UpdateDriverIDInBooking) //RejectBooking
 	r.GET("/bookings/completed", controller.GetCompletedBookings)
 	r.GET("/nametypevehicles", controller.GetAllVehicles)

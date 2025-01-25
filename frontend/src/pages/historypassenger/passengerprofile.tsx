@@ -73,6 +73,13 @@ const PassengerProfile: React.FC = () => {
         <Button type="default" onClick={() => navigate("/home")}>
           Back to Home
         </Button>
+        <Button
+          type="primary"
+          className="profile-button"
+          onClick={() => navigate("/")}
+        >
+          Log out
+        </Button>
       </Card>
     </div>
   );

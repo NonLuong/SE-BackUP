@@ -31,14 +31,14 @@ const items: CustomMenuItem[] = [
   },
   {
     key: "/training",
-    label: "Traning",
+    label: "TRAINING",
     icon: <FundProjectionScreenOutlined />,
   },
   { key: "/withdrawal", label: "WITHDRAWAL", icon: <CreditCardOutlined />},
   { key: "/dashboad-driver-review", label: "Review", icon: <StarOutlined /> },
   {
     key: "/",
-    label: "Log out",
+    label: "LOG OUT",
     icon: <LogoutOutlined />,
     className: "menu-item-logout",
   },

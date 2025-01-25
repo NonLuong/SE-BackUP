@@ -39,7 +39,7 @@ const items: CustomMenuItem[] = [
   { key: "/rooms", label: "ROOM", icon: <AiOutlineHome /> },
   {
     key: "/",
-    label: "Log out",
+    label: "LOG OUT",
     icon: <LogoutOutlined />,
     className: "menu-item-logout",
   },

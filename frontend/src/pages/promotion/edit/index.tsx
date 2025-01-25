@@ -245,7 +245,7 @@ function PromotionEdit() {
                 <Col xs={24}>
                   <Row gutter={[16, 16]}>
                     <Col xs={24} sm={12}>
-                      <Form.Item label="ระยะทางขั้นต่ำ (กิโลเมตร)" name="distance_promotion">
+                      <Form.Item label="ระยะทาง (กิโลเมตร)" name="distance_promotion">
                         <InputNumber min={0} max={100} style={{ width: "100%" }} />
                       </Form.Item>
                     </Col>

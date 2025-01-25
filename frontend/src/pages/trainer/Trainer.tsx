@@ -3,8 +3,7 @@ import AdminSidebar from "../../components/sider/AdminSidebar";
 import { useNavigate } from "react-router-dom";
 import { Table, Space, Card, Row, Col, Statistic, Modal } from "antd";
 import { TeamOutlined } from "@ant-design/icons";
-import Male from "../../assets/male.png";
-import Female from "../../assets/female.png";
+import { IoManSharp, IoWoman } from "react-icons/io5";
 import { GetTrainers, DeleteTrainerById } from "../../services/https/TainerAPI";
 import { TrainersInterface } from "../../interfaces/ITrainer";
 import dayjs from "dayjs";
@@ -203,13 +202,7 @@ const Trainer: React.FC = () => {
                   textAlign: "center",
                   marginTop: "10px",
                 }}
-                prefix={
-                  <img
-                    src={Male}
-                    alt="Male"
-                    style={{ marginLeft: "-100px", width: "30px" }}
-                  />
-                }
+                prefix={<IoManSharp style={{ fontSize: "32px", color: "#000" }} />}
               />
             </Card>
           </Col>
@@ -232,13 +225,7 @@ const Trainer: React.FC = () => {
                   textAlign: "center",
                   marginTop: "10px",
                 }}
-                prefix={
-                  <img
-                    src={Female}
-                    alt="Female"
-                    style={{ marginLeft: "-100px", width: "24px" }}
-                  />
-                }
+                prefix={<IoWoman style={{ fontSize: "32px", color: "#000" }} />}
               />
             </Card>
           </Col>

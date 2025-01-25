@@ -66,7 +66,7 @@ const HomePayment: React.FC = () => {
     try {
       const response = await apiRequest<PromotionResponseInterface>(
         "GET",
-        `${Endpoint.PAYMENT_PROMOTION_CHECK}?code=${promotionCode}&distance=${bookingNew?.distance}&price=${bookingNew?.total_price}`
+        `${Endpoint.PAYMENT_PROMOTION_CHECK}?code=${promotionCode}&distance=${bookingNew?.distance}&price=${(bookingNew!.distance - 5) * 10}`
       );
 
       if (response.can_use) {
@@ -75,15 +75,31 @@ const HomePayment: React.FC = () => {
         if (bookingNew != null) {
           sum =
             bookingNew.distance > 5
-              ? bookingNew.total_price -
+              ? (bookingNew.distance - 5) * 10 -
                 response.discount_value +
-                (bookingNew.distance - 5) * 10
-              : bookingNew.total_price - response.discount_value;
+                bookingNew.total_price
+              : bookingNew.total_price;
         }
         setPromotionId(response.promotion_id);
         setSummery(sum);
         setDiscount(d);
         setDiscountType(response.discount_type);
+        let deliCost: string = "";
+        if (
+          formatPrice(
+            (bookingNew!.distance - 5) * 10 - response.discount_value
+          ) == "0.00"
+        ) {
+          deliCost = "FREE";
+        } else {
+          deliCost = formatPrice(
+            (bookingNew!.distance - 5) * 10 - response.discount_value
+          );
+        }
+
+        setDeliveryCost(deliCost);
+
+
       } else {
         alert(response.message);
         if (bookingNew != null) {
