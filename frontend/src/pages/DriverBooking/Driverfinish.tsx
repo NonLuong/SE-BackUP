@@ -49,15 +49,15 @@ const DriverFinish: React.FC<DriverFinishProps> = ({ bookingId }) => {
       // Call finishBooking service
       const response = await finishBooking(String(bookingId));
 
+      // กดจบงานแล้วไปอัปเดตหน้า payment
+      const notifyPayment = {
+        id: String(bookingId),
+        message: "update",
+      };
+      apiRequest("POST", Endpoint.PAYMENT_NOTIFY, notifyPayment);
+
       if (response.success) {
         alert("✅ Booking finished successfully!");
-
-        // กดจบงานแล้วไปอัปเดตหน้า payment
-        const notifyPayment = {
-          id: String(bookingId),
-          message: "update",
-        };
-        apiRequest("POST", Endpoint.PAYMENT_NOTIFY, notifyPayment);
 
         navigate("/Dashboards"); // Navigate to the Dashboards page
       } else {

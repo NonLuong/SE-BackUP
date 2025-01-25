@@ -229,33 +229,48 @@ const DashboardDriverReview: React.FC = () => {
               backgroundColor: "#F5E6FF",
               borderRadius: "10px",
               marginRight: "10px",
+              display: "flex", // ใช้ flexbox
+              justifyContent: "center", // จัดแนวนอนให้อยู่กลาง
+              alignItems: "center", // จัดแนวตั้งให้อยู่กลาง
             }}
           >
-            <h2
+            <div
               style={{
-                fontSize: "28px",
-                fontWeight: "bold",
-                textAlign: "center",
-                marginBottom: "15px",
-                color: "#552D88",
-                fontFamily: "Comic Sans MS, sans-serif",
+                textAlign: "center", // จัดข้อความให้ตรงกลาง
+                width: "100%", // ให้ครอบคลุมความกว้างทั้งหมด
               }}
             >
-              Review By
-            </h2>
-            <div style={{ clear: "none", maxWidth: "80%" }}>
-            <Table
-              className="custom-ant-table"
-              columns={columns}
-              dataSource={ratingData.reviews}
-              pagination={false}
-              scroll={{ y: 435 }}
-              style={{
-                backgroundColor: "#FFF",
-                borderRadius: "10px",
-                minHeight: "495px",
-              }}
-            />
+              <h2
+                style={{
+                  fontSize: "28px",
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  marginBottom: "15px",
+                  color: "#552D88",
+                  fontFamily: "Comic Sans MS, sans-serif",
+                }}
+              >
+                Review By
+              </h2>
+              <div
+                style={{
+                  maxWidth: "90%",
+                  margin: "0 auto", // ทำให้ Table อยู่ตรงกลางในแนวนอน
+                }}
+              >
+                <Table
+                  className="custom-ant-table"
+                  columns={columns}
+                  dataSource={ratingData.reviews}
+                  pagination={false}
+                  scroll={{ y: 435 }}
+                  style={{
+                    backgroundColor: "#FFF",
+                    borderRadius: "10px",
+                    minHeight: "495px",
+                  }}
+                />
+              </div>
             </div>
           </div>
 

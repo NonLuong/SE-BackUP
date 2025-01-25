@@ -38,8 +38,7 @@ const Payment: React.FC = () => {
   const navigate = useNavigate();
 
   const location = useLocation();
-  const { paymenyAmount, promotionId, bookingId, driverId, passengerId } =
-    location.state || {};
+  const { paymenyAmount, promotionId, bookingId } = location.state || {};
 
   // WebSocket Waiting Driver
   useEffect(() => {
@@ -63,7 +62,7 @@ const Payment: React.FC = () => {
       if (event.data === "update") {
         setNotifyPayment(true);
 
-        // แจ้งเตือนขึ้น รอ 19 วิ
+        // แจ้งเตือนขึ้น รอ 9 วิ
         const notificationTimer = setTimeout(() => {
           setNotifyPayment(false);
 
@@ -72,8 +71,6 @@ const Payment: React.FC = () => {
             navigate("/review", {
               state: {
                 bookingId: bookingId,
-                driverId: driverId,
-                passengerId: passengerId,
               },
             });
           }, 1000);
