@@ -36,8 +36,8 @@
 
 
 /* สไตล์ของกล่องปุ่ม */
-.pickup-button-container {
-  width: 100%;
+.mapcomponent .pickup-button-container {
+  width: 96%;
   background-color: #D9D7EF;
   padding: 10px 20px;
   margin-top: 10px; /* เพิ่มระยะห่างจากรายการสถานที่ */
@@ -48,7 +48,8 @@
 
 
 /* ปุ่มเลือกจุดรับ */
-.pickup-button {
+.mapcomponent .pickup-button {
+  width: 98%;
   padding: 12px 20px;
   background-color: #7F6ACB; /* สีม่วง */
   color: #fff;
@@ -60,26 +61,29 @@
   font-size: 16px;
 }
 
-.pickup-button:hover {
+.mapcomponent .pickup-button:hover {
   background-color: #a696e0; /* สีเมื่อ hover */
 }
 
-/* MapComponent.css */
 .mapcomponent .search-input {
-  width: 100%;
-  padding: 10px;
-  border-radius: 5px;
+  width: 90%; /* เพิ่มความกว้างเป็น 90% ของ container */
+  max-width: 600px; /* กำหนดความกว้างสูงสุดสำหรับหน้าจอใหญ่ */
+  padding: 15px; /* เพิ่ม padding ให้ช่อง input ดูชัดเจน */
+  border-radius: 10px; /* เพิ่มมุมโค้ง */
   border: 1px solid #99D7EF;
   box-sizing: border-box;
+  font-size: 18px; /* ขนาดตัวอักษรใหญ่ขึ้น */
 }
 
- .searchContainerStyle {
-  width: 100%,
-  /*padding: 10px,
-  backgroundColor: '#D9D7EF',
-  left: '0',
-  zIndex: '1000',*/
-};
+.search-container {
+  width: 100%; /* ให้ container กว้างเต็มหน้าจอ */
+  padding: 20px; /* เพิ่ม padding รอบ container */
+ 
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center; /* จัด input ให้อยู่ตรงกลาง */
+}
+
 
 
 /* MapComponent.css */
@@ -98,7 +102,7 @@
   width: 100%;
   padding: 10px;
   border-radius: 5px;
-  border: 1px solid #D9D7EF;
+  
   box-sizing: border-box;
 }
 
@@ -114,11 +118,11 @@
   height: 20px;
 }
 
-.pickup-button-container {
+.mapcomponent .pickup-button-container {
   text-align: center;
 }
 
-.pickup-button {
+.mapcomponent .pickup-button {
   padding: 10px 20px;
   border: none;
   background-color: #7F6ACB;
@@ -126,3 +130,84 @@
   border-radius: 5px;
   cursor: pointer;
 }
+
+/* สไตล์สำหรับช่องค้นหา */
+.mapcomponent .search-input {
+  width: 90%; /* เพิ่มความกว้างให้เต็ม container */
+  max-width: 600px; /* จำกัดความกว้างสูงสุด */
+  padding: 15px; /* เพิ่ม padding ให้ดูชัดเจน */
+  border-radius: 10px; /* มุมโค้ง */
+  border: 1px solid #99D7EF; /* สีขอบ */
+  font-size: 18px; /* ขนาดตัวอักษรใหญ่ขึ้น */
+  outline: none; /* ลบเส้นขอบเวลา focus */
+  box-sizing: border-box;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* เพิ่มเงา */
+  margin-bottom: 10px; /* เพิ่มระยะห่างด้านล่าง */
+}
+
+/* เพิ่มสีพื้นหลังเมื่อ input ถูก focus */
+.mapcomponent .search-input:focus {
+  border: 1px solid #7F6ACB; /* เปลี่ยนสีขอบ */
+  background-color: #ffffff; /* พื้นหลังอ่อน */
+  box-shadow: 0 4px 10px rgba(127, 106, 203, 0.3); /* เพิ่มเงา */
+}
+
+/* สำหรับ container */
+.mapcomponent .search-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px; /* ระยะห่างระหว่าง input และปุ่ม */
+  padding: 10px;
+  position: absolute; /* ตั้งตำแหน่ง absolute */
+  top: 10px; /* เลื่อนขึ้นไปที่ตำแหน่งด้านบน */
+  left: 50%; /* กึ่งกลางหน้าจอ */
+  transform: translateX(-50%); /* จัดกึ่งกลางด้วย transform */
+  z-index: 1000; /* ให้ container อยู่เหนือแผนที่ */
+}
+
+
+.search-button {
+  padding: 10px 20px;
+  background-color: #7f6acb; /* สีปุ่ม */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.search-button:hover {
+  background-color: #a696e0; /* สีปุ่มเมื่อ hover */
+}
+
+.mapcomponent .pickup-button-container {
+  position: fixed; /* ทำให้ปุ่มติดกับหน้าจอ */
+  bottom: 0; /* วางที่ด้านล่างสุดของหน้าจอ */
+  left: 0;
+  width: 98%; /* ให้กว้างเต็มหน้าจอ */
+  background-color: #D9D7EF; /* สีพื้นหลัง */
+  padding: 10px 20px;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); /* เงาให้ดูเด่น */
+  text-align: center; /* จัดปุ่มให้อยู่ตรงกลาง */
+  z-index: 1000; /* ให้อยู่เหนือองค์ประกอบอื่น */
+}
+.mapcomponent .pickup-button {
+  padding: 20px 40px; /* เพิ่ม padding */
+  background-color: #7F6ACB;
+  color: white;
+  border: none;
+  border-radius: 10px; /* เพิ่มมุมโค้ง */
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 20px; /* เพิ่มขนาดตัวอักษร */
+  width: 100%; /* ให้ปุ่มเต็มความกว้าง container */
+  
+  margin: 0 auto; /* จัดปุ่มให้อยู่กลาง */
+}
+
+.mapcomponent .pickup-button:hover {
+  background-color: #a696e0; /* สีเมื่อ hover */
+}
+

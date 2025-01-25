@@ -63,6 +63,7 @@ const MapDestination: React.FC = () => {
 
     const location = place.geometry.location;
     setDestinationLocation({ name: place.name, lat: location.lat(), lng: location.lng() });
+    
 
     if (map) {
       map.panTo(location);
@@ -73,62 +74,72 @@ const MapDestination: React.FC = () => {
   const handleMapClick = (event: any) => {
     const lat = event.latLng.lat();
     const lng = event.latLng.lng();
-
+  
     const geocoder = new window.google.maps.Geocoder();
     geocoder.geocode({ location: { lat, lng } }, (results, status) => {
       if (status === window.google.maps.GeocoderStatus.OK && results) {
-        const placeName = results[0]?.formatted_address || 'ตำแหน่งที่เลือก';
+        let placeName = 'ตำแหน่งที่เลือก'; // ค่าเริ่มต้น
+  
+        // ตรวจสอบว่ามีผลลัพธ์ที่เหมาะสม
+        if (results.length > 0) {
+          // ลองดึงชื่อสถานที่จริงจาก address_components หรือ place details
+          const place = results[0];
+          const nameComponent = place.address_components?.find((component: any) =>
+            component.types.includes('establishment') || component.types.includes('point_of_interest')
+          );
+  
+          if (nameComponent) {
+            placeName = nameComponent.long_name; // ใช้ชื่อสถานที่จริง
+          } else if (place.formatted_address) {
+            // หากไม่มีชื่อสถานที่ ให้ fallback เป็นชื่อที่สั้นที่สุด
+            const formattedAddress = place.formatted_address.split(',')[0];
+            placeName = formattedAddress;
+          }
+        }
+  
         setDestinationLocation({ lat, lng, name: placeName });
-
+        setSearchText(placeName); // อัปเดตชื่อสถานที่ในช่องค้นหา
+  
         if (map) {
           map.panTo({ lat, lng });
           map.setZoom(15);
         }
+      } else {
+        console.error('Geocoder failed or no results found:', status);
       }
     });
   };
+  
 
-  const handlePlaceSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchText(event.target.value);
-    if (!event.target.value) {
+  const handleSearch = () => {
+    if (!searchText.trim()) {
+      alert("กรุณากรอกชื่อสถานที่");
       return;
     }
-
-    const placesService = new window.google.maps.places.PlacesService(document.createElement('div'));
-    const request = { query: event.target.value, fields: ['place_id', 'geometry', 'name'] };
-
-    placesService.findPlaceFromQuery(request, (results, status) => {
-      if (
-        status === window.google.maps.places.PlacesServiceStatus.OK &&
-        results &&
-        results.length > 0
-      ) {
-        const firstResult = results[0];
-
-        if (
-          firstResult.geometry &&
-          firstResult.geometry.location &&
-          firstResult.name
-        ) {
-          const location = firstResult.geometry.location;
-
-          if (map) {
-            map.panTo(location);
-            map.setZoom(15);
-          }
-
-          setDestinationLocation({
-            name: firstResult.name,
-            lat: location.lat(),
-            lng: location.lng(),
-          });
+  
+    const geocoder = new window.google.maps.Geocoder();
+    geocoder.geocode({ address: searchText }, (results, status) => {
+      if (status === window.google.maps.GeocoderStatus.OK && results && results.length > 0) {
+        const { lat, lng } = results[0].geometry.location;
+        const name = results[0].formatted_address;
+  
+        // แก้ไขจาก setPickupLocation เป็น setDestinationLocation
+        setDestinationLocation({ name, lat: lat(), lng: lng() });
+  
+        if (map) {
+          map.panTo({ lat: lat(), lng: lng() });
+          map.setZoom(15);
         }
+  
+        console.log("ค้นหาสำเร็จ:", name, { lat: lat(), lng: lng() });
       } else {
-        console.error("Error or no results from findPlaceFromQuery:", status);
+        alert("ไม่พบสถานที่ที่ค้นหา");
+        console.error("Error in geocoding:", status);
       }
     });
   };
-
+  
+  
   useEffect(() => {
     const getHistoryPlaces = async () => {
       console.log('Fetching history places from backend...');
@@ -176,13 +187,17 @@ const MapDestination: React.FC = () => {
         )}
       </GoogleMap>
 
-      <div className="search-container">
+            <div className="search-container">
         <input
           type="text"
           value={searchText}
-          onChange={handlePlaceSearch}
+          onChange={(e) => setSearchText(e.target.value)}
           placeholder="ค้นหาสถานที่"
+          className="search-input"
         />
+        <button className="search-button" onClick={handleSearch}>
+          Search
+        </button>
       </div>
 
       <div className="list-place">

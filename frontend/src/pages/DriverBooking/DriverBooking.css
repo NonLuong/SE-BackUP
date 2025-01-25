@@ -9,6 +9,7 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin-top: 50px;
   color: #000;
+  background-color: #9a54d0;
 }
 
 .driverbooking .connected {
@@ -24,13 +25,13 @@
   padding: 15px;
   border: 1px solid #ddd;
   border-radius: 8px;
-  background-color: #f9f9f9;
+  background-color: #e0d6f7;
 }
 
 .driverbooking .acceptButton {
   margin-top: 10px;
   padding: 10px 20px;
-  background-color: #28a745;
+  background-color: #9a42ec;
   color: #fff;
   border-radius: 5px;
   cursor: pointer;
@@ -40,6 +41,14 @@
   margin-top: 10px;
   padding: 10px 20px;
   background-color: #007bff;
+  color: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.driverbooking .rejectButton{
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #ff0000;
   color: #fff;
   border-radius: 5px;
   cursor: pointer;

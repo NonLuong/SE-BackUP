@@ -1,0 +1,392 @@
+{
+  "id": "abcdb9e6-18db-4014-b5a8-13a5090fc8c5",
+  "version": "2.0",
+  "name": "TEST",
+  "url": "http://localhost:5173/promotion/create",
+  "tests": [{
+    "id": "d21aa607-0e0d-4f04-bb29-6b08a90ea3e9",
+    "name": "SP1",
+    "commands": [{
+      "id": "d2ad65bf-ad07-411a-a3a1-23ed73cb0ab3",
+      "comment": "",
+      "command": "open",
+      "target": "http://localhost:5173/promotion/create",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "e1e65709-710c-4224-83cc-2fa483b56c98",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1382x736",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "b8fb4345-c403-4858-9ab7-83a0bbb21c50",
+      "comment": "",
+      "command": "click",
+      "target": "css=.ant-col:nth-child(1) .ant-col:nth-child(1) .ant-col:nth-child(1)",
+      "targets": [
+        ["css=.ant-col:nth-child(1) .ant-col:nth-child(1) .ant-col:nth-child(1)", "css:finder"],
+        ["xpath=//form[@id='promotionCreate']/div/div/div/div/div/div/div", "xpath:idRelative"],
+        ["xpath=//form/div/div/div/div/div/div/div", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "1e4c81be-0064-4d7d-ba6c-ae53bdc111dc",
+      "comment": "",
+      "command": "click",
+      "target": "id=promotionCreate_promotion_code",
+      "targets": [
+        ["id=promotionCreate_promotion_code", "id"],
+        ["css=#promotionCreate_promotion_code", "css:finder"],
+        ["xpath=//input[@id='promotionCreate_promotion_code']", "xpath:attributes"],
+        ["xpath=//form[@id='promotionCreate']/div/div/div/div/div/div/div[2]/div/div/input", "xpath:idRelative"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "5d9403de-e62c-47e1-a422-bef4c14683ae",
+      "comment": "",
+      "command": "type",
+      "target": "id=promotionCreate_promotion_code",
+      "targets": [
+        ["id=promotionCreate_promotion_code", "id"],
+        ["css=#promotionCreate_promotion_code", "css:finder"],
+        ["xpath=//input[@id='promotionCreate_promotion_code']", "xpath:attributes"],
+        ["xpath=//form[@id='promotionCreate']/div/div/div/div/div/div/div[2]/div/div/input", "xpath:idRelative"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "MARRY"
+    }, {
+      "id": "d948ad3d-5bb6-473f-9b9e-7b3cbd660f68",
+      "comment": "",
+      "command": "click",
+      "target": "id=promotionCreate_promotion_name",
+      "targets": [
+        ["id=promotionCreate_promotion_name", "id"],
+        ["css=#promotionCreate_promotion_name", "css:finder"],
+        ["xpath=//input[@id='promotionCreate_promotion_name']", "xpath:attributes"],
+        ["xpath=//form[@id='promotionCreate']/div/div/div/div[2]/div/div/div[2]/div/div/input", "xpath:idRelative"],
+        ["xpath=//div[2]/div/div/div[2]/div/div/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "2dbdf4f2-07cc-4dab-bff7-859009e2e31c",
+      "comment": "",
+      "command": "type",
+      "target": "id=promotionCreate_promotion_name",
+      "targets": [
+        ["id=promotionCreate_promotion_name", "id"],
+        ["css=#promotionCreate_promotion_name", "css:finder"],
+        ["xpath=//input[@id='promotionCreate_promotion_name']", "xpath:attributes"],
+        ["xpath=//form[@id='promotionCreate']/div/div/div/div[2]/div/div/div[2]/div/div/input", "xpath:idRelative"],
+        ["xpath=//div[2]/div/div/div[2]/div/div/input", "xpath:position"]
+      ],
+      "value": "ลดไ"
+    }, {
+      "id": "96aa2c50-6d04-48aa-8f6c-575b212e5dbf",
+      "comment": "",
+      "command": "click",
+      "target": "id=promotionCreate_promotion_name",
+      "targets": [
+        ["id=promotionCreate_promotion_name", "id"],
+        ["css=#promotionCreate_promotion_name", "css:finder"],
+        ["xpath=//input[@id='promotionCreate_promotion_name']", "xpath:attributes"],
+        ["xpath=//form[@id='promotionCreate']/div/div/div/div[2]/div/div/div[2]/div/div/input", "xpath:idRelative"],
+        ["xpath=//div[2]/div/div/div[2]/div/div/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "91be351e-ed86-4842-bbff-1ae152231da5",
+      "comment": "",
+      "command": "type",
+      "target": "id=promotionCreate_promotion_name",
+      "targets": [
+        ["id=promotionCreate_promotion_name", "id"],
+        ["css=#promotionCreate_promotion_name", "css:finder"],
+        ["xpath=//input[@id='promotionCreate_promotion_name']", "xpath:attributes"],
+        ["xpath=//form[@id='promotionCreate']/div/div/div/div[2]/div/div/div[2]/div/div/input", "xpath:idRelative"],
+        ["xpath=//div[2]/div/div/div[2]/div/div/input", "xpath:position"]
+      ],
+      "value": "ลดไปเลย 50 บาท"
+    }, {
+      "id": "3b5980be-8260-4c9d-a3d6-692bc985f84a",
+      "comment": "",
+      "command": "click",
+      "target": "id=promotionCreate_discount_type_id",
+      "targets": [
+        ["id=promotionCreate_discount_type_id", "id"],
+        ["css=#promotionCreate_discount_type_id", "css:finder"],
+        ["xpath=//input[@id='promotionCreate_discount_type_id']", "xpath:attributes"],
+        ["xpath=//form[@id='promotionCreate']/div/div[2]/div/div/div/div/div[2]/div/div/div/div/span/span/input", "xpath:idRelative"],
+        ["xpath=//span/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "19f8b1fe-9bb2-4d7b-b0ea-05d2ba3a43d2",
+      "comment": "",
+      "command": "click",
+      "target": "css=.ant-select-item-option-active > .ant-select-item-option-content",
+      "targets": [
+        ["css=.ant-select-item-option-active > .ant-select-item-option-content", "css:finder"],
+        ["xpath=//div[2]/div/div/div[2]/div/div/div/div/div", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "3bfe4657-9b3c-47e5-ae5d-e4536ec68d95",
+      "comment": "",
+      "command": "click",
+      "target": "id=promotionCreate_discount",
+      "targets": [
+        ["id=promotionCreate_discount", "id"],
+        ["css=#promotionCreate_discount", "css:finder"],
+        ["xpath=//input[@id='promotionCreate_discount']", "xpath:attributes"],
+        ["xpath=//form[@id='promotionCreate']/div/div[2]/div/div[2]/div/div/div[2]/div/div/div/div[2]/input", "xpath:idRelative"],
+        ["xpath=//div[2]/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "6d4ae458-a275-49ee-aadb-3180c93bdaf9",
+      "comment": "",
+      "command": "type",
+      "target": "id=promotionCreate_discount",
+      "targets": [
+        ["id=promotionCreate_discount", "id"],
+        ["css=#promotionCreate_discount", "css:finder"],
+        ["xpath=//input[@id='promotionCreate_discount']", "xpath:attributes"],
+        ["xpath=//form[@id='promotionCreate']/div/div[2]/div/div[2]/div/div/div[2]/div/div/div/div[2]/input", "xpath:idRelative"],
+        ["xpath=//div[2]/input", "xpath:position"]
+      ],
+      "value": "50"
+    }, {
+      "id": "91e8d149-0ba2-41e1-87b4-dedc531e8a38",
+      "comment": "",
+      "command": "click",
+      "target": "id=promotionCreate_use_limit",
+      "targets": [
+        ["id=promotionCreate_use_limit", "id"],
+        ["css=#promotionCreate_use_limit", "css:finder"],
+        ["xpath=//input[@id='promotionCreate_use_limit']", "xpath:attributes"],
+        ["xpath=//form[@id='promotionCreate']/div/div[3]/div/div[2]/div/div/div[2]/div/div/div/div[2]/input", "xpath:idRelative"],
+        ["xpath=//div[3]/div/div[2]/div/div/div[2]/div/div/div/div[2]/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "218bd5bd-8f64-4d33-a22d-cfbdeb81ef19",
+      "comment": "",
+      "command": "type",
+      "target": "id=promotionCreate_use_limit",
+      "targets": [
+        ["id=promotionCreate_use_limit", "id"],
+        ["css=#promotionCreate_use_limit", "css:finder"],
+        ["xpath=//input[@id='promotionCreate_use_limit']", "xpath:attributes"],
+        ["xpath=//form[@id='promotionCreate']/div/div[3]/div/div[2]/div/div/div[2]/div/div/div/div[2]/input", "xpath:idRelative"],
+        ["xpath=//div[3]/div/div[2]/div/div/div[2]/div/div/div/div[2]/input", "xpath:position"]
+      ],
+      "value": "67"
+    }, {
+      "id": "4b4025c4-e8c4-4a00-b326-ed8624b34e4a",
+      "comment": "",
+      "command": "click",
+      "target": "id=promotionCreate_distance_promotion",
+      "targets": [
+        ["id=promotionCreate_distance_promotion", "id"],
+        ["css=#promotionCreate_distance_promotion", "css:finder"],
+        ["xpath=//input[@id='promotionCreate_distance_promotion']", "xpath:attributes"],
+        ["xpath=//form[@id='promotionCreate']/div/div[4]/div/div/div/div/div[2]/div/div/div/div[2]/input", "xpath:idRelative"],
+        ["xpath=//div[4]/div/div/div/div/div[2]/div/div/div/div[2]/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "61e71852-e20e-4919-8f2f-a14974ef2843",
+      "comment": "",
+      "command": "type",
+      "target": "id=promotionCreate_distance_promotion",
+      "targets": [
+        ["id=promotionCreate_distance_promotion", "id"],
+        ["css=#promotionCreate_distance_promotion", "css:finder"],
+        ["xpath=//input[@id='promotionCreate_distance_promotion']", "xpath:attributes"],
+        ["xpath=//form[@id='promotionCreate']/div/div[4]/div/div/div/div/div[2]/div/div/div/div[2]/input", "xpath:idRelative"],
+        ["xpath=//div[4]/div/div/div/div/div[2]/div/div/div/div[2]/input", "xpath:position"]
+      ],
+      "value": "5"
+    }, {
+      "id": "5b2bbe4e-e937-4c54-86dd-3b5f98da9ce4",
+      "comment": "",
+      "command": "click",
+      "target": "id=promotionCreate_end_date",
+      "targets": [
+        ["id=promotionCreate_end_date", "id"],
+        ["css=#promotionCreate_end_date", "css:finder"],
+        ["xpath=//input[@id='promotionCreate_end_date']", "xpath:attributes"],
+        ["xpath=//form[@id='promotionCreate']/div/div[4]/div/div[2]/div/div/div[2]/div/div/div/div/input", "xpath:idRelative"],
+        ["xpath=//div[4]/div/div[2]/div/div/div[2]/div/div/div/div/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "62b3d210-e6a0-43ec-b170-7f7b2bd45c9e",
+      "comment": "",
+      "command": "click",
+      "target": "css=.ant-picker-cell-hover > .ant-picker-cell-inner",
+      "targets": [
+        ["css=.ant-picker-cell-hover > .ant-picker-cell-inner", "css:finder"],
+        ["xpath=//tr[5]/td[6]/div", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "a2e0c96e-b6e3-485b-b651-a37466bb0983",
+      "comment": "",
+      "command": "click",
+      "target": "id=promotionCreate_promotion_description",
+      "targets": [
+        ["id=promotionCreate_promotion_description", "id"],
+        ["css=#promotionCreate_promotion_description", "css:finder"],
+        ["xpath=//textarea[@id='promotionCreate_promotion_description']", "xpath:attributes"],
+        ["xpath=//form[@id='promotionCreate']/div/div[6]/div/div/div/div/div[2]/div/div/textarea", "xpath:idRelative"],
+        ["xpath=//textarea", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "43d24b40-73d0-4b66-9bf5-9464b662ed09",
+      "comment": "",
+      "command": "type",
+      "target": "id=promotionCreate_promotion_description",
+      "targets": [
+        ["id=promotionCreate_promotion_description", "id"],
+        ["css=#promotionCreate_promotion_description", "css:finder"],
+        ["xpath=//textarea[@id='promotionCreate_promotion_description']", "xpath:attributes"],
+        ["xpath=//form[@id='promotionCreate']/div/div[6]/div/div/div/div/div[2]/div/div/textarea", "xpath:idRelative"],
+        ["xpath=//textarea", "xpath:position"]
+      ],
+      "value": "ใช้เลยตอนนี้เดินทางมากกว่า 5 กม."
+    }, {
+      "id": "6f6af8bc-70cd-4859-b1b3-a40a69d4bb7a",
+      "comment": "",
+      "command": "click",
+      "target": "id=promotionCreate_distance_condition",
+      "targets": [
+        ["id=promotionCreate_distance_condition", "id"],
+        ["css=#promotionCreate_distance_condition", "css:finder"],
+        ["xpath=//input[@id='promotionCreate_distance_condition']", "xpath:attributes"],
+        ["xpath=//form[@id='promotionCreate']/div/div[5]/div/div/div/div/div[2]/div/div/div/div/span/span/input", "xpath:idRelative"],
+        ["xpath=//div[5]/div/div/div/div/div[2]/div/div/div/div/span/span/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "8d0ddc28-d93d-469d-b882-0da3c336d230",
+      "comment": "",
+      "command": "type",
+      "target": "id=pic",
+      "targets": [],
+      "value": "C:\\Users\\User\\Downloads\\1.gif"
+    }, {
+      "id": "58267b52-f733-47b3-aeb0-fb8edea7974f",
+      "comment": "",
+      "command": "click",
+      "target": "css=.ant-modal-wrap",
+      "targets": [
+        ["css=.ant-modal-wrap", "css:finder"],
+        ["xpath=//div[5]/div/div[2]", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "dd27d2b7-593c-40ab-aad8-d15e4001f2e8",
+      "comment": "",
+      "command": "click",
+      "target": "css=.ant-modal-footer > .ant-btn-primary > span",
+      "targets": [
+        ["css=.ant-modal-footer > .ant-btn-primary > span", "css:finder"],
+        ["xpath=//div[3]/button[2]/span", "xpath:position"],
+        ["xpath=//span[contains(.,'OK')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "00c45f60-6dbb-4d99-9770-db64de260853",
+      "comment": "",
+      "command": "click",
+      "target": "id=promotionCreate_distance_condition",
+      "targets": [
+        ["id=promotionCreate_distance_condition", "id"],
+        ["css=#promotionCreate_distance_condition", "css:finder"],
+        ["xpath=//input[@id='promotionCreate_distance_condition']", "xpath:attributes"],
+        ["xpath=//form[@id='promotionCreate']/div/div[5]/div/div/div/div/div[2]/div/div/div/div/span/span/input", "xpath:idRelative"],
+        ["xpath=//div[5]/div/div/div/div/div[2]/div/div/div/div/span/span/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "83c1351b-4486-45be-a335-d6ce14c4fed4",
+      "comment": "",
+      "command": "click",
+      "target": "css=div:nth-child(5) .ant-select-item:nth-child(1) > .ant-select-item-option-content",
+      "targets": [
+        ["css=div:nth-child(5) .ant-select-item:nth-child(1) > .ant-select-item-option-content", "css:finder"],
+        ["xpath=//div[4]/div/div/div[2]/div/div/div/div/div", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "65ea6f5f-9cf1-4c40-b9ba-36778541de39",
+      "comment": "",
+      "command": "click",
+      "target": "id=promotionCreate_status_promotion_id",
+      "targets": [
+        ["id=promotionCreate_status_promotion_id", "id"],
+        ["css=#promotionCreate_status_promotion_id", "css:finder"],
+        ["xpath=//input[@id='promotionCreate_status_promotion_id']", "xpath:attributes"],
+        ["xpath=//form[@id='promotionCreate']/div/div[3]/div/div/div/div/div[2]/div/div/div/div/span/span/input", "xpath:idRelative"],
+        ["xpath=//div[3]/div/div/div/div/div[2]/div/div/div/div/span/span/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "aa76c76b-7f64-4919-84ab-456a21d75b80",
+      "comment": "",
+      "command": "click",
+      "target": "css=div:nth-child(7) .ant-select-item:nth-child(1) > .ant-select-item-option-content",
+      "targets": [
+        ["css=div:nth-child(7) .ant-select-item:nth-child(1) > .ant-select-item-option-content", "css:finder"],
+        ["xpath=//div[5]/div/div/div[2]/div/div/div/div/div", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "af6772c2-bdd0-4a28-91c3-b58b96945e06",
+      "comment": "",
+      "command": "click",
+      "target": "css=.ant-col:nth-child(7)",
+      "targets": [
+        ["css=.ant-col:nth-child(7)", "css:finder"],
+        ["xpath=//form[@id='promotionCreate']/div/div[7]", "xpath:idRelative"],
+        ["xpath=//div[7]", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "59cb79b7-b7bf-463a-84cf-a7d87d63ca8c",
+      "comment": "",
+      "command": "click",
+      "target": "css=.ant-btn-primary",
+      "targets": [
+        ["css=.ant-btn-primary", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//form[@id='promotionCreate']/div/div[7]/button", "xpath:idRelative"],
+        ["xpath=//div[7]/button", "xpath:position"],
+        ["xpath=//button[contains(.,'บันทึก')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "7efe1981-59bb-48dd-95c4-25d8777a227b",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.message-success",
+      "targets": [],
+      "value": "Promotion created successfully"
+    }]
+  }],
+  "suites": [{
+    "id": "3a2c5386-9538-4a9a-8a90-9bbaf9b8ab88",
+    "name": "Default Suite",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": []
+  }],
+  "urls": ["http://localhost:5173/promotion/create"],
+  "plugins": []
+}

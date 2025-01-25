@@ -1,7 +1,8 @@
 .MapRoute{
-  background-color: #bdb3f5; /* สีพื้นหลัง */
+  background-color: #dcd7f7;; /* สีพื้นหลัง */
   width: auto;
   height: auto;
+  overflow-x: hidden; /* ซ่อนการเลื่อนซ้ายขวา */
   
   
 }
@@ -59,7 +60,7 @@
 
 
 
-button {
+  .MapRoute .button {
   background-color:  #D9D7EF; /* ปุ่มสีม่วง */
   color: white;
   border: none;
@@ -194,7 +195,7 @@ border-radius: 15px;
 display: block; /* ใช้ block layout เพื่อแยกบรรทัด */
 width: 100%;
 padding: 20px;
-background-color: #bdb3f5;
+background-color: #dcd7F7;
 }
 
 /* ตั๋ว */
@@ -290,4 +291,45 @@ font-weight: bold;
     opacity: 1;
     transform: translate(-50%, -50%);
   }
+}
+
+.MapRoute .booking-button-container {
+  position: relative; /* แก้จาก fixed เป็น relative */
+  bottom: 0;
+  left: 0;
+  width: 100%; /* ให้เต็มความกว้างของ container */
+  background-color: #D9D7EF;
+  padding: 15px; /* เพิ่ม padding ให้พอเหมาะ */
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); /* เพิ่มเงา */
+  text-align: center;
+  z-index: 999; /* ให้อยู่เหนือองค์ประกอบอื่น */
+  margin-top: 20px; /* เพิ่มระยะห่างระหว่าง ticket-container */
+}
+
+
+
+.MapRoute .booking-button {
+  padding: 20px 40px; /* เพิ่ม padding เพื่อให้ปุ่มดูใหญ่ขึ้น */
+  background-color: #7F6ACB;
+  color: white;
+  border: none;
+  border-radius: 10px; /* เพิ่มมุมโค้ง */
+  font-size: 20px; /* ขนาดตัวอักษรใหญ่ขึ้น */
+  font-weight: bold; /* ตัวอักษรหนา */
+  width: 93%; /* ให้ปุ่มเต็มความกว้าง container */
+  
+  cursor: pointer;
+  margin: 0 auto; /* จัดปุ่มให้อยู่ตรงกลาง */
+}
+
+.MapRoute .booking-button:hover {
+  background-color: #a696e0; /* สีเมื่อ hover */
+}
+
+.ticket-container {
+  display: block; /* ใช้ block layout เพื่อแยกบรรทัด */
+  width: 100%;
+  padding: 20px;
+  background-color: #dcd7f7;
+  margin-bottom: 20px; /* เว้นระยะห่างด้านล่าง */
 }

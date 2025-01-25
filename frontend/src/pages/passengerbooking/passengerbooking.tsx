@@ -9,11 +9,28 @@ const PassengerNotification: React.FC = () => {
   const [driverId, setDriverId] = useState<string | null>(null);
   const [roomChatId, setRoomChatId] = useState<string | null>(null);
 
-  const passengerId = '1';
+  const [passengerId, setPassengerId] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  // ✅ ตรวจสอบ Role และ Passenger ID ก่อนเข้าหน้านี้
+  useEffect(() => {
+    const storedRole = localStorage.getItem('role');
+    const rawPassengerId = localStorage.getItem('id');
+
+    if (storedRole === 'Passenger' && rawPassengerId) {
+      setPassengerId(rawPassengerId);
+      console.log('🛎️ Passenger ID:', rawPassengerId);
+    } else {
+      console.error('❌ This page is only accessible for Passengers.');
+      alert('❌ You are not authorized to access this page.');
+      navigate('/login'); // Redirect ไปหน้า login
+    }
+  }, [navigate]);
 
   // ✅ เชื่อมต่อ WebSocket
   useEffect(() => {
+    if (!passengerId) return; // ออกจาก useEffect หากไม่มี Passenger ID
+
     let socket: WebSocket | null = null;
     let reconnectInterval: ReturnType<typeof setTimeout>;
 
@@ -91,10 +108,10 @@ const PassengerNotification: React.FC = () => {
       </div>
       <button
         className={`chatButton ${
-            bookingId && driverId && roomChatId ? "enabled" : "disabled"
+          bookingId && driverId && roomChatId ? 'enabled' : 'disabled'
         }`}
-          onClick={handleGoToChat}
-          disabled={!bookingId || !driverId || !roomChatId}
+        onClick={handleGoToChat}
+        disabled={!bookingId || !driverId || !roomChatId}
       >
         💬 Go to Chat
       </button>

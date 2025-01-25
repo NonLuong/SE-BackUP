@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getBookingById, acceptBooking, rejectBooking, notifyPassenger, updateDriverInBooking } from "../../services/https/booking";  // เพิ่ม rejectBooking
-import { createRoomChat } from "../../services/https/Roomchat/roomchat";
-import "./DriverBooking.css"; // นำเข้าการจัดสไตล์จากไฟล์ CSS
+import { getBookingById, acceptBooking, rejectBooking, notifyPassenger, updateDriverInBooking } from "../../services/https/booking";
+import { createRoomChat, updateDriverStatus } from "../../services/https/Roomchat/roomchat";
+import "./DriverBooking.css";
 
-// 🛠️ Define Booking Interface
 interface Booking {
   bookingId: number;
   startLocation: string;
@@ -12,63 +11,79 @@ interface Booking {
   bookingStatus: string;
   bookingTime: string;
   passengerId: number;
-  roomChatId: number; // RoomChat ID for backend
+  roomChatId: number;
 }
 
-// 🚗 DriverBooking Component
 const DriverBooking: React.FC = () => {
   const [booking, setBooking] = useState<Booking | null>(null);
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const driverID = 6; // Simulate driver ID (assuming it's obtained from authentication)
+  const [driverID, setDriverID] = useState<number | null>(null);
 
   const navigate = useNavigate();
 
   useEffect(() => {
+    const storedRole = localStorage.getItem("role");
+    const rawDriverID = localStorage.getItem("id");
+
+    // ตรวจสอบว่า Role ต้องเป็น Driver เท่านั้น
+    if (storedRole === "Driver" && rawDriverID) {
+      setDriverID(Number(rawDriverID));
+      console.log("🚗 Retrieved DriverID:", rawDriverID);
+    } else {
+      console.error("❌ This page is only accessible for Drivers.");
+      alert("❌ You are not authorized to access this page.");
+      navigate("/login"); // Redirect ผู้ใช้กลับไปหน้า login
+    }
+  }, [navigate]);
+
+  useEffect(() => {
+    if (!driverID) return; // ออกจาก useEffect หากไม่มี driverID
+
     let socket: WebSocket;
 
     const connectWebSocket = () => {
       socket = new WebSocket(`ws://localhost:8080/ws/driver/${driverID}`);
 
       socket.onopen = () => {
-        console.log('✅ WebSocket connected');
+        console.log("✅ WebSocket connected");
         setIsConnected(true);
       };
 
       socket.onmessage = async (event) => {
-        console.log('📩 Received message:', event.data);
+        console.log("📩 Received message:", event.data);
         try {
           const data = JSON.parse(event.data);
-          if (data.type === 'new_booking' && data.bookingId) {
+          if (data.type === "new_booking" && data.bookingId) {
             setLoading(true);
             const bookingDetails = await getBookingById(String(data.bookingId));
             setBooking({
-              bookingId: bookingDetails.id || bookingDetails.ID || 'Unknown',
-              startLocation: bookingDetails.beginning || 'Unknown',
-              destination: bookingDetails.terminus || 'Unknown',
-              bookingStatus: bookingDetails.booking_status || 'Unknown',
+              bookingId: bookingDetails.id || bookingDetails.ID || "Unknown",
+              startLocation: bookingDetails.beginning || "Unknown",
+              destination: bookingDetails.terminus || "Unknown",
+              bookingStatus: bookingDetails.booking_status || "Unknown",
               bookingTime: bookingDetails.start_time
                 ? new Date(bookingDetails.start_time).toLocaleString()
-                : 'Unknown',
+                : "Unknown",
               passengerId: bookingDetails.passenger_id,
-              roomChatId: bookingDetails.room_chat_id, 
+              roomChatId: bookingDetails.room_chat_id,
             });
             setLoading(false);
           }
         } catch (error) {
-          console.error('❌ Error processing message:', error);
+          console.error("❌ Error processing message:", error);
           setLoading(false);
         }
       };
 
       socket.onclose = () => {
-        console.log('🔌 WebSocket disconnected, attempting to reconnect...');
+        console.log("🔌 WebSocket disconnected, attempting to reconnect...");
         setIsConnected(false);
         setTimeout(connectWebSocket, 5000);
       };
 
       socket.onerror = (error) => {
-        console.error('❌ WebSocket error:', error);
+        console.error("❌ WebSocket error:", error);
       };
     };
 
@@ -77,147 +92,93 @@ const DriverBooking: React.FC = () => {
     return () => {
       if (socket) socket.close();
     };
-  }, []);
+  }, [driverID]);
 
-  // ✅ ฟังก์ชัน Accept Booking
   const handleAcceptBooking = async () => {
-    if (!booking || !booking.bookingId || !booking.passengerId) {
-      console.error('❌ Booking ID or Passenger ID is missing');
-      alert('❌ Booking ID or Passenger ID is missing');
+    if (!booking || !booking.bookingId || !booking.passengerId || !driverID) {
+      console.error("❌ Missing Booking ID, Passenger ID, or DriverID");
+      alert("❌ Missing Booking ID, Passenger ID, or DriverID");
       return;
     }
 
     try {
       setLoading(true);
-
-      // 🚗 ยืนยันการรับงาน
       const response = await acceptBooking(String(booking.bookingId));
 
       if (response.success) {
-        alert('✅ Booking accepted successfully');
+        alert("✅ Booking accepted successfully");
 
-        // ✅ Update DriverID in Booking
         const updateDriverResponse = await updateDriverInBooking(booking.bookingId, driverID);
-
         if (updateDriverResponse.success) {
-          console.log('✅ DriverID updated in booking:', updateDriverResponse);
-        } else {
-          console.error('❌ Failed to update DriverID in booking');
+          console.log("✅ DriverID updated in booking:", updateDriverResponse);
         }
 
-        // ✅ Create RoomChat
+        const updateDriverStatusResponse = await updateDriverStatus(driverID, 3);
+        if (updateDriverStatusResponse.success) {
+          console.log("✅ Driver status updated");
+        }
+
         const roomChatResponse = await createRoomChat({
-          booking_id: Number(booking.bookingId),
-          passenger_id: Number(booking.passengerId),
-          driver_id: Number(driverID),
+          booking_id: booking.bookingId,
+          passenger_id: booking.passengerId,
+          driver_id: driverID,
         });
 
-        if (roomChatResponse && roomChatResponse.id) {
-          console.log('✅ RoomChat created with ID:', roomChatResponse.id);
-          alert('✅ RoomChat created successfully');
-        
-          // ✅ อัปเดต State ของ booking ด้วย roomChatId
+        if (roomChatResponse?.id) {
+          console.log("✅ RoomChat created with ID:", roomChatResponse.id);
           setBooking((prev) => ({
             ...prev!,
             roomChatId: roomChatResponse.id,
           }));
-        
-          console.log('🛠️ Updated Booking State:', booking); // ตรวจสอบการอัปเดต State
-        
-          // 📲 แจ้ง Passenger
+
           const notifyResponse = await notifyPassenger(
             String(booking.passengerId),
             String(driverID),
             String(booking.bookingId),
-            `Your driver has accepted the booking (ID: ${booking.bookingId}) and a chat room is ready!`,
+            `Your driver has accepted the booking (ID: ${booking.bookingId})`,
             String(roomChatResponse.id)
           );
-        
-          if (notifyResponse.success) {
-            alert('✅ Passenger notified successfully');
-          } else {
-            console.error('❌ Failed to notify passenger');
-          }
 
-          navigate('/Driverontheway', {
-            state: {
-              bookingId: booking.bookingId,
-              passengerId: booking.passengerId,
-              driverID,
-              roomChatId: booking.roomChatId,
-            },
-          }); 
-        
-        } else {
-          console.error('❌ Failed to create RoomChat');
-          alert('❌ Failed to create RoomChat');
+          if (notifyResponse.success) {
+            alert("✅ Passenger notified successfully");
+          }
         }
       } else {
         alert(`❌ Failed to accept booking: ${response.message}`);
       }
-    } catch (error: any) {
-      console.error('❌ Error:', error.message || error);
-      alert(`❌ Error: ${error.message || 'Failed to accept booking'}`);
+    } catch (error) {
+      console.error("❌ Error:", error);
+      alert("❌ Error accepting booking");
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ ฟังก์ชัน Reject Booking
   const handleRejectBooking = async () => {
-    if (!booking || !booking.bookingId || !booking.passengerId) {
-      console.error('❌ Booking ID or Passenger ID is missing');
-      alert('❌ Booking ID or Passenger ID is missing');
+    if (!booking || !booking.bookingId || !driverID) {
+      console.error("❌ Missing Booking ID or DriverID");
+      alert("❌ Missing Booking ID or DriverID");
       return;
     }
 
     try {
       setLoading(true);
-
-      // 🚗 Reject Booking
       const response = await rejectBooking(String(booking.bookingId));
-      console.log('Reject Booking Response:', response);
-
 
       if (response.success) {
-        alert('✅ Booking rejected successfully');
-        // 📲 แจ้ง Passenger
-        const notifyResponse = await notifyPassenger(
-          String(booking.passengerId),
-          String(driverID),
-          String(booking.bookingId),
-          `Your driver has rejected the booking (ID: ${booking.bookingId}).`,
-          ''
-        );
-        
-        if (notifyResponse.success) {
-          alert('✅ Passenger notified successfully');
-        } else {
-          console.error('❌ Failed to notify passenger');
-        }
-
-        navigate('/DriverBooking', {
-          state: {
-            driverID,
-            bookingId: booking.bookingId,
-              passengerId: booking.passengerId,
-      
-              roomChatId: booking.roomChatId,
-          },
-        }); 
-        
+        alert("✅ Booking rejected successfully");
+        navigate("/DriverBooking");
       } else {
         alert(`❌ Failed to reject booking: ${response.message}`);
       }
-    } catch (error: any) {
-      console.error('❌ Error:', error.message || error);
-      alert(`❌ Error: ${error.message || 'Failed to reject booking'}`);
+    } catch (error) {
+      console.error("❌ Error:", error);
+      alert("❌ Error rejecting booking");
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ Handle Chat Navigation
   const handleChatWithPassenger = () => {
     if (!booking?.bookingId || !booking?.passengerId || !booking?.roomChatId) {
       alert("❌ Missing Booking ID, Passenger ID, or RoomChat ID");
@@ -248,16 +209,23 @@ const DriverBooking: React.FC = () => {
       ) : booking ? (
         <div className="bookingCard">
           <h2>📦 New Booking Received!</h2>
-          <p><strong>Booking ID:</strong> {booking.bookingId}</p>
-          <p><strong>Start Location:</strong> {booking.startLocation}</p>
-          <p><strong>Destination:</strong> {booking.destination}</p>
-          <p><strong>Status:</strong> {booking.bookingStatus}</p>
-          <p><strong>Time:</strong> {booking.bookingTime}</p>
+          <p>
+            <strong>Booking ID:</strong> {booking.bookingId}
+          </p>
+          <p>
+            <strong>Start Location:</strong> {booking.startLocation}
+          </p>
+          <p>
+            <strong>Destination:</strong> {booking.destination}
+          </p>
+          <p>
+            <strong>Time:</strong> {booking.bookingTime}
+          </p>
           <button className="acceptButton" onClick={handleAcceptBooking}>
-            ✅ Accept Booking
+            Accept Booking
           </button>
           <button className="rejectButton" onClick={handleRejectBooking}>
-            ❌ Reject Booking
+            Reject Booking
           </button>
           <button className="chatButton" onClick={handleChatWithPassenger}>
             💬 Chat with Passenger

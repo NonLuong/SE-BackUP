@@ -32,3 +32,56 @@ interface RoomChat {
     }
   }
   
+
+  interface DriverNameResponse {
+    firstname: string;
+    lastname: string;
+    success: boolean;
+  }
+  
+  // ฟังก์ชันดึงชื่อคนขับ
+  export async function getDriverName(driverId: number): Promise<DriverNameResponse | null> {
+    try {
+      const response = await fetch(`${apiUrl}/drivers/${driverId}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+  
+      if (response.ok) {
+        const result: DriverNameResponse = await response.json();
+        console.log("✅ Fetched driver name successfully:", result);
+        return result;
+      } else {
+        console.error("❌ Failed to fetch driver name:", response.statusText);
+        return null;
+      }
+    } catch (error) {
+      console.error("❌ Error fetching driver name:", error);
+      return null;
+    }
+  }
+  
+
+  // ฟังก์ชันสำหรับอัปเดต driver_status_id
+  export const updateDriverStatus = async (driverId: number, statusId: number): Promise<any> => {
+    try {
+      const response = await fetch(`${apiUrl}/driver/active/${driverId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ driver_status_id: statusId }), // ส่งค่า driver_status_id ใน body
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to update driver status");
+      }
+  
+      return await response.json();
+    } catch (error: any) {
+      console.error("Error updating driver status:", error.message);
+      throw error.message;
+    }
+  };
+  

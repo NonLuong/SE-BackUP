@@ -40,7 +40,7 @@ type Driver struct {
 	Employee   Employee `gorm:"foreignKey:EmployeeID" json:"employee" valid:"-"`
 
 	// ความสัมพันธ์กับตาราง Status
-	DriverStatusID uint   `json:"driverstatus_id"`
+	DriverStatusID int   `json:"driverstatus_id"`
 	DriverStatus   DriverStatus `gorm:"foreignKey:DriverStatusID" json:"driverstatus" valid:"-"`
 
 	// ความสัมพันธ์กับตาราง Booking

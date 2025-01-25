@@ -150,4 +150,29 @@ export const sendBookingStatusToBackend = async (bookingStatusData: any): Promis
       throw error;
     }
   };
+ 
+  
+  export const finishBooking = async (bookingId: string, driverId: number): Promise<any> => {
+    try {
+      const response = await fetch(`${apiUrl}/bookings/${bookingId}/finish`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          driverId: driverId,
+        }),
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to finish booking');
+      }
+  
+      return await response.json();
+    } catch (error: any) {
+      console.error('❌ Error finishing booking:', error.message || error);
+      throw new Error(error.message || 'Unknown error occurred while finishing booking');
+    }
+  };
   

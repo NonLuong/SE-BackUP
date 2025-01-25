@@ -119,7 +119,7 @@
   .banner-image {
   
   border-radius: 10px; /* มุมโค้งมนของกรอบ */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* เงาเพื่อความสวยงาม */
+  
   max-width: 100%; /* ป้องกันรูปภาพเกินขนาด */
   height: auto; /* ให้รูปภาพคงสัดส่วน */
   display: block;

@@ -1,0 +1,112 @@
+{
+  "id": "ce59d085-2ffa-443a-b7f5-d4658e5b9c85",
+  "version": "2.0",
+  "name": "Withdrawal",
+  "url": "http://localhost:5173/withdrawal/money",
+  "tests": [{
+    "id": "8bac65a9-7fd6-4419-8cbe-7da933438f36",
+    "name": "W Correct",
+    "commands": [{
+      "id": "173ee163-10fd-4aa2-a185-32e04c715417",
+      "comment": "",
+      "command": "open",
+      "target": "http://localhost:5173/withdrawal/money",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "b9958f3c-2763-40d8-848a-673d121bb60b",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1366x768",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "112dba2e-8cfc-4c23-b198-5b148ff5bb5a",
+      "comment": "",
+      "command": "click",
+      "target": "css=.ant-row:nth-child(1)",
+      "targets": [
+        ["css=.ant-row:nth-child(1)", "css:finder"],
+        ["xpath=//div[@id='root']/div/div[2]/div", "xpath:idRelative"],
+        ["xpath=//div[2]/div", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "b46d10c8-6874-4c4f-8686-64cc06f592ff",
+      "comment": "",
+      "command": "type",
+      "target": "xpath=//input[@class='ant-input-number-input']",
+      "targets": [
+        ["css=.ant-select-selection-item", "css:finder"],
+        ["xpath=//div[@id='root']/div/div[2]/div/div[2]/div/div/div[5]/div/div/span/span[2]", "xpath:idRelative"],
+        ["xpath=//span/span[2]", "xpath:position"]
+      ],
+      "value": "100"
+    }, {
+      "id": "2ffaf492-9828-4123-be49-309a98947b5a",
+      "comment": "",
+      "command": "type",
+      "target": "css=.ant-input-number-focused .ant-input-number-input",
+      "targets": [
+        ["css=.ant-input-number-focused .ant-input-number-input", "css:finder"],
+        ["xpath=//input[@value='100']", "xpath:attributes"],
+        ["xpath=//div[@id='root']/div/div[2]/div/div[2]/div/div/div/div/div[2]/input", "xpath:idRelative"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "100"
+    }, {
+      "id": "775ce35b-cbd9-4cfb-a42f-e59dc50ff421",
+      "comment": "",
+      "command": "click",
+      "target": "css=.ant-input",
+      "targets": [
+        ["css=.ant-input", "css:finder"],
+        ["xpath=//input[@value='']", "xpath:attributes"],
+        ["xpath=//div[@id='root']/div/div[2]/div/div[2]/div/div/div[4]/input", "xpath:idRelative"],
+        ["xpath=//div[4]/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "64610afd-9697-47e3-93a6-a64341ff40a6",
+      "comment": "",
+      "command": "type",
+      "target": "css=.ant-input",
+      "targets": [
+        ["css=.ant-input", "css:finder"],
+        ["xpath=//input[@value='2222222222']", "xpath:attributes"],
+        ["xpath=//div[@id='root']/div/div[2]/div/div[2]/div/div/div[4]/input", "xpath:idRelative"],
+        ["xpath=//div[4]/input", "xpath:position"]
+      ],
+      "value": "2222222222"
+    }, {
+      "id": "953a40d9-c01e-4f1c-9a80-8d3cbc9f0810",
+      "comment": "",
+      "command": "click",
+      "target": "css=.ant-btn-primary > span",
+      "targets": [
+        ["css=.ant-btn-primary > span", "css:finder"],
+        ["xpath=//div[@id='root']/div/div[2]/div/div[2]/div/div/div[6]/div/button/span", "xpath:idRelative"],
+        ["xpath=//div/button/span", "xpath:position"],
+        ["xpath=//span[contains(.,'ยืนยันการเบิกเงิน')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "a0aaabdf-0fc1-417b-a5c2-209127b073a0",
+      "comment": "",
+      "command": "assertText",
+      "target": "css=.message-success",
+      "targets": [],
+      "value": "Withdrawal created successfully"
+    }]
+  }],
+  "suites": [{
+    "id": "d3887e60-eeb6-4513-95fe-e8684f78ffb9",
+    "name": "Default Suite",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": ["8bac65a9-7fd6-4419-8cbe-7da933438f36"]
+  }],
+  "urls": ["http://localhost:5173/withdrawal/money"],
+  "plugins": []
+}

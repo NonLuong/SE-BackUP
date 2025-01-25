@@ -80,6 +80,7 @@ func registerRoutes(r *gin.Engine) {
 	r.PATCH("/bookings/:id/driver", controller.UpdateDriverIDInBooking) //RejectBooking
 	r.GET("/bookings/completed", controller.GetCompletedBookings)
 	r.GET("/nametypevehicles", controller.GetAllVehicles)
+	r.GET("/drivers/:id", controller.GetDriverName)
 
 	// WebSocket
 	//socketdriverbooking
@@ -185,6 +186,7 @@ func registerRoutes(r *gin.Engine) {
 	r.POST("/drivers", controller.CreateDriver)      // สร้าง Driver ใหม่
 	r.PATCH("/driver/:id", controller.UpdateDriver)  // อัปเดตข้อมูล Driver ตาม ID
 	r.DELETE("/driver/:id", controller.DeleteDriver) // ลบข้อมูล Driver ตาม ID
+	r.PATCH("/driver/active/:id", controller.UpdateDriverStatus)
 
 	// Passenger Routes
 	r.POST("/passengers", controller.CreatePassenger)

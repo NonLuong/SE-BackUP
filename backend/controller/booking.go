@@ -329,33 +329,26 @@ func UpdateDriverIDInBooking(c *gin.Context) {
 }
 
 func UpdateBookingStatusToComplete(c *gin.Context) {
-	// ใช้ DB จาก config
 	db := config.DB()
+	bookingID := c.Param("id")
 
-	// รับค่า BookingID จากพารามิเตอร์ใน URL
-	bookingIDParam := c.Param("id")
-	bookingID, err := strconv.ParseUint(bookingIDParam, 10, 32)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Booking ID"})
-		return
-	}
-
-	// ค้นหา BookingStatus ที่ตรงกับ BookingID
+	// ค้นหา BookingStatus
 	var bookingStatus entity.BookingStatus
 	if err := db.Where("booking_id = ?", bookingID).First(&bookingStatus).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "BookingStatus not found"})
 		return
 	}
 
-	// อัพเดท StatusBooking เป็น "complete"
+	// อัพเดทสถานะ BookingStatus
 	bookingStatus.StatusBooking = "complete"
 	if err := db.Save(&bookingStatus).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update BookingStatus"})
 		return
 	}
 
-	// ส่งผลลัพธ์กลับไปยังผู้ใช้
+	// ส่งข้อมูลกลับไป
 	c.JSON(http.StatusOK, gin.H{
+		"success": true,
 		"message": "BookingStatus updated to complete successfully",
 		"data":    bookingStatus,
 	})

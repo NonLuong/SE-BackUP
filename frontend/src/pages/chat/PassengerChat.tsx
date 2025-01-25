@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { sendMessageToBackend, getMessagesByRoomChatId, Message } from '../../services/https/booking';
-import './PassengerChat.css';
+import { getDriverName } from '../../services/https/Roomchat/roomchat';
+import { FaCar } from "react-icons/fa";
 
 // 🛠️ ประเภทของข้อความในแชท
 interface ChatMessage {
@@ -10,21 +11,12 @@ interface ChatMessage {
   timestamp: string;
 }
 
-
-
 // 🛎️ PassengerChat Component
 const PassengerChat: React.FC = () => {
   const location = useLocation();
-  const { bookingId, driverId, passengerId, roomChatId, } = location.state || {};
+  const { bookingId, driverId, passengerId, roomChatId } = location.state || {};
 
-  
-  console.log('🛠️ Booking ID:', bookingId);
-  console.log('🛠️ Driver ID:', driverId);
-  console.log('🛠️ Passenger ID:', passengerId);
-  console.log('🛠️ RoomChat ID:', roomChatId);
-
-
-
+  const [driverName, setDriverName] = useState<{ firstname: string; lastname: string } | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState<string>('');
   const [isConnected, setIsConnected] = useState<boolean>(false);
@@ -53,12 +45,10 @@ const PassengerChat: React.FC = () => {
                 msg.message === data.message &&
                 msg.sender === data.sender
             );
-
             if (isDuplicate) {
               console.warn('⚠️ Duplicate message detected');
               return prev;
             }
-
             return [
               ...prev,
               {
@@ -99,7 +89,22 @@ const PassengerChat: React.FC = () => {
     };
   }, [bookingId]);
 
-  // ✅ ดึงข้อความจาก Backend ตาม roomChatId
+  // ✅ ดึงข้อมูลชื่อคนขับ
+  useEffect(() => {
+    const fetchDriverName = async () => {
+      if (!driverId) return;
+      const result = await getDriverName(driverId);
+      if (result && result.success) {
+        setDriverName({ firstname: result.firstname, lastname: result.lastname });
+      } else {
+        setDriverName(null);
+      }
+    };
+
+    fetchDriverName();
+  }, [driverId]);
+
+  // ✅ ดึงข้อความจาก Backend
   useEffect(() => {
     const fetchMessages = async () => {
       if (!roomChatId) {
@@ -109,7 +114,6 @@ const PassengerChat: React.FC = () => {
 
       try {
         const fetchedMessages = await getMessagesByRoomChatId(String(roomChatId));
-        console.log('✅ Fetched Messages:', fetchedMessages);
         setMessages(
           fetchedMessages.map((msg: any) => ({
             sender: msg.sender_type,
@@ -125,7 +129,6 @@ const PassengerChat: React.FC = () => {
     fetchMessages();
   }, [roomChatId]);
 
-
   // ✅ Scroll ไปยังข้อความล่าสุด
   useEffect(() => {
     if (chatBoxRef.current) {
@@ -139,21 +142,18 @@ const PassengerChat: React.FC = () => {
       console.warn('❌ Cannot send empty message');
       return;
     }
-  
+
     const timestamp = new Date().toLocaleTimeString();
-  
-    // ✉️ ส่งข้อความไปยัง WebSocket
+
     const messagePayload = {
       type: 'chat_message',
       bookingId,
       sender: 'Passenger',
       message: newMessage,
       timestamp,
-      roomChatId, // ✅ เพิ่ม chatroomId ไปยัง WebSocket payload
+      roomChatId,
     };
-  
-    console.log('📤 Sending message:', messagePayload);
-  
+
     socketRef.current.send(JSON.stringify(messagePayload));
     setMessages((prev) => [
       ...prev,
@@ -163,10 +163,8 @@ const PassengerChat: React.FC = () => {
         timestamp,
       },
     ]);
-  
-    // 💾 ส่งข้อความไปยัง Backend
+
     const backendMessage: Message = {
-      
       content: newMessage,
       message_type: 'text',
       read_status: false,
@@ -176,53 +174,167 @@ const PassengerChat: React.FC = () => {
       driver_id: Number(driverId),
       sender_id: Number(passengerId),
       sender_type: 'Passenger',
-      room_id: Number(roomChatId), // ✅ เพิ่ม chatroomId สำหรับ Backend
+      room_id: Number(roomChatId),
     };
-  
-    console.log('📤 Sending message to backend:', backendMessage);
-  
+
     const res = await sendMessageToBackend(backendMessage);
     if (!res) {
       console.error('❌ Failed to save message to backend');
     }
-  
+
     setNewMessage('');
   };
-  
-  return (
-    <div className="containerpassengerchat">
-    <h1>💬 Chat with Driver</h1>
-    <p><strong>Booking ID:</strong> {bookingId}</p>
-    <p><strong>Driver ID:</strong> {driverId}</p>
-    <p className={isConnected ? 'connected' : 'disconnected'}>
-      {isConnected ? '🟢 Connected to Chat Room' : '🔴 Disconnected from Chat Room'}
-    </p>
-  
-    <div className="chatBox" ref={chatBoxRef}>
-  {messages.map((msg, index) => (
-    <div
-      key={index}
-      className={`message ${msg.sender === 'You' ? 'message-user' : 'message-other'}`}
-    >
-      <p><strong>{msg.sender}:</strong> {msg.message}</p>
-      <p className="timestamp">{msg.timestamp}</p>
-    </div>
-  ))}
-</div>
 
-      <div className="inputSection">
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
+  return (
+    <div style={styles.container}>
+      <h1>💬 Chat with Driver</h1>
+      {driverName ? (
+        <p><strong>Driver:</strong> {driverName.firstname} {driverName.lastname}</p>
+      ) : (
+        <p>กำลังโหลดข้อมูลชื่อคนขับ...</p>
+      )}
+      
+      {isConnected ? (
+        <p style={styles.connected}>🟢 Connected to Chat Room</p>
+      ) : (
+        <p style={styles.disconnected}>🔴 Disconnected from Chat Room</p>
+      )}
+      <div style={styles.chatBox} ref={chatBoxRef}>
+      <FaCar style={styles.iconBackground} />
+        {messages.map((msg, index) => (
+          <div
+            key={index}
+            style={{
+              ...styles.message,
+              alignSelf: msg.sender === 'You' ? 'flex-end' : 'flex-start',
+              backgroundColor: msg.sender === 'You' ? '#d1e7dd' : '#f8d7da',
+            }}
+          >
+            <p><strong>{msg.sender}:</strong> {msg.message}</p>
+            <p style={styles.timestamp}>{msg.timestamp}</p>
+          </div>
+        ))}
+      </div>
+      <div style={styles.inputSection}>
         <input
-          className="input"
+          style={styles.input}
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
-          placeholder="พิมพ์ข้อความที่นี่..."
+          onKeyDown={handleKeyDown}
+          placeholder="Type your message..."
         />
-        <button className="sendButton" onClick={handleSendMessage}>
+        <button style={styles.sendButton} onClick={handleSendMessage}>
           ➤
         </button>
       </div>
     </div>
   );
+};
+
+
+
+
+
+// 🎨 CSS Styles
+const styles = {
+  container: {
+    fontFamily: 'Arial, sans-serif',
+    textAlign: 'center' as const,
+    width: '100vw', // กว้างเต็มหน้าจอ
+    height: '100vh', // สูงเต็มหน้าจอ
+    margin: '0',
+    display: 'flex',
+    flexDirection: 'column' as const, // จัด layout เป็นแนวตั้ง
+    backgroundColor: 'rgb(202, 197, 249)',
+    color: '#000',
+  },
+  connected: {
+    color: 'green',
+    fontWeight: 'bold',
+  },
+  disconnected: {
+    color: 'red',
+    fontWeight: 'bold',
+  },
+  chatBox: {
+    flex: 1,
+    overflowY: 'scroll' as const,
+    border: '1px solid #ddd',
+    padding: '10px',
+    borderRadius: '5px',
+    backgroundColor: '#d9d7ef',
+    display: 'flex',
+    flexDirection: 'column' as const,
+    gap: '8px',
+    color: '#000',
+    backgroundImage: 'url("https://example.com/car-icon.png")',
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'center',
+    backgroundSize: 'contain',
+  },
+
+
+  message: {
+    padding: '8px 12px',
+    borderRadius: '8px',
+    maxWidth: '70%',
+    wordWrap: 'break-word' as const,
+    color: '#000',
+  },
+  timestamp: {
+    fontSize: '10px',
+    color: '#666',
+    marginTop: '4px',
+  },
+  inputSection: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: '10px',
+    padding: '10px',
+    backgroundColor: '#D1C4E9',
+    borderTop: '1px solid #ccc',
+  },
+  input: {
+    flex: 1,
+    padding: '12px 15px',
+    borderRadius: '25px',
+    border: '1px solid #ccc',
+    fontSize: '14px',
+    outline: 'none',
+    backgroundColor: '#fff',
+    color: '#000',
+  },
+  sendButton: {
+    padding: '10px 15px',
+    backgroundColor: '#9575CD',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '50%',
+    fontSize: '20px',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '50px',
+    height: '50px',
+  },
+  iconBackground: {
+    position: "absolute" as const,
+    top: "50%",
+    left: "50%",
+    fontSize: "250px",
+    color: "#f0f0f0",
+    transform: "translate(-50%, -50%)",
+    zIndex: 0,
+  },
 };
 
 

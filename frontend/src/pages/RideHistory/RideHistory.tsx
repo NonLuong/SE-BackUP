@@ -52,7 +52,7 @@ const RideHistory: React.FC = () => {
   return (
     <div className="ride-history-container">
       <div className="ride-history">
-        <div className="header">Travel History</div>
+        <div className="header">TRAVEL HISTORY</div>
         <div className="ride-cards">
           {bookings.map((booking, index) => (
             <div key={booking.id} className="ride-card">
@@ -67,7 +67,7 @@ const RideHistory: React.FC = () => {
               <div className="ride-card-body">
                 <p>
                   <strong>Route:</strong>{" "}
-                  {booking.beginning} - {booking.terminus}
+                  {booking.beginning} to {booking.terminus}
                 </p>
                 <p>
                   <strong>Start Date:</strong>{" "}

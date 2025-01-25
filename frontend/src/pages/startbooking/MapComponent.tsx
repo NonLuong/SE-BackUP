@@ -137,6 +137,34 @@ const MapComponent: React.FC = () => {
     });
   };
 
+  const handleSearch = () => {
+    if (!searchText.trim()) {
+      alert("กรุณากรอกชื่อสถานที่");
+      return;
+    }
+  
+    const geocoder = new window.google.maps.Geocoder();
+    geocoder.geocode({ address: searchText }, (results, status) => {
+      if (status === window.google.maps.GeocoderStatus.OK && results && results.length > 0) {
+        const { lat, lng } = results[0].geometry.location;
+        const name = results[0].formatted_address;
+  
+        setPickupLocation({ name, lat: lat(), lng: lng() });
+  
+        if (map) {
+          map.panTo({ lat: lat(), lng: lng() });
+          map.setZoom(15);
+        }
+  
+        console.log("ค้นหาสำเร็จ:", name, { lat: lat(), lng: lng() });
+      } else {
+        alert("ไม่พบสถานที่ที่ค้นหา");
+        console.error("Error in geocoding:", status);
+      }
+    });
+  };
+  
+
   
   const handleNearbyPlaceClick = (place: any) => {
     if (!place.geometry || !place.geometry.location) return;
@@ -144,6 +172,7 @@ const MapComponent: React.FC = () => {
     const location = place.geometry.location;
     const name = place.name || "ไม่ทราบชื่อสถานที่"; // ดึงชื่อสถานที่โดยตรงจาก place.name
     setPickupLocation({ name, lat: location.lat(), lng: location.lng() });
+    setSearchText(name); // อัปเดตชื่อสถานที่ในช่องค้นหา
   
     if (map) {
       map.panTo(location);
@@ -167,25 +196,28 @@ const MapComponent: React.FC = () => {
           const service = new window.google.maps.places.PlacesService(map);
           service.getDetails({ placeId }, (place, placeStatus) => {
             if (placeStatus === window.google.maps.places.PlacesServiceStatus.OK && place) {
-              // ดึงชื่อสถานที่ที่ดีที่สุด
               const placeName =
                 place.name && place.name.length > 1
                   ? place.name
                   : results[0].formatted_address.split(",")[0]; // fallback หากไม่มี name
               setPickupLocation({ name: placeName, lat, lng });
+              setSearchText(placeName); // อัปเดตชื่อในช่องค้นหา
               console.log("Place Name (from Place Details):", placeName);
             } else {
               console.error("Failed to fetch place details:", placeStatus);
               setPickupLocation({ name: "ตำแหน่งที่ไม่ทราบชื่อ", lat, lng });
+              setSearchText("ตำแหน่งที่ไม่ทราบชื่อ"); // fallback ชื่อ
             }
           });
         } else {
           console.error("No place_id found");
           setPickupLocation({ name: "ตำแหน่งที่ไม่ทราบชื่อ", lat, lng });
+          setSearchText("ตำแหน่งที่ไม่ทราบชื่อ"); // fallback ชื่อ
         }
       } else {
         console.error("Error fetching place name:", status);
         setPickupLocation({ name: "ตำแหน่งที่ไม่ทราบชื่อ", lat, lng });
+        setSearchText("ตำแหน่งที่ไม่ทราบชื่อ"); // fallback ชื่อ
       }
     });
   
@@ -233,14 +265,20 @@ const MapComponent: React.FC = () => {
       )}
     </GoogleMap>
 
-      <div className="search-container">
-      <input
-        type="text"
-        value={searchText}
-        onChange={(e) => setSearchText(e.target.value)}
-        placeholder="ค้นหาสถานที่"
-      />
-    </div>
+    <div className="search-container">
+  <input
+    type="text"
+    value={searchText}
+    onChange={(e) => setSearchText(e.target.value)}
+    placeholder="ค้นหาสถานที่"
+    className="search-input"
+  />
+  <button className="search-button" onClick={handleSearch}>
+    Search
+  </button>
+</div>
+
+
 
     <div className="list-place">
       <ul className="place-list">
@@ -249,7 +287,7 @@ const MapComponent: React.FC = () => {
             <li
               key={index}
               className="place-item"
-              onClick={() => handleNearbyPlaceClick(place)}
+              onClick={() => handleNearbyPlaceClick(place)} // เรียกฟังก์ชันเมื่อคลิก
             >
               <img
                 src="https://img.icons8.com/ios-filled/50/FF0000/marker.png"

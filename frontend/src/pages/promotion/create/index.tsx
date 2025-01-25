@@ -293,6 +293,7 @@ const PromotionCreate = () => {
                         <Form.Item label="รูปภาพ" name="photo">
                           <ImgCrop rotationSlider>
                             <Upload
+                              id="pic"
                               listType="picture-card"
                               fileList={fileList}
                               onChange={onChange}

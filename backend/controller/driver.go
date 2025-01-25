@@ -217,3 +217,65 @@ func DeleteDriver(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Driver deleted successfully"})
 }
+
+// GetDriverName - ดึงข้อมูลชื่อคนขับ
+func GetDriverName(c *gin.Context) {
+	driverID := c.Param("id") // ดึงค่า driver ID จาก URL
+	var driver entity.Driver  // สร้างตัวแปรสำหรับเก็บข้อมูลคนขับ
+
+	db := config.DB() // เชื่อมต่อฐานข้อมูล
+
+	// ค้นหาข้อมูลคนขับในฐานข้อมูลตาม ID
+	if err := db.Where("id = ?", driverID).First(&driver).Error; err != nil {
+		// กรณีไม่พบข้อมูลคนขับ
+		c.JSON(http.StatusNotFound, gin.H{"success": false, "message": "Driver not found"})
+		return
+	}
+
+	// ส่งข้อมูลชื่อคนขับกลับไป
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"firstname": driver.Firstname,
+		"lastname":  driver.Lastname,
+	})
+}
+
+// UpdateDriver - อัปเดต driver_status_id เป็น 1
+func UpdateDriverStatus(c *gin.Context) {
+	// รับ driver ID จากพารามิเตอร์ URL
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid driver ID"})
+		return
+	}
+
+	// ค้นหา Driver ในฐานข้อมูล
+	var driver entity.Driver
+	if err := config.DB().First(&driver, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Driver not found"})
+		return
+	}
+
+	// รับ driver_status_id จาก Body
+	var requestBody struct {
+		DriverStatusID int `json:"driver_status_id"`
+	}
+	if err := c.ShouldBindJSON(&requestBody); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		return
+	}
+
+	// อัปเดต driver_status_id
+	driver.DriverStatusID = requestBody.DriverStatusID
+	if err := config.DB().Save(&driver).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update driver status"})
+		return
+	}
+
+	// ส่งผลลัพธ์กลับไป
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Driver status updated successfully",
+		"data":    driver,
+	})
+}

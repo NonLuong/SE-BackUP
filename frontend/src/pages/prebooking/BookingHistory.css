@@ -1,26 +1,60 @@
 /* Booking List Container */
 
-.booking-list {
-  background-color: #F3E9FF; /* สีพื้นหลังม่วงอ่อน */
-  margin: 0;
-  padding: 0;
-  font-family: Arial, sans-serif; /* ฟอนต์เริ่มต้น */
-  width: 100%; /* ความกว้างเต็มหน้าจอ */
-  display: flex; /* เพื่อจัดเนื้อหา */
-  justify-content: center; /* จัดเนื้อหาให้อยู่ตรงกลางแนวนอน */
-  align-items: center; /* จัดเนื้อหาให้อยู่ตรงกลางแนวตั้ง */
-  max-height: 100%; /* ความสูงขั้นต่ำเต็มหน้าจอ */
+/* ทำให้ Container เต็มหน้าจอ */
+.booking-list-container {
+  width: 100%; /* ใช้ความกว้างเต็มหน้าจอ */
+  height: 100%; /* ใช้ความสูงเต็มหน้าจอ */
+  font-family: Arial, sans-serif;
+  padding: 20px;
+
+  margin: 0; /* รีเซ็ต margin เพื่อให้ชิดหน้าจอ */
+  box-sizing: border-box; /* รวม padding และ border */
+}
+
+.booking-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; /* ปรับให้หัวข้ออยู่ด้านบน */
+  min-height: 100vh; /* ให้เต็มหน้าจอ */
+  
+  background-color: #dcd7f7;;
+}
+
+.page-title {
+  font-size: 36px;
+  font-weight: bold;
+  color: #5a2d98;
+  margin-top: 20px; /* ระยะห่างด้านบน */
+  margin-bottom: 40px; /* ระยะห่างระหว่างหัวข้อกับเนื้อหา */
+  text-align: center;
+}
+.opernbooking-details {
+  display: flex;
+  align-items: flex-start; /* จัดให้อยู่ด้านบน */
+  gap: 50px; /* เพิ่มระยะห่างระหว่างรูปภาพและข้อความ */
+}
+
+.booking-page .booking-text {
+  text-align: left; /* จัดข้อความชิดซ้าย */
+  font-size: 20px; /* ขนาดตัวอักษร */
+  line-height: 1.8; /* ระยะห่างระหว่างบรรทัด */
+  color: #000000; /* สีข้อความ */
+  flex-grow: 1; /* ขยายพื้นที่ให้เต็ม */
 }
 
 
-.booking-list-container {
-  width: 90%;
-  font-family: Arial, sans-serif;
-  padding: 20px;
-  background-color: #E5D9F2; /* สีพื้นหลังอ่อน */
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin-top: 50px; /* ใช้แทน top หากต้องการให้กล่องเลื่อนลง */
+
+/* จัดตำแหน่งกลางหน้าจอ */
+.booking-list {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* ใช้ความสูงเต็มหน้าจอ */
+  background-color: #F3E9FF; /* สีพื้นหลัง */
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 .booking-list-container h1 {
@@ -35,19 +69,19 @@
   padding-left: 0;
 }
 
-.booking-item {
+.booking-list-container .booking-item {
   background-color: #CDC1FF;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* เพิ่มความเด่นให้เงากล่อง */
   margin-bottom: 20px; /* เพิ่มระยะห่างระหว่างกล่อง */
   padding: 20px;
-  max-width: 90%; /* ตั้งค่าความกว้างสูงสุด */
+  width: 90%; /* ตั้งค่าความกว้างสูงสุด */
   margin-left: auto; /* จัดกล่องให้อยู่ตรงกลาง */
   margin-right: auto; /* จัดกล่องให้อยู่ตรงกลาง */
 }
 
 /* Header Section */
-.booking-item-header {
+.booking-list-container .booking-item-header {
   display: flex;
     justify-content: space-between;
     align-items: center;
@@ -56,8 +90,14 @@
     margin-bottom: 20px;
 }
 
+.italic-text {
+  font-style: italic;
+  color:#000;
+}
+
+
 /* Buttons Group */
-.booking-actions {
+.booking-list-container .booking-actions {
   display: flex;
   gap: 10px; /* ระยะห่างระหว่างปุ่ม */
   justify-content: flex-end; /* จัดให้อยู่ด้านขวาของกล่อง */
@@ -66,8 +106,16 @@
 }
 
 /* Edit and Cancel Buttons */
-.edit-button,
-.cancel-button {
+.booking-list-container .edit-buttonbooking{
+  padding: 10px 20px; /* เพิ่มขนาดปุ่ม */
+  font-size: 14px; /* ขนาดตัวอักษร */
+  border: none; /* ลบขอบ */
+  border-radius: 50px; /* ทำให้ปุ่มกลม */
+  cursor: pointer; /* เปลี่ยนเคอร์เซอร์เมื่อชี้ */
+  font-weight: bold; /* ตัวหนา */
+  transition: background-color 0.3s ease, transform 0.2s ease; /* เพิ่มเอฟเฟกต์ */
+}
+.booking-list-container .cancel-buttonbooking {
   padding: 10px 20px; /* เพิ่มขนาดปุ่ม */
   font-size: 14px; /* ขนาดตัวอักษร */
   border: none; /* ลบขอบ */
@@ -77,37 +125,47 @@
   transition: background-color 0.3s ease, transform 0.2s ease; /* เพิ่มเอฟเฟกต์ */
 }
 
-/* Edit Button Style */
-.edit-button {
-  background-color: #4CAF50; /* สีเขียว */
-  color: #fff; /* สีตัวอักษร */
+.booking-list-container .cancel-buttonbooking {
+  background-color: #ff0000; /* สีเขียว */
+  color: #000; /* สีตัวอักษร */
 }
 
-.edit-button:hover {
-  background-color: #45a049; /* สีเขียวเข้มเมื่อ hover */
+.booking-list-container .cancel-buttonbooking:hover {
+  background-color: #f56363; /* สีเขียวเข้มเมื่อ hover */
+  transform: scale(1.05); /* ขยายเล็กน้อยเมื่อ hover */
+}
+
+/* Edit Button Style */
+.booking-list-container .edit-buttonbooking {
+  background-color: #c178fd; /* สีเขียว */
+  color: #000; /* สีตัวอักษร */
+}
+
+.booking-list-container .edit-buttonbooking:hover {
+  background-color: #c29cd5; /* สีเขียวเข้มเมื่อ hover */
   transform: scale(1.05); /* ขยายเล็กน้อยเมื่อ hover */
 }
 
 /* Cancel Button Style */
-.cancel-button {
+.booking-list-container .cancel-button {
   background-color: #f44336; /* สีแดง */
   color: #fff; /* สีตัวอักษร */
 }
 
-.cancel-button:hover {
+.booking-list-container .cancel-button:hover {
   background-color: #d32f2f; /* สีแดงเข้มเมื่อ hover */
   transform: scale(1.05); /* ขยายเล็กน้อยเมื่อ hover */
 }
 
 /* Divider Line */
-.divider {
+.booking-list-container .divider {
   border: none;
   border-top: 1px solid #ccc; /* เส้นแบ่ง */
   margin: 10px 0; /* ระยะห่างด้านบนและล่าง */
 }
 
 /* Popup Styles */
-.custom-popup-overlay {
+.booking-list-container .custom-popup-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -172,7 +230,7 @@
 }
 
 .close-popup-button {
-  background-color: #4CAF50;
+  background-color: #f12020;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -216,7 +274,7 @@
   .react-calendar {
     width: 350px;
     max-width: 100%;
-    background: #ffffff; /* สีพื้นหลัง */
+    background: #6a63ff; /* สีพื้นหลัง */
     border: 1px solid #a0a096;
     font-family: 'Arial', 'Helvetica', sans-serif;
     line-height: 1.125em;
@@ -260,16 +318,7 @@
   color: #000; /* สีฟอนต์ปุ่มเมื่อ hover */
 }
 
-button {
-  background-color: #D9D7EF;
- 
-  border: none;
-  padding: 8px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 16px;
-  margin-top: 10px;
-}
+
 
 .success-popup-overlay {
   position: fixed;
@@ -284,7 +333,7 @@ button {
   z-index: 1001;
 }
 
-.success-popup {
+.confirmation-popup-overlay .success-popup {
   background-color: #ffffff;
   padding: 20px;
   border-radius: 8px;
@@ -293,13 +342,13 @@ button {
   width: 300px;
 }
 
-.success-popup h2 {
+.confirmation-popup-overlay .success-popup h2 {
   color: #4CAF50;
   margin-bottom: 15px;
 }
 
-.close-popup-button {
-  background-color: #4CAF50;
+.confirmation-popup-overlay .close-popup-button {
+  background-color: #a791d8;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -308,25 +357,216 @@ button {
 }
 
 .close-popup-button:hover {
-  background-color: #45a049;
+  background-color: #e35959;
 }
 
-.booking-details {
+.booking-list-container .opernbooking-details {
   display: flex;
-  align-items: center; /* จัดข้อความให้อยู่กึ่งกลางในแนวตั้ง */
-  gap: 20px; /* ระยะห่างระหว่างภาพและข้อความ */
+  align-items: center;
+  gap: 10px; /* ลดระยะห่าง */
 }
 
-.banner-image {
-  width: 200px; /* กำหนดขนาดความกว้างของภาพ */
-  height: auto; /* ปรับอัตราส่วนภาพอัตโนมัติ */
-  border-radius: 8px; /* ทำให้ภาพมีมุมโค้ง */
+.booking-list-container .banner-image {
+  width: 350px; /* กำหนดขนาดภาพ */
+  height: auto;
+  border-radius: 8px;
+  margin-right: 10px; /* ควบคุมระยะห่างเฉพาะด้านขวา */
 }
 
-.booking-text {
-  text-align: left; /* จัดข้อความให้อยู่ทางซ้าย */
-  font-size: 16px; /* ขนาดตัวอักษร */
-  line-height: 1.5; /* ระยะห่างระหว่างบรรทัด */
-  color: #333; /* สีตัวอักษร */
+
+
+.react-calendar__tile--now {
+  background: #dd99f1;
 }
 
+
+
+/* ปุ่มยืนยัน (CONFIRM) */
+.confirmation-popup .confirm-button {
+  background-color: #9d5ec7; /* สีเขียว */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 8px; /* เพิ่มความโค้ง */
+  cursor: pointer;
+  margin-right: 10px; /* ระยะห่างระหว่างปุ่ม */
+  transition: background-color 0.3s ease, transform 0.2s ease; /* เพิ่มเอฟเฟกต์ */
+}
+
+.confirmation-popup .confirm-button:hover {
+  background-color: #8f64bd; /* สีเขียวเข้มเมื่อ hover */
+  transform: scale(1.05); /* ขยายเล็กน้อยเมื่อ hover */
+}
+
+/* ปุ่มปิด (CLOSE) */
+.confirmation-popup .cancel-button {
+  background-color: #f44336; /* สีแดง */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 8px; /* เพิ่มความโค้ง */
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease; /* เพิ่มเอฟเฟกต์ */
+}
+
+.confirmation-popup .cancel-button:hover {
+  background-color: #d32f2f; /* สีแดงเข้มเมื่อ hover */
+  transform: scale(1.05); /* ขยายเล็กน้อยเมื่อ hover */
+}
+
+/* จัดเรียงปุ่มใน Confirmation Popup */
+.confirmation-popup {
+  display: flex;
+  flex-direction: column; /* ปุ่มอยู่ด้านล่างข้อความ */
+  align-items: center;
+  gap: 20px; /* ระยะห่างระหว่างข้อความและปุ่ม */
+}
+
+.confirmation-popup .button-group {
+  display: flex;
+  justify-content: center; /* ปุ่มจัดอยู่กึ่งกลาง */
+  gap: 15px; /* ระยะห่างระหว่างปุ่ม */
+}
+
+
+/* Overlay Background */
+.confirmation-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* สีพื้นหลังโปร่งแสง */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1001;
+  opacity: 0;
+  animation: fadeIn 0.3s forwards; /* เพิ่มอนิเมชันจางเข้าของ overlay */
+}
+
+/* Popup Box */
+.confirmation-popup {
+  background-color: #fff;
+  padding: 20px 30px;
+  border-radius: 10px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* เพิ่มเงาสำหรับ popup */
+  text-align: center;
+  transform: scale(0.9);
+  animation: scaleUp 0.3s forwards; /* เพิ่มอนิเมชันขยาย popup */
+}
+
+/* Popup Heading */
+.confirmation-popup h3 {
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* Confirm Button */
+.confirm-button {
+  background-color: #4CAF50; /* สีเขียว */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-right: 10px; /* ระยะห่างระหว่างปุ่ม */
+}
+
+.confirm-button:hover {
+  background-color: #45a049; /* สีเขียวเข้ม */
+  transform: scale(1.05); /* เพิ่มขนาดเล็กน้อยเมื่อ hover */
+}
+
+/* Cancel Button */
+.cancel-button {
+  background-color: #f44336; /* สีแดง */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancel-button:hover {
+  background-color: #d32f2f; /* สีแดงเข้ม */
+  transform: scale(1.05); /* เพิ่มขนาดเล็กน้อยเมื่อ hover */
+}
+
+/* Animation for fade-in */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Animation for scale-up */
+@keyframes scaleUp {
+  from {
+    transform: scale(0.9);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.react-calendar__tile:disabled {
+  pointer-events: none; /* ปิดการคลิก */
+  cursor: not-allowed; /* แสดงลูกศรห้าม */
+  background-color: #f0f0f0; /* สีพื้นหลังสำหรับวันที่ปิดใช้งาน */
+  color: #ccc; /* สีข้อความจาง */
+}
+
+
+.react-calendar {
+  background-color: #ffffff; /* เปลี่ยนสีพื้นหลังเป็นสีขาว */
+  border: 1px solid #dcdcdc; /* เพิ่มเส้นขอบ */
+  border-radius: 10px; /* เพิ่มมุมโค้งมน */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* เพิ่มเงาเบา ๆ */
+}
+
+.react-calendar__tile {
+  background-color: #ffffff; /* สีพื้นหลังของ tile */
+  color: #333; /* สีข้อความปกติ */
+  border-radius: 5px; /* เพิ่มมุมโค้งมน */
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.react-calendar__tile--active {
+  background-color: #6a63ff; /* สีพื้นหลังของวันที่เลือก */
+  color: #ffffff; /* สีข้อความของวันที่เลือก */
+}
+
+.react-calendar__tile--now {
+  background-color: #eeeeee; /* สีพื้นหลังของวันที่ปัจจุบัน */
+  color: #333; /* สีข้อความ */
+}
+
+.react-calendar__tile--disabled {
+  background-color: #f0f0f0; /* สีพื้นหลังของวันที่ไม่สามารถเลือกได้ */
+  color: #ccc; /* สีข้อความของวันที่ไม่สามารถเลือกได้ */
+  pointer-events: none; /* ปิดการคลิก */
+}
+
+.react-calendar__navigation button {
+  color: #333; /* สีปุ่มของเดือนและปี */
+  background: none;
+  border: none;
+  font-size: 1em;
+  margin: 0 5px;
+}
+
+.react-calendar__navigation button:hover {
+  background-color: #e6e6e6; /* สีเมื่อ hover */
+  color: #000; /* สีข้อความเมื่อ hover */
+}

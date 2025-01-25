@@ -235,70 +235,77 @@ const MapRoute: React.FC = () => {
 
   return (
     <div className="MapRoute">
-      <GoogleMap
-        mapContainerStyle={{ width: "100%", height: "400px" }}
-        zoom={12}
-        center={pickupLocation || { lat: 13.736717, lng: 100.523186 }}
-      >
-        {directions && <DirectionsRenderer directions={directions} />}
-        {pickupLocation && <Marker position={pickupLocation} label="Pickup" />}
-        {destinationLocation && <Marker position={destinationLocation} label="Destination" />}
-      </GoogleMap>
+  <GoogleMap
+    mapContainerStyle={{ width: "100%", height: "400px" }}
+    zoom={12}
+    center={pickupLocation || { lat: 13.736717, lng: 100.523186 }}
+  >
+    {directions && <DirectionsRenderer directions={directions} />}
+    {pickupLocation && <Marker position={pickupLocation} label="Pickup" />}
+    {destinationLocation && <Marker position={destinationLocation} label="Destination" />}
+  </GoogleMap>
 
-      {successMessage && <div className="success-message">{successMessage}</div>}
+  {successMessage && <div className="success-message">{successMessage}</div>}
 
-      <div className="ticket-container">
-        {vehicles.map((vehicle: Vehicle, index: number) => {
-          const fareForVehicle =
-            distance !== null &&
-            !isNaN(vehicle.BaseFare) &&
-            !isNaN(vehicle.PerKm) &&
-            typeof vehicle.BaseFare === "number" &&
-            typeof vehicle.PerKm === "number"
-              ? vehicle.BaseFare + vehicle.PerKm * distance
-              : null;
+  {/* ticket-container */}
+  <div className="ticket-container">
+    {vehicles.map((vehicle: Vehicle, index: number) => {
+      const fareForVehicle =
+        distance !== null &&
+        !isNaN(vehicle.BaseFare) &&
+        !isNaN(vehicle.PerKm) &&
+        typeof vehicle.BaseFare === "number" &&
+        typeof vehicle.PerKm === "number"
+          ? vehicle.BaseFare + vehicle.PerKm * distance
+          : null;
 
-              // เพิ่ม log เพื่อตรวจสอบค่า
-            
-          return (
-            <div key={vehicle.ID} className={`ticket ${selectedVehicle === vehicle.ID ? "selected" : ""}`}>
-              <div className="dashed-border">
-                <div
-                  className={`vehicle-item ${index % 2 === 0 ? "even" : "odd"}`}
-                  onClick={() => handleSelectVehicle(vehicle.ID)}
-                >
-                  <div className="vehicle-icon">{vehicle.icon}</div>
-                  <div className="vehicle-info">
-                    <h3>{vehicle.NameCar}</h3>
-                    <p>
-                    <UserOutlined style={{ marginRight: "5px",marginLeft:"5px", fontSize: "30px", verticalAlign: "middle" }} />
-                    x{vehicle.Capacity}
-                  </p>
-                    {distance !== null && <p>Distance: {distance.toFixed(2)} Km</p>}
-                    {fareForVehicle !== null ? (
-                      <p>Fare: {fareForVehicle.toFixed(2)} Baht</p>
-                    ) : (
-                      <p>Fare: N/A</p>
-                    )}
-                  </div>
-                </div>
+      return (
+        <div key={vehicle.ID} className={`ticket ${selectedVehicle === vehicle.ID ? "selected" : ""}`}>
+          <div className="dashed-border">
+            <div
+              className={`vehicle-item ${index % 2 === 0 ? "even" : "odd"}`}
+              onClick={() => handleSelectVehicle(vehicle.ID)}
+            >
+              <div className="vehicle-icon">{vehicle.icon}</div>
+              <div className="vehicle-info">
+                <h3>{vehicle.NameCar}</h3>
+                <p>
+                  <UserOutlined
+                    style={{
+                      marginRight: "5px",
+                      marginLeft: "5px",
+                      fontSize: "30px",
+                      verticalAlign: "middle",
+                    }}
+                  />
+                  x{vehicle.Capacity}
+                </p>
+                {distance !== null && <p>Distance: {distance.toFixed(2)} Km</p>}
+                {fareForVehicle !== null ? (
+                  <p>Fare: {fareForVehicle.toFixed(2)} Baht</p>
+                ) : (
+                  <p>Fare: N/A</p>
+                )}
               </div>
             </div>
-          );
-        })}
-      </div>
+          </div>
+        </div>
+      );
+    })}
+  </div>
 
-      <div className="booking-button-container">
-        <button
-          className="booking-button"
-          onClick={handleBooking}
-          disabled={!selectedVehicle || distance === null}
-        >
-          Booking Cabana
-        </button>
-      </div>
-    </div>
+  {/* booking-button-container */}
+  <div className="booking-button-container">
+    <button
+      className="booking-button"
+      onClick={handleBooking}
+      disabled={!selectedVehicle || distance === null}
+    >
+      Booking Cabana
+    </button>
+  </div>
+</div>
+
   );
-};
-
+}  
 export default MapRoute;

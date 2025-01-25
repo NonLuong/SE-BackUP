@@ -34,6 +34,11 @@ const items: CustomMenuItem[] = [
     label: "TRAINING",
     icon: <FundProjectionScreenOutlined />,
   },
+  {
+    key: "/DriverBooking",
+    label: "ACCEPT JOB",
+    icon: <FundProjectionScreenOutlined />,
+  },
   { key: "/withdrawal", label: "WITHDRAWAL", icon: <CreditCardOutlined />},
   { key: "/dashboad-driver-review", label: "Review", icon: <StarOutlined /> },
   {

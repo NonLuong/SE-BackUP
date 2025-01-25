@@ -1,7 +1,7 @@
 /* ครอบคลุมทั้งหน้าจอ */
 .ride-history-container {
   font-family: "Arial", sans-serif;
-  background-color: #f3e5f5; /* พื้นหลังสีม่วงอ่อน */
+  background-color: #dcd7f7;; /* พื้นหลังสีม่วงอ่อน */
   min-height: 100vh; /* ความสูงเต็มหน้าจอ */
   display: flex;
   justify-content: center;
@@ -31,7 +31,7 @@
 }
 
 .ride-history .ride-card {
-  background: #ffffff; /* พื้นหลังสีขาว */
+  background: #CDC1FF; /* พื้นหลังสีขาว */
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* เงา */
   padding: 25px; /* เพิ่มความใหญ่ */
@@ -56,7 +56,7 @@
 .ride-history .ride-card-header h3 {
   margin: 0;
   font-size: 24px; /* ข้อความใหญ่ขึ้น */
-  color: #6a1b9a; /* สีม่วงเข้ม */
+  color: #000000; /* สีม่วงเข้ม */
 }
 
 .ride-history .ride-card-header .status {
@@ -82,5 +82,6 @@
 }
 
 .ride-history .ride-card-body strong {
-  color: #333;
+  color: #000000;
 }
+ 
